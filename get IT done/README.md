@@ -6,7 +6,7 @@ A full-stack task management application built to help you organize projects, tr
 
 **This app is fully vibecoded.** It was built entirely through AI-assisted development using [GitHub Copilot](https://github.com/features/copilot) in VS Code — with prompts, conversations, and iterative refinement rather than traditional manual coding.
 
-Multiple AI models were used throughout the process, including **Claude**, **GPT-4o**, and **Gemini**, depending on the task at hand. The entire codebase — frontend, backend, database models, API routes, styling, and even this README — was generated through natural language conversations with Copilot.
+Multiple AI models were used throughout the process, including **Claude** and **GPT-5.2**, depending on the task at hand. The entire codebase — frontend, backend, database models, API routes, styling, and even this README — was generated through natural language conversations with Copilot.
 
 No code was written by hand. Every feature, bug fix, and design decision was driven by describing what was needed and letting the AI generate the implementation.
 
