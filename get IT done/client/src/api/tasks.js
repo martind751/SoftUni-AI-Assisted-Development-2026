@@ -13,8 +13,18 @@ function getErrorMessage(payload, fallback) {
   return msg || fallback
 }
 
-export async function listTasks() {
-  const res = await fetch('/api/tasks')
+export async function listTasks(options = {}) {
+  // Build query string from non-empty options
+  const params = new URLSearchParams()
+  Object.entries(options).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      params.append(key, value)
+    }
+  })
+  const queryString = params.toString()
+  const url = `/api/tasks${queryString ? `?${queryString}` : ''}`
+  
+  const res = await fetch(url)
   const payload = await readJson(res)
   if (!res.ok) throw new Error(getErrorMessage(payload, 'Failed to load tasks'))
   return payload?.tasks || []

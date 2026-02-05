@@ -7,6 +7,8 @@ import { listProjects, createProject } from './api/projects'
 import { listCategories, createCategory } from './api/categories'
 import { Modal } from './components/Modal'
 import { TaskForm } from './components/TaskForm'
+import { ProjectForm } from './components/ProjectForm'
+import { CategoryForm } from './components/CategoryForm'
 import { TaskList } from './components/TaskList'
 
 function normalizeTask(t) {
@@ -28,24 +30,49 @@ function App() {
   const [projects, setProjects] = useState([])
   const [categories, setCategories] = useState([])
 
-  const [editingTask, setEditingTask] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  // Filter and sort state for tasks
+  const [taskFilters, setTaskFilters] = useState({
+    view: 'all',
+    projectId: '',
+    categoryId: '',
+    status: '',
+    priority: '',
+    sortBy: 'createdAt',
+    sortOrder: 'desc'
+  })
 
-  function openCreateModal() {
+  const [editingTask, setEditingTask] = useState(null)
+  const [editingProject, setEditingProject] = useState(null) 
+  const [editingCategory, setEditingCategory] = useState(null)
+  const [activeModal, setActiveModal] = useState(null) // 'task', 'project', 'category'
+
+  function openCreateTaskModal() {
     setEditingTask(null)
     setTasksError('')
-    setIsModalOpen(true)
+    setActiveModal('task')
   }
 
-  function openEditModal(task) {
+  function openEditTaskModal(task) {
     setEditingTask(task)
     setTasksError('')
-    setIsModalOpen(true)
+    setActiveModal('task')
+  }
+
+  function openCreateProjectModal() {
+    setEditingProject(null)
+    setActiveModal('project')
+  }
+
+  function openCreateCategoryModal() {
+    setEditingCategory(null)
+    setActiveModal('category')
   }
 
   function closeModal() {
-    setIsModalOpen(false)
+    setActiveModal(null)
     setEditingTask(null)
+    setEditingProject(null)
+    setEditingCategory(null)
     setTasksError('')
   }
 
@@ -75,7 +102,17 @@ function App() {
       setTasksLoading(true)
       setTasksError('')
       try {
-        const rows = await listTasks()
+        // Build options from taskFilters, excluding empty values and 'all' view
+        const options = {}
+        if (taskFilters.view && taskFilters.view !== 'all') options.view = taskFilters.view
+        if (taskFilters.projectId) options.projectId = taskFilters.projectId
+        if (taskFilters.categoryId) options.categoryId = taskFilters.categoryId
+        if (taskFilters.status) options.status = taskFilters.status
+        if (taskFilters.priority) options.priority = taskFilters.priority
+        if (taskFilters.sortBy) options.sortBy = taskFilters.sortBy
+        if (taskFilters.sortOrder) options.sortOrder = taskFilters.sortOrder
+        
+        const rows = await listTasks(options)
         if (!cancelled) setTasks(rows.map(normalizeTask))
       } catch (e) {
         if (!cancelled) setTasksError(e?.message || 'Failed to load tasks')
@@ -88,7 +125,7 @@ function App() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [taskFilters])
 
   useEffect(() => {
     let cancelled = false
@@ -114,25 +151,58 @@ function App() {
     }
   }, [])
 
-  async function handleCreateProject(name) {
+  async function handleCreateProject(payload) {
+    setBusy(true)
+
     try {
-      const created = await createProject({ name })
+      const created = await createProject(payload)
       setProjects((prev) => [...prev, created])
+      closeModal()
       return created
     } catch (e) {
-      console.error('Failed to create project:', e)
+      setTasksError(e?.message || 'Failed to create project')
       throw e
+    } finally {
+      setBusy(false)
     }
   }
 
-  async function handleCreateCategory(name, color) {
+  async function handleCreateCategory(payload) {
+    setBusy(true)
+
     try {
-      const created = await createCategory({ name, color })
+      const created = await createCategory(payload)
       setCategories((prev) => [...prev, created])
+      closeModal()
       return created
     } catch (e) {
-      console.error('Failed to create category:', e)
+      setTasksError(e?.message || 'Failed to create category')
       throw e
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleQuickCreateProject() {
+    const name = window.prompt('Enter project name:')
+    if (name?.trim()) {
+      try {
+        await handleCreateProject({ name: name.trim(), description: '' })
+      } catch (e) {
+        // Error is already handled in handleCreateProject
+      }
+    }
+  }
+
+  async function handleQuickCreateCategory() {
+    const name = window.prompt('Enter category name:')
+    if (name?.trim()) {
+      const color = window.prompt('Enter color (hex, e.g. #3b82f6):', '#3b82f6') || '#6b7280'
+      try {
+        await handleCreateCategory({ name: name.trim(), color })
+      } catch (e) {
+        // Error is already handled in handleCreateCategory
+      }
     }
   }
 
@@ -185,6 +255,48 @@ function App() {
     }
   }
 
+  async function handleQuickCreateProject() {
+    const name = window.prompt('Enter project name:')
+    if (name?.trim()) {
+      try {
+        await handleCreateProject(name.trim())
+      } catch (e) {
+        // Error is already handled in handleCreateProject
+      }
+    }
+  }
+
+  async function handleQuickCreateCategory() {
+    const name = window.prompt('Enter category name:')
+    if (name?.trim()) {
+      const color = window.prompt('Enter color (hex, e.g. #3b82f6):', '#3b82f6') || '#6b7280'
+      try {
+        await handleCreateCategory(name.trim(), color)
+      } catch (e) {
+        // Error is already handled in handleCreateCategory
+      }
+    }
+  }
+
+  async function handleToggleComplete(task) {
+    const id = task?._id
+    if (!id) return
+
+    const newStatus = task.status === 'done' ? 'todo' : 'done'
+    const previous = tasks
+
+    // Optimistically update UI
+    setTasks((prev) => prev.map((t) => (t._id === id ? { ...t, status: newStatus } : t)))
+
+    try {
+      await updateTask(id, { status: newStatus })
+    } catch (e) {
+      // Revert on error
+      setTasks(previous)
+      setTasksError(e?.message || 'Failed to update task')
+    }
+  }
+
   async function handleDelete(task) {
     const id = task?._id
     if (!id) return
@@ -222,13 +334,6 @@ function App() {
           <span className="subtitle">Your personal productivity hub</span>
         </div>
         <div className="headerRight">
-          <button 
-            type="button" 
-            className="button buttonPrimary buttonLarge" 
-            onClick={openCreateModal}
-          >
-            + New Task
-          </button>
           <div className={statusBadgeClass}>
             <span className="statusDot"></span>
             {statusText}
@@ -237,9 +342,9 @@ function App() {
       </header>
 
       <Modal 
-        isOpen={isModalOpen} 
+        isOpen={activeModal === 'task'} 
         onClose={closeModal}
-        title={editingTask ? '✏️ Edit Task' : '✨ New Task'}
+        title={editingTask ? 'Edit Task' : 'New Task'}
       >
         <TaskForm
           mode={editingTask ? 'edit' : 'create'}
@@ -248,9 +353,37 @@ function App() {
           error={tasksError}
           projects={projects}
           categories={categories}
-          onCreateProject={handleCreateProject}
-          onCreateCategory={handleCreateCategory}
           onSubmit={editingTask ? handleSave : handleCreate}
+          onCancel={closeModal}
+          hideHeader
+        />
+      </Modal>
+
+      <Modal 
+        isOpen={activeModal === 'project'} 
+        onClose={closeModal}
+        title='New Project'
+      >
+        <ProjectForm
+          mode='create'
+          busy={busy}
+          error={tasksError}
+          onSubmit={handleCreateProject}
+          onCancel={closeModal}
+          hideHeader
+        />
+      </Modal>
+
+      <Modal 
+        isOpen={activeModal === 'category'} 
+        onClose={closeModal}
+        title='New Category'
+      >
+        <CategoryForm
+          mode='create'
+          busy={busy}
+          error={tasksError}
+          onSubmit={handleCreateCategory}
           onCancel={closeModal}
           hideHeader
         />
@@ -259,22 +392,46 @@ function App() {
       <main className="boardLayout">
         <section className="boardCard">
           <div className="taskListHeader">
-            <h2 className="cardTitle">📋 Your Tasks</h2>
-            <span className="taskCount">
-              {tasksLoading ? (
-                <>
-                  <span className="spinner"></span>
-                  Loading...
-                </>
-              ) : (
-                <>{tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}</>
-              )}
-            </span>
+            <h2>Tasks</h2>
+            <div className="createActions">
+              <div className="createDropdown">
+                <button 
+                  type="button" 
+                  className="button buttonPrimary createNewButton"
+                >
+                  + Create New
+                  <span className="dropdownArrow">▼</span>
+                </button>
+                <div className="dropdownMenu">
+                  <button 
+                    type="button" 
+                    className="dropdownItem" 
+                    onClick={openCreateTaskModal}
+                  >
+                    New Task
+                  </button>
+                  <button 
+                    type="button" 
+                    className="dropdownItem" 
+                    onClick={openCreateProjectModal}
+                  >
+                    New Project
+                  </button>
+                  <button 
+                    type="button" 
+                    className="dropdownItem" 
+                    onClick={openCreateCategoryModal}
+                  >
+                    New Category
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
           {!serverOnline ? (
             <div className="emptyState">
-              <div className="emptyIcon">🔌</div>
+              <div className="emptyIcon"></div>
               <p className="emptyText">Server offline</p>
               <p className="emptyHint">Start the server to load your tasks</p>
             </div>
@@ -288,10 +445,23 @@ function App() {
               tasks={tasks} 
               projects={projects}
               categories={categories}
-              onEdit={openEditModal} 
-              onDelete={handleDelete} 
+              filters={taskFilters}
+              onFiltersChange={setTaskFilters}
+              onEdit={openEditTaskModal} 
+              onDelete={handleDelete}
+              onToggleComplete={handleToggleComplete}
             />
-          )}
+          )}  
+
+          <button
+            type="button"
+            className="taskFab"
+            onClick={openCreateTaskModal}
+            title="Create new task"
+            aria-label="Create new task"
+          >
+            +
+          </button>
         </section>
       </main>
     </div>

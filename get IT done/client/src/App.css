@@ -1,8 +1,8 @@
 /* App Shell */
 .appShell {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 32px 24px 60px;
+  padding: 32px 24px 100px;
   min-height: 100vh;
 }
 
@@ -12,79 +12,88 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 40px;
-  padding-bottom: 24px;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
   border-bottom: 1px solid var(--border);
 }
 
 .headerLeft {
   display: flex;
   align-items: baseline;
-  gap: 16px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.buttonGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .subtitle {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--muted);
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .statusBadge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+  gap: 6px;
+  padding: 6px 12px;
   border-radius: var(--radius-full);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
 }
 
 .statusBadge.online {
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  color: var(--accent2);
+  background: var(--accent2-soft);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  color: #16a34a;
 }
 
 .statusBadge.offline {
-  background: rgba(244, 63, 94, 0.15);
-  border: 1px solid rgba(244, 63, 94, 0.3);
+  background: var(--danger-soft);
+  border: 1px solid rgba(239, 68, 68, 0.2);
   color: var(--danger);
 }
 
 .statusBadge.checking {
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  color: var(--accent-light);
+  background: var(--accent-soft);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  color: var(--accent);
 }
 
 .statusDot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  animation: pulse 2s infinite;
+  animation: pulse 2s ease-in-out infinite;
 }
 
 .statusBadge.online .statusDot {
-  background: var(--accent2);
-  box-shadow: 0 0 10px var(--accent2-glow);
+  background: #22c55e;
 }
 
 .statusBadge.offline .statusDot {
   background: var(--danger);
-  box-shadow: 0 0 10px var(--danger-glow);
 }
 
 .statusBadge.checking .statusDot {
   background: var(--accent);
-  box-shadow: 0 0 10px var(--accent-glow);
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.1); }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 /* Main Layout */
@@ -110,10 +119,9 @@
 /* Cards */
 .card {
   background: var(--card);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-xl);
-  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
   transition: all var(--transition-base);
   box-shadow: var(--shadow-sm);
   min-width: 0;
@@ -122,23 +130,24 @@
 
 .card:hover {
   background: var(--card-hover);
-  border-color: rgba(139, 92, 246, 0.15);
+  box-shadow: var(--shadow-md);
 }
 
 .cardTitle {
-  margin: 0 0 24px 0;
+  margin: 0 0 20px 0;
   font-size: 1.1rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   gap: 10px;
+  color: var(--fg);
 }
 
 .cardTitle::before {
   content: '';
   width: 4px;
-  height: 20px;
-  background: linear-gradient(180deg, var(--accent) 0%, var(--accent2) 100%);
+  height: 18px;
+  background: var(--accent);
   border-radius: var(--radius-full);
 }
 
@@ -157,11 +166,10 @@
 }
 
 .label {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
 }
 
 .row3 {
@@ -214,43 +222,57 @@
 .button {
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  padding: 0.75em 1.25em;
+  background: var(--surface);
+  padding: 0.65em 1.1em;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-base);
 }
 
 .button:hover {
-  transform: translateY(-2px);
-  border-color: var(--accent);
+  background: var(--card-hover);
+  border-color: #cbd5e1;
   box-shadow: var(--shadow-sm);
 }
 
 .buttonPrimary {
-  background: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+  background: var(--accent);
   border: none;
   color: white;
-  box-shadow: 0 4px 20px var(--accent-glow);
+  box-shadow: var(--shadow-sm);
 }
 
 .buttonPrimary:hover {
-  background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
-  box-shadow: 0 6px 30px var(--accent-glow);
+  background: var(--accent-light);
+  box-shadow: var(--shadow-md);
   border-color: transparent;
 }
 
+.buttonSecondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.85rem;
+  padding: 0.5em 0.75em;
+  font-weight: 500;
+}
+
+.buttonSecondary:hover {
+  background: var(--card-hover);
+  border-color: #cbd5e1;
+  color: var(--fg);
+  box-shadow: none;
+}
+
 .buttonDanger {
-  background: rgba(244, 63, 94, 0.1);
-  border-color: rgba(244, 63, 94, 0.3);
+  background: var(--danger-soft);
+  border-color: rgba(239, 68, 68, 0.2);
   color: var(--danger);
 }
 
 .buttonDanger:hover {
-  background: rgba(244, 63, 94, 0.2);
-  border-color: var(--danger);
-  box-shadow: 0 4px 20px var(--danger-glow);
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
 .buttonIcon {
@@ -262,10 +284,225 @@
   min-height: 40px;
 }
 
-/* Task List */
+/* Task List Header */
 .taskListHeader {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.taskListHeader h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.createActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Create Dropdown */
+.createDropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.createNewButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 12px;
+}
+
+.dropdownArrow {
+  font-size: 0.7em;
+  transition: transform var(--transition-fast);
+}
+
+.createDropdown:hover .dropdownArrow {
+  transform: rotate(180deg);
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all var(--transition-base);
+  z-index: 1000;
+  min-width: 160px;
+}
+
+.createDropdown:hover .dropdownMenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdownItem {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  color: var(--fg);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  border-radius: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.dropdownItem:first-child {
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.dropdownItem:last-child {
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.dropdownItem:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+  transform: none;
+  box-shadow: none;
+}
+
+@media (max-width: 600px) {
+  .taskListHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .createActions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .dropdownMenu {
+    right: 0;
+    left: auto;
+  }
+}
+
+/* Color Picker */
+.colorPickerRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.colorOption {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  box-sizing: border-box;
+  display: inline-block;
+  line-height: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 2px solid transparent;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.colorOption:hover {
+  transform: scale(1.1);
+  border-color: #94a3b8;
+}
+
+.colorOption.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent), 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+}
+
+.colorCustom {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  border: 2px dashed #d1d5db;
+  background: #f8fafc;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.colorCustom:hover {
+  border-color: var(--accent);
+  transform: scale(1.1);
+}
+
+.colorCustomIcon {
+  color: var(--muted);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.colorInput {
+  width: 32px;
+  height: 32px;
+  box-sizing: border-box;
+  border: 2px solid #d1d5db;
+  border-radius: 9999px;
+  cursor: pointer;
+  background: none;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+/* When the color input is used as the custom swatch trigger, hide it visually but keep it clickable */
+.colorCustom .colorInput {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  border: none;
+  margin: 0;
+}
+
+.colorInput::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+}
+
+.colorInput::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.colorInput::-moz-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+/* Task List */
   align-items: center;
   gap: 16px;
   margin-bottom: 20px;
@@ -275,13 +512,13 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 14px;
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  padding: 5px 12px;
+  background: var(--accent-soft);
+  border: 1px solid rgba(99, 102, 241, 0.15);
   border-radius: var(--radius-full);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: var(--accent-light);
+  color: var(--accent);
 }
 
 .taskList {
@@ -292,14 +529,16 @@
 /* Task Item */
 .taskItem {
   display: grid;
-  gap: 16px;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.02);
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   transition: all var(--transition-base);
   position: relative;
   overflow: hidden;
+  align-items: start;
 }
 
 .taskItem::before {
@@ -308,17 +547,16 @@
   left: 0;
   top: 0;
   bottom: 0;
-  width: 4px;
+  width: 3px;
   background: var(--accent);
-  border-radius: var(--radius-full) 0 0 var(--radius-full);
+  border-radius: 3px 0 0 3px;
   opacity: 0;
   transition: opacity var(--transition-fast);
 }
 
 .taskItem:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(139, 92, 246, 0.2);
-  transform: translateX(4px);
+  background: #fafafa;
+  border-color: #d1d5db;
   box-shadow: var(--shadow-sm);
 }
 
@@ -327,7 +565,8 @@
 }
 
 .taskItem.done {
-  opacity: 0.6;
+  opacity: 0.65;
+  background: #fafafa;
 }
 
 .taskItem.done::before {
@@ -341,9 +580,61 @@
 
 @media (min-width: 600px) {
   .taskItem {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: auto 1fr auto;
     align-items: start;
   }
+}
+
+/* Task Checkbox */
+.taskCheckbox {
+  display: flex;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.taskCheckboxInput {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.taskCheckboxLabel {
+  position: relative;
+  display: block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.taskCheckboxLabel::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 9px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.taskCheckboxInput:checked + .taskCheckboxLabel {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.taskCheckboxInput:checked + .taskCheckboxLabel::after {
+  opacity: 1;
+}
+
+.taskCheckboxLabel:hover {
+  border-color: var(--accent);
 }
 
 /* Task Content */
@@ -389,63 +680,96 @@
 .pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
+  gap: 5px;
+  padding: 4px 10px;
   border-radius: var(--radius-full);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--card-hover);
   white-space: nowrap;
+  color: var(--muted);
 }
 
 .pillTodo {
-  background: rgba(139, 92, 246, 0.12);
-  border-color: rgba(139, 92, 246, 0.3);
-  color: var(--accent-light);
+  background: var(--accent-soft);
+  border-color: rgba(99, 102, 241, 0.2);
+  color: var(--accent);
 }
 
 .pillProgress {
-  background: rgba(245, 158, 11, 0.12);
-  border-color: rgba(245, 158, 11, 0.4);
-  color: var(--warning);
+  background: var(--warning-soft);
+  border-color: rgba(245, 158, 11, 0.25);
+  color: #d97706;
 }
 
 .pillDone {
-  background: rgba(16, 185, 129, 0.12);
-  border-color: rgba(16, 185, 129, 0.3);
-  color: var(--accent2);
+  background: var(--accent2-soft);
+  border-color: rgba(34, 197, 94, 0.2);
+  color: #16a34a;
 }
 
 .pillPriorityHigh {
-  background: rgba(244, 63, 94, 0.12);
-  border-color: rgba(244, 63, 94, 0.4);
+  background: var(--danger-soft);
+  border-color: rgba(239, 68, 68, 0.25);
   color: var(--danger);
 }
 
 .pillPriorityLow {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: #f8fafc;
+  border-color: #e2e8f0;
   color: var(--muted);
 }
 
 .pillDue {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: rgba(59, 130, 246, 0.3);
-  color: var(--info);
+  background: var(--info-soft);
+  border-color: rgba(14, 165, 233, 0.2);
+  color: #0284c7;
 }
 
 .pillProject {
-  background: rgba(99, 102, 241, 0.15);
-  border-color: rgba(99, 102, 241, 0.3);
-  color: #a5b4fc;
+  background: rgba(99, 102, 241, 0.08);
+  border-color: rgba(99, 102, 241, 0.15);
+  color: var(--accent);
 }
 
 .pillCategory {
   border: none;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  color: white;
+}
+
+/* View Mode Tabs */
+.viewModeTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.viewModeTab {
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.viewModeTab:hover {
+  background: var(--card-hover);
+  color: var(--fg);
+}
+
+.viewModeTab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
 }
 
 /* Filter Row */
@@ -455,11 +779,314 @@
   gap: 10px;
   margin-bottom: 16px;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-light);
+}
+
+/* Filter Toolbar */
+.filterToolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 0;
+  flex-wrap: wrap;
+}
+
+/* Filter Dropdown Container */
+.filterDropdownContainer {
+  position: relative;
+}
+
+.filterDropdownBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--fg);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.filterDropdownBtn:hover {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.filterDropdownBtn.hasFilters {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.filterIcon {
+  font-size: 0.9rem;
+}
+
+.filterBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+/* Filter Panel Dropdown */
+.filterPanel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 100;
+  min-width: 280px;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.filterPanelSection {
+  margin-bottom: 16px;
+}
+
+.filterPanelSection:last-child {
+  margin-bottom: 0;
+}
+
+.filterPanelLabel {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  letter-spacing: 0.5px;
+}
+
+.filterPanelGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.filterPanelSortRow {
+  display: flex;
+  gap: 8px;
+}
+
+.filterPanelSortRow .filterSelect {
+  flex: 1;
+}
+
+.filterPanelSortRow .sortDirectionBtn {
+  width: auto;
+  padding: 0 12px;
+  font-size: 0.8rem;
+}
+
+/* Filter Panel Actions */
+.filterPanelActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-light);
+}
+
+.filterPanelActions .button {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+}
+
+.filterPanelActions .buttonPrimary {
+  flex: 1.5;
+}
+
+.filterPanelClearBtn {
+  flex: 0 0 auto !important;
+  padding: 8px !important;
+  font-size: 0.75rem !important;
+}
+
+/* Active Filters Bar */
+.activeFiltersBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  margin-bottom: 16px;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+.activeFiltersLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  white-space: nowrap;
+}
+
+/* Editable Filter Chips (inline) */
+.filterChipEditable {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.8rem;
+  transition: all var(--transition-fast);
+}
+
+.filterChipEditable:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filterChipEditable label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--fg-muted);
+  white-space: nowrap;
+}
+
+.filterChipSelect {
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0 4px;
+  outline: none;
+  min-width: 80px;
+}
+
+.filterChipSelect:focus {
+  background: var(--accent-light);
+  border-radius: 3px;
+}
+
+.filterChipEditable.sortChip {
+  /* Remove blue styling - make it look like other chips */
+}
+
+.filterChipEditable.sortChip label {
+  color: var(--fg-muted);
+}
+
+.filterChipEditable.sortChip .filterChipSelect {
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.sortDirectionInline {
+  width: 24px;
+  height: 24px;
+  font-size: 0.85rem;
+  padding: 0;
+}
+
+.clearFiltersBtn {
+  margin-left: auto;
+  padding: 5px 12px;
+  font-size: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--fg-muted);
+  transition: all var(--transition-fast);
+}
+
+.clearFiltersBtn:hover {
+  background: var(--error);
+  border-color: var(--error);
+  color: white;
+}
+
+.activeFiltersChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+}
+
+.filterChip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.8rem;
+  color: var(--fg);
+  transition: all var(--transition-fast);
+}
+
+.filterChip:hover {
+  border-color: var(--accent);
+  background: white;
+}
+
+.filterChipRemove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: none;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all var(--transition-fast);
+}
+
+.filterChipRemove:hover {
+  background: var(--error);
+  color: white;
+}
+
+.sortChip {
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.sortChip:hover {
+  background: var(--surface);
+  border-color: var(--accent);
+}
+
+/* Compact Filter + Sort Row (legacy, kept for reference) */
+.filterSortRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .filterSelect {
-  padding: 8px 12px;
+  padding: 7px 11px;
   border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--surface);
@@ -468,9 +1095,60 @@
   cursor: pointer;
 }
 
+.filterSelectCompact {
+  padding: 5px 8px;
+  font-size: 0.8rem;
+  min-width: 0;
+}
+
 .filterSelect:focus {
   border-color: var(--accent);
   outline: none;
+}
+
+/* Filter/Sort Divider */
+.filterSortDivider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+/* Sort Direction Button (compact) */
+.sortDirectionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--fg);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sortDirectionBtn:hover {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.sortDirectionBtn:active {
+  transform: scale(0.95);
+}
+
+/* Clear button (compact) */
+.buttonClear {
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  min-width: 0;
+}
+
+.viewModeSelect {
+  font-weight: 600;
+  border-color: var(--accent);
 }
 
 .buttonSmall {
@@ -543,8 +1221,8 @@
   align-items: center;
   gap: 10px;
   padding: 12px 16px;
-  background: rgba(244, 63, 94, 0.1);
-  border: 1px solid rgba(244, 63, 94, 0.3);
+  background: var(--danger-soft);
+  border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: var(--radius-md);
   color: var(--danger);
   font-weight: 500;
@@ -621,22 +1299,70 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 32px;
-  animation: fadeIn 0.4s ease-out;
+  padding: 28px;
+  padding-bottom: 96px;
+  position: relative;
+  animation: fadeIn 0.3s ease-out;
+  box-shadow: var(--shadow-sm);
+}
+
+/* In-card Quick Create (+) */
+.taskFab {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  width: 52px;
+  height: 52px;
+  border-radius: 9999px;
+  background: var(--accent);
+  border: none;
+  color: white;
+  font-size: 22px;
+  font-weight: 300;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.taskFab:hover {
+  transform: scale(1.05);
+  background: var(--accent-light);
+  box-shadow: var(--shadow-lg);
+}
+
+.taskFab:active {
+  transform: scale(0.95);
+}
+
+@media (max-width: 600px) {
+  .boardCard {
+    padding-bottom: 92px;
+  }
+
+  .taskFab {
+    right: 20px;
+    bottom: 20px;
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
 }
 
 /* Modal */
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(15, 23, 42, 0.4);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
   z-index: 1000;
-  animation: fadeIn 0.2s ease-out;
+  animation: fadeIn 0.15s ease-out;
 }
 
 .modalContent {
@@ -644,11 +1370,11 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   width: 100%;
-  max-width: 560px;
+  max-width: 520px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  animation: modalSlideIn 0.3s ease-out;
+  box-shadow: var(--shadow-lg);
+  animation: modalSlideIn 0.2s ease-out;
 }
 
 @keyframes modalSlideIn {
@@ -688,7 +1414,7 @@
 }
 
 .modalClose:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--card-hover);
   color: var(--fg);
 }
 
@@ -702,4 +1428,5 @@
   border: none;
   box-shadow: none;
 }
+
 

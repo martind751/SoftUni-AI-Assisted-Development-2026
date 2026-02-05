@@ -19,9 +19,9 @@ function formatDueDate(value) {
 }
 
 function statusLabel(status) {
-  if (status === 'in_progress') return '🚀 In Progress'
-  if (status === 'done') return '✅ Done'
-  return '📋 To Do'
+  if (status === 'in_progress') return 'In Progress'
+  if (status === 'done') return 'Done'
+  return 'To Do'
 }
 
 function statusClass(status) {
@@ -32,10 +32,10 @@ function statusClass(status) {
 
 function priorityLabel(priority) {
   const p = priority ?? 2
-  if (p <= 1) return '🔴 High'
-  if (p >= 4) return '⚪ Low'
-  if (p === 2) return '🟡 Medium'
-  return '🟢 Normal'
+  if (p <= 1) return 'High'
+  if (p >= 4) return 'Low'
+  if (p === 2) return 'Medium'
+  return 'Normal'
 }
 
 function priorityClass(priority) {
@@ -57,7 +57,7 @@ function getDuePillClass(value) {
   return 'pill pillDue'
 }
 
-export function TaskItem({ task, onEdit, onDelete }) {
+export function TaskItem({ task, onEdit, onDelete, onToggleComplete }) {
   const isDone = task.status === 'done'
   const isHighPriority = (task.priority ?? 2) <= 1
   
@@ -69,6 +69,16 @@ export function TaskItem({ task, onEdit, onDelete }) {
 
   return (
     <div className={itemClasses}>
+      <div className="taskCheckbox">
+        <input 
+          type="checkbox" 
+          checked={isDone} 
+          onChange={() => onToggleComplete(task)}
+          className="taskCheckboxInput"
+          id={`task-${task._id}`}
+        />
+        <label htmlFor={`task-${task._id}`} className="taskCheckboxLabel"></label>
+      </div>
       <div className="taskContent">
         <div className="taskTitleRow">
           <strong className="taskTitle">{task.title}</strong>
@@ -79,11 +89,11 @@ export function TaskItem({ task, onEdit, onDelete }) {
           <span className={priorityClass(task.priority)}>{priorityLabel(task.priority)}</span>
           {task.dueDate ? (
             <span className={getDuePillClass(task.dueDate)}>
-              📅 {formatDueDate(task.dueDate)}
+              {formatDueDate(task.dueDate)}
             </span>
           ) : null}
           {task.projectId?.name ? (
-            <span className="pill pillProject">📁 {task.projectId.name}</span>
+            <span className="pill pillProject">{task.projectId.name}</span>
           ) : null}
           {task.categoryId?.name ? (
             <span 
@@ -100,10 +110,10 @@ export function TaskItem({ task, onEdit, onDelete }) {
 
       <div className="taskButtons">
         <button type="button" className="button buttonIcon" onClick={() => onEdit(task)} title="Edit task">
-          ✏️
+          Edit
         </button>
         <button type="button" className="button buttonIcon buttonDanger" onClick={() => onDelete(task)} title="Delete task">
-          🗑️
+          Delete
         </button>
       </div>
     </div>

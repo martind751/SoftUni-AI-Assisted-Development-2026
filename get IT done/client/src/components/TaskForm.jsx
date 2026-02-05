@@ -17,7 +17,7 @@ function toInputDateString(value) {
   return d.toISOString().slice(0, 10)
 }
 
-export function TaskForm({ mode, initialTask, busy, error, projects = [], categories = [], onCreateProject, onCreateCategory, onSubmit, onCancel, hideHeader = false }) {
+export function TaskForm({ mode, initialTask, busy, error, projects = [], categories = [], onSubmit, onCancel, hideHeader = false }) {
   const initialDraft = useMemo(() => {
     if (!initialTask) return defaultDraft
 
@@ -43,38 +43,11 @@ export function TaskForm({ mode, initialTask, busy, error, projects = [], catego
   }
 
   async function handleProjectChange(e) {
-    const value = e.target.value
-    if (value === '__new__') {
-      const name = window.prompt('Enter project name:')
-      if (name?.trim()) {
-        try {
-          const created = await onCreateProject(name.trim())
-          setField('projectId', created._id)
-        } catch {
-          // error handled in App
-        }
-      }
-    } else {
-      setField('projectId', value)
-    }
+    setField('projectId', e.target.value)
   }
 
   async function handleCategoryChange(e) {
-    const value = e.target.value
-    if (value === '__new__') {
-      const name = window.prompt('Enter category name:')
-      if (name?.trim()) {
-        const color = window.prompt('Enter color (hex, e.g. #3b82f6):', '#3b82f6') || '#6b7280'
-        try {
-          const created = await onCreateCategory(name.trim(), color)
-          setField('categoryId', created._id)
-        } catch {
-          // error handled in App
-        }
-      }
-    } else {
-      setField('categoryId', value)
-    }
+    setField('categoryId', e.target.value)
   }
 
   function handleSubmit(e) {
@@ -103,7 +76,7 @@ export function TaskForm({ mode, initialTask, busy, error, projects = [], catego
 
   return (
     <form onSubmit={handleSubmit} className="form">
-      {!hideHeader && <h2 className="cardTitle">{mode === 'edit' ? '✏️ Edit Task' : '✨ New Task'}</h2>}
+      {!hideHeader && <h2 className="cardTitle">{mode === 'edit' ? 'Edit Task' : 'New Task'}</h2>}
 
       <div className="field">
         <label className="label">What needs to be done?</label>
@@ -135,10 +108,10 @@ export function TaskForm({ mode, initialTask, busy, error, projects = [], catego
             onChange={(e) => setField('priority', e.target.value)}
             disabled={busy}
           >
-            <option value={1}>🔴 High</option>
-            <option value={2}>🟡 Medium</option>
-            <option value={3}>🟢 Normal</option>
-            <option value={4}>⚪ Low</option>
+            <option value={1}>High</option>
+            <option value={2}>Medium</option>
+            <option value={3}>Normal</option>
+            <option value={4}>Low</option>
           </select>
         </div>
 
@@ -149,9 +122,9 @@ export function TaskForm({ mode, initialTask, busy, error, projects = [], catego
             onChange={(e) => setField('status', e.target.value)}
             disabled={busy}
           >
-            <option value="todo">📋 To Do</option>
-            <option value="in_progress">🚀 In Progress</option>
-            <option value="done">✅ Done</option>
+            <option value="todo">To Do</option>
+            <option value="in_progress">In Progress</option>
+            <option value="done">Done</option>
           </select>
         </div>
 
@@ -178,7 +151,6 @@ export function TaskForm({ mode, initialTask, busy, error, projects = [], catego
             {projects.map((p) => (
               <option key={p._id} value={p._id}>{p.name}</option>
             ))}
-            <option value="__new__">+ Add New Project...</option>
           </select>
         </div>
 
@@ -193,12 +165,11 @@ export function TaskForm({ mode, initialTask, busy, error, projects = [], catego
             {categories.map((c) => (
               <option key={c._id} value={c._id}>{c.name}</option>
             ))}
-            <option value="__new__">+ Add New Category...</option>
           </select>
         </div>
       </div>
 
-      {error ? <div className="errorMessage">⚠️ {error}</div> : null}
+      {error ? <div className="errorMessage">{error}</div> : null}
 
       <div className="actions">
         <button type="submit" className="button buttonPrimary" disabled={busy}>
