@@ -76,6 +76,9 @@
   font-size: 1.75rem;
   line-height: 1;
   filter: grayscale(0.2);
+  width: 2rem;
+  text-align: center;
+  flex-shrink: 0;
 }
 
 .dashboardCardContent {

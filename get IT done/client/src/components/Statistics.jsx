@@ -73,30 +73,35 @@ export function Statistics() {
       {/* Overview Cards */}
       <div className="statsGrid">
         <div className="statCard statCardPrimary">
-          <div className="statLabel">Total Tasks</div>
-          <div className="statValue">{overview.total}</div>
+          <div className="statCardIcon">#</div>
+          <div className="statCardContent">
+            <div className="statValue">{overview.total}</div>
+            <div className="statLabel">Total Tasks</div>
+          </div>
         </div>
         
         <div className="statCard statCardSuccess">
-          <div className="statLabel">Completed</div>
-          <div className="statValue">{overview.completed}</div>
-          <div className="statProgress">
-            <div 
-              className="statProgressBar statProgressBarSuccess" 
-              style={{ width: `${overview.completionRate}%` }}
-            ></div>
+          <div className="statCardIcon">✓</div>
+          <div className="statCardContent">
+            <div className="statValue">{overview.completed}</div>
+            <div className="statLabel">Completed</div>
           </div>
-          <div className="statHint">{overview.completionRate}% completion rate</div>
         </div>
         
         <div className="statCard statCardWarning">
-          <div className="statLabel">In Progress</div>
-          <div className="statValue">{overview.inProgress}</div>
+          <div className="statCardIcon">⟳</div>
+          <div className="statCardContent">
+            <div className="statValue">{overview.inProgress}</div>
+            <div className="statLabel">In Progress</div>
+          </div>
         </div>
         
         <div className="statCard statCardInfo">
-          <div className="statLabel">To Do</div>
-          <div className="statValue">{overview.todo}</div>
+          <div className="statCardIcon">○</div>
+          <div className="statCardContent">
+            <div className="statValue">{overview.todo}</div>
+            <div className="statLabel">To Do</div>
+          </div>
         </div>
       </div>
 
@@ -119,23 +124,32 @@ export function Statistics() {
       {/* Productivity Metrics */}
       <div className="statsSection">
         <h3>Recent Productivity</h3>
-        <div className="statsGrid statsGrid3">
+        <div className="statsGrid">
           <div className="statCard">
-            <div className="statLabel">Last 7 Days</div>
-            <div className="statValue statValueMedium">{productivity.completedLast7Days}</div>
-            <div className="statHint">tasks completed</div>
+            <div className="statCardIcon">📅</div>
+            <div className="statCardContent">
+              <div className="statValue statValueMedium">{productivity.completedLast7Days}</div>
+              <div className="statLabel">Last 7 Days</div>
+              <div className="statHint">tasks completed</div>
+            </div>
           </div>
           
           <div className="statCard">
-            <div className="statLabel">Last 30 Days</div>
-            <div className="statValue statValueMedium">{productivity.completedLast30Days}</div>
-            <div className="statHint">tasks completed</div>
+            <div className="statCardIcon">📆</div>
+            <div className="statCardContent">
+              <div className="statValue statValueMedium">{productivity.completedLast30Days}</div>
+              <div className="statLabel">Last 30 Days</div>
+              <div className="statHint">tasks completed</div>
+            </div>
           </div>
           
           <div className="statCard">
-            <div className="statLabel">Daily Average</div>
-            <div className="statValue statValueMedium">{productivity.avgTasksPerDay}</div>
-            <div className="statHint">tasks per day (7-day avg)</div>
+            <div className="statCardIcon">⚡</div>
+            <div className="statCardContent">
+              <div className="statValue statValueMedium">{productivity.avgTasksPerDay}</div>
+              <div className="statLabel">Daily Average</div>
+              <div className="statHint">tasks per day (7-day avg)</div>
+            </div>
           </div>
         </div>
       </div>

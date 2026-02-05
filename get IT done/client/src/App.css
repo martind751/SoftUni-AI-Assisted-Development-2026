@@ -146,6 +146,43 @@
   box-shadow: 0 0 20px var(--accent-glow);
 }
 
+/* Overview Toggle */
+.overviewToggle {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  padding: 3px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  width: fit-content;
+  border: 1px solid var(--border);
+}
+
+.overviewToggleBtn {
+  padding: 6px 16px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--fg-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+.overviewToggleBtn:hover {
+  background: var(--bg-tertiary);
+  color: var(--fg);
+}
+
+.overviewToggleBtnActive {
+  background: var(--accent-gradient);
+  color: white !important;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
 /* Main Layout */
 .layout {
   display: grid;

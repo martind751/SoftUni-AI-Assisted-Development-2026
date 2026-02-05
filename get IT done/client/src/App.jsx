@@ -40,7 +40,8 @@ function App() {
   const [tags, setTags] = useState([])
 
   // Navigation state
-  const [currentView, setCurrentView] = useState('dashboard') // 'dashboard', 'tasks', or 'statistics'
+  const [currentView, setCurrentView] = useState('overview')
+  const [overviewSubView, setOverviewSubView] = useState('dashboard') // 'dashboard' or 'statistics'
 
   // Filter and sort state for tasks
   const [taskFilters, setTaskFilters] = useState({
@@ -519,22 +520,16 @@ function App() {
 
       <nav className="appNav">
         <button 
-          className={`navTab ${currentView === 'dashboard' ? 'navTabActive' : ''}`}
-          onClick={() => setCurrentView('dashboard')}
+          className={`navTab ${currentView === 'overview' ? 'navTabActive' : ''}`}
+          onClick={() => setCurrentView('overview')}
         >
-          Dashboard
+          Overview
         </button>
         <button 
           className={`navTab ${currentView === 'tasks' ? 'navTabActive' : ''}`}
           onClick={() => setCurrentView('tasks')}
         >
           Tasks
-        </button>
-        <button 
-          className={`navTab ${currentView === 'statistics' ? 'navTabActive' : ''}`}
-          onClick={() => setCurrentView('statistics')}
-        >
-          Statistics
         </button>
         <button 
           className={`navTab ${currentView === 'manage' ? 'navTabActive' : ''}`}
@@ -545,14 +540,32 @@ function App() {
       </nav>
 
       <main className="boardLayout">
-        {currentView === 'dashboard' ? (
+        {currentView === 'overview' ? (
           <section className="boardCard">
-            <Dashboard 
-              onNavigateToTasks={(view) => {
-                setTaskFilters(prev => ({ ...prev, view: view || 'all' }))
-                setCurrentView('tasks')
-              }}
-            />
+            <div className="overviewToggle">
+              <button
+                className={`overviewToggleBtn ${overviewSubView === 'dashboard' ? 'overviewToggleBtnActive' : ''}`}
+                onClick={() => setOverviewSubView('dashboard')}
+              >
+                Dashboard
+              </button>
+              <button
+                className={`overviewToggleBtn ${overviewSubView === 'statistics' ? 'overviewToggleBtnActive' : ''}`}
+                onClick={() => setOverviewSubView('statistics')}
+              >
+                Statistics
+              </button>
+            </div>
+            {overviewSubView === 'dashboard' ? (
+              <Dashboard 
+                onNavigateToTasks={(view) => {
+                  setTaskFilters(prev => ({ ...prev, view: view || 'all' }))
+                  setCurrentView('tasks')
+                }}
+              />
+            ) : (
+              <Statistics />
+            )}
           </section>
         ) : currentView === 'tasks' ? (
           <section className="boardCard">
@@ -650,11 +663,7 @@ function App() {
               onCreateTag={openCreateTagModal}
             />
           </section>
-        ) : (
-          <section className="boardCard">
-            <Statistics />
-          </section>
-        )}
+        ) : null}
       </main>
     </div>
   )
