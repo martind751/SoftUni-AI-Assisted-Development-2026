@@ -7,7 +7,11 @@ const taskRouter = express.Router();
 taskRouter.get(
   '/',
   asyncHandler(async (req, res) => {
-    const tasks = await Task.find().sort({ createdAt: -1 }).lean();
+    const tasks = await Task.find()
+      .populate('projectId', 'name')
+      .populate('categoryId', 'name color')
+      .sort({ createdAt: -1 })
+      .lean();
     res.json({ tasks });
   })
 );
@@ -23,7 +27,10 @@ taskRouter.post(
 taskRouter.get(
   '/:id',
   asyncHandler(async (req, res) => {
-    const task = await Task.findById(req.params.id).lean();
+    const task = await Task.findById(req.params.id)
+      .populate('projectId', 'name')
+      .populate('categoryId', 'name color')
+      .lean();
     if (!task) return res.status(404).json({ error: { message: 'Task not found' } });
     res.json({ task });
   })

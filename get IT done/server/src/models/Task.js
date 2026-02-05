@@ -12,6 +12,7 @@ const taskSchema = new mongoose.Schema(
       enum: ['todo', 'in_progress', 'done']
     },
     projectId: { type: mongoose.Schema.Types.ObjectId, ref: 'Project' },
+    categoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
     goalId: { type: mongoose.Schema.Types.ObjectId, ref: 'Goal' },
     tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],
     isRecurring: { type: Boolean, default: false },

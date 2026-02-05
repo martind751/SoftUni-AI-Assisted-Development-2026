@@ -5,7 +5,9 @@ const defaultDraft = {
   description: '',
   priority: 2,
   status: 'todo',
-  dueDate: ''
+  dueDate: '',
+  projectId: '',
+  categoryId: ''
 }
 
 function toInputDateString(value) {
@@ -15,7 +17,7 @@ function toInputDateString(value) {
   return d.toISOString().slice(0, 10)
 }
 
-export function TaskForm({ mode, initialTask, busy, error, onSubmit, onCancel }) {
+export function TaskForm({ mode, initialTask, busy, error, projects = [], categories = [], onCreateProject, onCreateCategory, onSubmit, onCancel, hideHeader = false }) {
   const initialDraft = useMemo(() => {
     if (!initialTask) return defaultDraft
 
@@ -24,7 +26,9 @@ export function TaskForm({ mode, initialTask, busy, error, onSubmit, onCancel })
       description: initialTask.description || '',
       priority: initialTask.priority ?? 2,
       status: initialTask.status || 'todo',
-      dueDate: toInputDateString(initialTask.dueDate)
+      dueDate: toInputDateString(initialTask.dueDate),
+      projectId: initialTask.projectId?._id || initialTask.projectId || '',
+      categoryId: initialTask.categoryId?._id || initialTask.categoryId || ''
     }
   }, [initialTask])
 
@@ -36,6 +40,41 @@ export function TaskForm({ mode, initialTask, busy, error, onSubmit, onCancel })
 
   function setField(name, value) {
     setDraft((d) => ({ ...d, [name]: value }))
+  }
+
+  async function handleProjectChange(e) {
+    const value = e.target.value
+    if (value === '__new__') {
+      const name = window.prompt('Enter project name:')
+      if (name?.trim()) {
+        try {
+          const created = await onCreateProject(name.trim())
+          setField('projectId', created._id)
+        } catch {
+          // error handled in App
+        }
+      }
+    } else {
+      setField('projectId', value)
+    }
+  }
+
+  async function handleCategoryChange(e) {
+    const value = e.target.value
+    if (value === '__new__') {
+      const name = window.prompt('Enter category name:')
+      if (name?.trim()) {
+        const color = window.prompt('Enter color (hex, e.g. #3b82f6):', '#3b82f6') || '#6b7280'
+        try {
+          const created = await onCreateCategory(name.trim(), color)
+          setField('categoryId', created._id)
+        } catch {
+          // error handled in App
+        }
+      }
+    } else {
+      setField('categoryId', value)
+    }
   }
 
   function handleSubmit(e) {
@@ -52,16 +91,19 @@ export function TaskForm({ mode, initialTask, busy, error, onSubmit, onCancel })
     if (draft.priority !== '' && draft.priority != null) payload.priority = Number(draft.priority)
     if (draft.status) payload.status = draft.status
     if (draft.dueDate) payload.dueDate = new Date(draft.dueDate).toISOString()
+    if (draft.projectId) payload.projectId = draft.projectId
+    else payload.projectId = null
+    if (draft.categoryId) payload.categoryId = draft.categoryId
+    else payload.categoryId = null
 
     onSubmit(payload)
   }
 
-  const heading = mode === 'edit' ? '✏️ Edit Task' : '✨ New Task'
   const submitLabel = mode === 'edit' ? 'Save Changes' : 'Add Task'
 
   return (
     <form onSubmit={handleSubmit} className="form">
-      <h2 className="cardTitle">{heading}</h2>
+      {!hideHeader && <h2 className="cardTitle">{mode === 'edit' ? '✏️ Edit Task' : '✨ New Task'}</h2>}
 
       <div className="field">
         <label className="label">What needs to be done?</label>
@@ -121,6 +163,38 @@ export function TaskForm({ mode, initialTask, busy, error, onSubmit, onCancel })
             onChange={(e) => setField('dueDate', e.target.value)}
             disabled={busy}
           />
+        </div>
+      </div>
+
+      <div className="row2">
+        <div className="field">
+          <label className="label">Project</label>
+          <select
+            value={draft.projectId}
+            onChange={handleProjectChange}
+            disabled={busy}
+          >
+            <option value="">— No Project —</option>
+            {projects.map((p) => (
+              <option key={p._id} value={p._id}>{p.name}</option>
+            ))}
+            <option value="__new__">+ Add New Project...</option>
+          </select>
+        </div>
+
+        <div className="field">
+          <label className="label">Category</label>
+          <select
+            value={draft.categoryId}
+            onChange={handleCategoryChange}
+            disabled={busy}
+          >
+            <option value="">— No Category —</option>
+            {categories.map((c) => (
+              <option key={c._id} value={c._id}>{c.name}</option>
+            ))}
+            <option value="__new__">+ Add New Category...</option>
+          </select>
         </div>
       </div>
 

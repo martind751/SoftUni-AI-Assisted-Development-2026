@@ -82,6 +82,17 @@ export function TaskItem({ task, onEdit, onDelete }) {
               📅 {formatDueDate(task.dueDate)}
             </span>
           ) : null}
+          {task.projectId?.name ? (
+            <span className="pill pillProject">📁 {task.projectId.name}</span>
+          ) : null}
+          {task.categoryId?.name ? (
+            <span 
+              className="pill pillCategory" 
+              style={{ backgroundColor: task.categoryId.color || '#6b7280', color: '#fff' }}
+            >
+              {task.categoryId.name}
+            </span>
+          ) : null}
         </div>
 
         {task.description ? <div className="taskDesc">{task.description}</div> : null}

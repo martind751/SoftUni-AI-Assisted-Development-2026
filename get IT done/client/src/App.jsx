@@ -3,6 +3,9 @@ import './App.css'
 import { useEffect, useState } from 'react'
 
 import { createTask, deleteTask, listTasks, updateTask } from './api/tasks'
+import { listProjects, createProject } from './api/projects'
+import { listCategories, createCategory } from './api/categories'
+import { Modal } from './components/Modal'
 import { TaskForm } from './components/TaskForm'
 import { TaskList } from './components/TaskList'
 
@@ -22,7 +25,29 @@ function App() {
   const [tasksError, setTasksError] = useState('')
   const [busy, setBusy] = useState(false)
 
+  const [projects, setProjects] = useState([])
+  const [categories, setCategories] = useState([])
+
   const [editingTask, setEditingTask] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  function openCreateModal() {
+    setEditingTask(null)
+    setTasksError('')
+    setIsModalOpen(true)
+  }
+
+  function openEditModal(task) {
+    setEditingTask(task)
+    setTasksError('')
+    setIsModalOpen(true)
+  }
+
+  function closeModal() {
+    setIsModalOpen(false)
+    setEditingTask(null)
+    setTasksError('')
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -65,6 +90,52 @@ function App() {
     }
   }, [])
 
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadProjectsAndCategories() {
+      try {
+        const [projectsData, categoriesData] = await Promise.all([
+          listProjects(),
+          listCategories()
+        ])
+        if (!cancelled) {
+          setProjects(projectsData)
+          setCategories(categoriesData)
+        }
+      } catch (e) {
+        console.error('Failed to load projects/categories:', e)
+      }
+    }
+
+    loadProjectsAndCategories()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  async function handleCreateProject(name) {
+    try {
+      const created = await createProject({ name })
+      setProjects((prev) => [...prev, created])
+      return created
+    } catch (e) {
+      console.error('Failed to create project:', e)
+      throw e
+    }
+  }
+
+  async function handleCreateCategory(name, color) {
+    try {
+      const created = await createCategory({ name, color })
+      setCategories((prev) => [...prev, created])
+      return created
+    } catch (e) {
+      console.error('Failed to create category:', e)
+      throw e
+    }
+  }
+
   async function handleCreate(payload) {
     setBusy(true)
     setTasksError('')
@@ -82,6 +153,7 @@ function App() {
     try {
       const created = await createTask(payload)
       setTasks((prev) => prev.map((t) => (t._id === tmpId ? normalizeTask(created) : t)))
+      closeModal()
     } catch (e) {
       setTasks((prev) => prev.filter((t) => t._id !== tmpId))
       setTasksError(e?.message || 'Failed to create task')
@@ -104,7 +176,7 @@ function App() {
     try {
       const updated = await updateTask(id, payload)
       setTasks((prev) => prev.map((t) => (t._id === id ? normalizeTask(updated) : t)))
-      setEditingTask(null)
+      closeModal()
     } catch (e) {
       setTasks(previous)
       setTasksError(e?.message || 'Failed to update task')
@@ -149,25 +221,43 @@ function App() {
           <h1>get IT done</h1>
           <span className="subtitle">Your personal productivity hub</span>
         </div>
-        <div className={statusBadgeClass}>
-          <span className="statusDot"></span>
-          {statusText}
+        <div className="headerRight">
+          <button 
+            type="button" 
+            className="button buttonPrimary buttonLarge" 
+            onClick={openCreateModal}
+          >
+            + New Task
+          </button>
+          <div className={statusBadgeClass}>
+            <span className="statusDot"></span>
+            {statusText}
+          </div>
         </div>
       </header>
 
-      <main className="layout">
-        <section className="card">
-          <TaskForm
-            mode={editingTask ? 'edit' : 'create'}
-            initialTask={editingTask}
-            busy={busy}
-            error={tasksError}
-            onSubmit={editingTask ? handleSave : handleCreate}
-            onCancel={() => setEditingTask(null)}
-          />
-        </section>
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={closeModal}
+        title={editingTask ? '✏️ Edit Task' : '✨ New Task'}
+      >
+        <TaskForm
+          mode={editingTask ? 'edit' : 'create'}
+          initialTask={editingTask}
+          busy={busy}
+          error={tasksError}
+          projects={projects}
+          categories={categories}
+          onCreateProject={handleCreateProject}
+          onCreateCategory={handleCreateCategory}
+          onSubmit={editingTask ? handleSave : handleCreate}
+          onCancel={closeModal}
+          hideHeader
+        />
+      </Modal>
 
-        <section className="card">
+      <main className="boardLayout">
+        <section className="boardCard">
           <div className="taskListHeader">
             <h2 className="cardTitle">📋 Your Tasks</h2>
             <span className="taskCount">
@@ -194,7 +284,13 @@ function App() {
               Loading your tasks...
             </div>
           ) : (
-            <TaskList tasks={tasks} onEdit={setEditingTask} onDelete={handleDelete} />
+            <TaskList 
+              tasks={tasks} 
+              projects={projects}
+              categories={categories}
+              onEdit={openEditModal} 
+              onDelete={handleDelete} 
+            />
           )}
         </section>
       </main>
