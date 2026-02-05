@@ -4,6 +4,7 @@ import { TaskItem } from './TaskItem'
 const VIEW_MODE_LABELS = {
   all: 'All Tasks',
   active: 'Active',
+  overdue: 'Overdue',
   today: 'Today',
   thisWeek: 'This Week',
   upcoming: 'Upcoming',

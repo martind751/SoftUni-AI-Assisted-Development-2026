@@ -20,10 +20,15 @@ function getViewModeFilter(view) {
   endOfWeek.setHours(23, 59, 59, 999);
 
   switch (view) {
+    case 'overdue':
+      return {
+        status: { $ne: 'done' },
+        dueDate: { $lt: today }
+      };
     case 'today':
       return {
         status: { $ne: 'done' },
-        dueDate: { $lte: endOfToday }
+        dueDate: { $gte: today, $lte: endOfToday }
       };
     case 'thisWeek':
       return {

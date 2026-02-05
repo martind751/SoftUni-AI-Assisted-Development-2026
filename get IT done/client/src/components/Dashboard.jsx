@@ -92,7 +92,7 @@ export function Dashboard({ onNavigateToTasks }) {
       <div className="dashboardGrid">
         <div 
           className="dashboardCard dashboardCardClickable dashboardCardDanger"
-          onClick={() => handleViewTasks('today')}
+          onClick={() => handleViewTasks('overdue')}
           role="button"
           tabIndex={0}
         >
@@ -118,7 +118,7 @@ export function Dashboard({ onNavigateToTasks }) {
 
         <div 
           className="dashboardCard dashboardCardClickable dashboardCardInfo"
-          onClick={() => handleViewTasks('upcoming')}
+          onClick={() => handleViewTasks('active')}
           role="button"
           tabIndex={0}
         >
@@ -171,7 +171,7 @@ export function Dashboard({ onNavigateToTasks }) {
             <h3>Overdue Tasks</h3>
             <button 
               className="dashboardViewAll"
-              onClick={() => handleViewTasks('today')}
+              onClick={() => handleViewTasks('overdue')}
             >
               View all →
             </button>
