@@ -6,6 +6,7 @@ const { projectRouter } = require('./projectRoutes');
 const { categoryRouter } = require('./categoryRoutes');
 const { goalRouter } = require('./goalRoutes');
 const { tagRouter } = require('./tagRoutes');
+const { statsRouter } = require('./statsRoutes');
 
 const apiRouter = express.Router();
 
@@ -15,5 +16,6 @@ apiRouter.use('/projects', projectRouter);
 apiRouter.use('/categories', categoryRouter);
 apiRouter.use('/goals', goalRouter);
 apiRouter.use('/tags', tagRouter);
+apiRouter.use('/stats', statsRouter);
 
 module.exports = { apiRouter };

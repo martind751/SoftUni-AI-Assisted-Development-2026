@@ -10,6 +10,7 @@ import { TaskForm } from './components/TaskForm'
 import { ProjectForm } from './components/ProjectForm'
 import { CategoryForm } from './components/CategoryForm'
 import { TaskList } from './components/TaskList'
+import { Statistics } from './components/Statistics'
 
 function normalizeTask(t) {
   return {
@@ -29,6 +30,9 @@ function App() {
 
   const [projects, setProjects] = useState([])
   const [categories, setCategories] = useState([])
+
+  // Navigation state
+  const [currentView, setCurrentView] = useState('tasks') // 'tasks' or 'statistics'
 
   // Filter and sort state for tasks
   const [taskFilters, setTaskFilters] = useState({
@@ -389,80 +393,99 @@ function App() {
         />
       </Modal>
 
+      <nav className="appNav">
+        <button 
+          className={`navTab ${currentView === 'tasks' ? 'navTabActive' : ''}`}
+          onClick={() => setCurrentView('tasks')}
+        >
+          📋 Tasks
+        </button>
+        <button 
+          className={`navTab ${currentView === 'statistics' ? 'navTabActive' : ''}`}
+          onClick={() => setCurrentView('statistics')}
+        >
+          📊 Statistics
+        </button>
+      </nav>
+
       <main className="boardLayout">
-        <section className="boardCard">
-          <div className="taskListHeader">
-            <h2>Tasks</h2>
-            <div className="createActions">
-              <div className="createDropdown">
-                <button 
-                  type="button" 
-                  className="button buttonPrimary createNewButton"
-                >
-                  + Create New
-                  <span className="dropdownArrow">▼</span>
-                </button>
-                <div className="dropdownMenu">
+        {currentView === 'tasks' ? (
+          <section className="boardCard">
+            <div className="taskListHeader">
+              <h2>Tasks</h2>
+              <div className="createActions">
+                <div className="createDropdown">
                   <button 
                     type="button" 
-                    className="dropdownItem" 
-                    onClick={openCreateTaskModal}
+                    className="button buttonPrimary createNewButton"
                   >
-                    New Task
+                    + Create New
+                    <span className="dropdownArrow">▼</span>
                   </button>
-                  <button 
-                    type="button" 
-                    className="dropdownItem" 
-                    onClick={openCreateProjectModal}
-                  >
-                    New Project
-                  </button>
-                  <button 
-                    type="button" 
-                    className="dropdownItem" 
-                    onClick={openCreateCategoryModal}
-                  >
-                    New Category
-                  </button>
+                  <div className="dropdownMenu">
+                    <button 
+                      type="button" 
+                      className="dropdownItem" 
+                      onClick={openCreateTaskModal}
+                    >
+                      New Task
+                    </button>
+                    <button 
+                      type="button" 
+                      className="dropdownItem" 
+                      onClick={openCreateProjectModal}
+                    >
+                      New Project
+                    </button>
+                    <button 
+                      type="button" 
+                      className="dropdownItem" 
+                      onClick={openCreateCategoryModal}
+                    >
+                      New Category
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {!serverOnline ? (
-            <div className="emptyState">
-              <div className="emptyIcon"></div>
-              <p className="emptyText">Server offline</p>
-              <p className="emptyHint">Start the server to load your tasks</p>
-            </div>
-          ) : tasksLoading ? (
-            <div className="loading">
-              <span className="spinner"></span>
-              Loading your tasks...
-            </div>
-          ) : (
-            <TaskList 
-              tasks={tasks} 
-              projects={projects}
-              categories={categories}
-              filters={taskFilters}
-              onFiltersChange={setTaskFilters}
-              onEdit={openEditTaskModal} 
-              onDelete={handleDelete}
-              onToggleComplete={handleToggleComplete}
-            />
-          )}  
+            {!serverOnline ? (
+              <div className="emptyState">
+                <div className="emptyIcon"></div>
+                <p className="emptyText">Server offline</p>
+                <p className="emptyHint">Start the server to load your tasks</p>
+              </div>
+            ) : tasksLoading ? (
+              <div className="loading">
+                <span className="spinner"></span>
+                Loading your tasks...
+              </div>
+            ) : (
+              <TaskList 
+                tasks={tasks} 
+                projects={projects}
+                categories={categories}
+                filters={taskFilters}
+                onFiltersChange={setTaskFilters}
+                onEdit={openEditTaskModal} 
+                onDelete={handleDelete}
+                onToggleComplete={handleToggleComplete}
+              />
+            )}  
 
-          <button
-            type="button"
-            className="taskFab"
-            onClick={openCreateTaskModal}
-            title="Create new task"
-            aria-label="Create new task"
-          >
-            +
-          </button>
-        </section>
+            <button
+              type="button"
+              className="taskFab"
+              onClick={openCreateTaskModal}
+              title="Create new task"
+              aria-label="Create new task"
+            >
+              +
+            </button>
+          </section>
+        ) : (
+          <Statistics />
+        )}
       </main>
     </div>
   )

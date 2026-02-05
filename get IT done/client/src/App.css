@@ -96,6 +96,41 @@
   50% { opacity: 0.5; }
 }
 
+/* Navigation Tabs */
+.appNav {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 4px;
+  background: #f3f4f6;
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.navTab {
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.navTab:hover {
+  background: rgba(255, 255, 255, 0.5);
+  color: #374151;
+}
+
+.navTabActive {
+  background: white;
+  color: #1f2937;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 /* Main Layout */
 .layout {
   display: grid;
