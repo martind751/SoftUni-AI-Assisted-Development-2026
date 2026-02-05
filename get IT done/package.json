@@ -1,0 +1,21 @@
+{
+  "name": "get-it-done",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.28.1",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
+  "scripts": {
+    "dev": "concurrently -n server,client -c auto \"pnpm -C server dev\" \"pnpm -C client dev\"",
+    "dev:server": "pnpm -C server dev",
+    "dev:client": "pnpm -C client dev",
+    "build": "pnpm -C client build",
+    "start": "pnpm -C server start"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
+}
