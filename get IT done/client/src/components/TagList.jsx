@@ -48,7 +48,7 @@ export function TagList({
   return (
     <div className="manageList">
       <div className="manageListHeader">
-        <h3>🔖 Tags</h3>
+        <h3>Tags</h3>
         <button 
           type="button" 
           className="button buttonSmall buttonPrimary"

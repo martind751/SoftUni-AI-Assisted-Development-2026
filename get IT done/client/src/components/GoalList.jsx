@@ -57,7 +57,7 @@ export function GoalList({
   return (
     <div className="manageList">
       <div className="manageListHeader">
-        <h3>🎯 Goals</h3>
+        <h3>Goals</h3>
         <button 
           type="button" 
           className="button buttonSmall buttonPrimary"

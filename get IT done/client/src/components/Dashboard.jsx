@@ -84,8 +84,8 @@ export function Dashboard({ onNavigateToTasks }) {
   return (
     <div className="dashboardContainer">
       <div className="dashboardHeader">
-        <h2>🏠 Dashboard</h2>
-        <p className="dashboardSubtitle">Your productivity at a glance</p>
+        <h2>Dashboard</h2>
+        <span className="dashboardSubtitle">Your productivity at a glance</span>
       </div>
 
       {/* Quick Stats Cards */}
@@ -96,7 +96,7 @@ export function Dashboard({ onNavigateToTasks }) {
           role="button"
           tabIndex={0}
         >
-          <div className="dashboardCardIcon">⚠️</div>
+          <div className="dashboardCardIcon">!</div>
           <div className="dashboardCardContent">
             <div className="dashboardCardValue">{overview.overdue || 0}</div>
             <div className="dashboardCardLabel">Overdue</div>
@@ -109,7 +109,7 @@ export function Dashboard({ onNavigateToTasks }) {
           role="button"
           tabIndex={0}
         >
-          <div className="dashboardCardIcon">📅</div>
+          <div className="dashboardCardIcon">*</div>
           <div className="dashboardCardContent">
             <div className="dashboardCardValue">{overview.dueToday || 0}</div>
             <div className="dashboardCardLabel">Due Today</div>
@@ -122,7 +122,7 @@ export function Dashboard({ onNavigateToTasks }) {
           role="button"
           tabIndex={0}
         >
-          <div className="dashboardCardIcon">📆</div>
+          <div className="dashboardCardIcon">#</div>
           <div className="dashboardCardContent">
             <div className="dashboardCardValue">{overview.todo + overview.inProgress || 0}</div>
             <div className="dashboardCardLabel">Active Tasks</div>
@@ -135,7 +135,7 @@ export function Dashboard({ onNavigateToTasks }) {
           role="button"
           tabIndex={0}
         >
-          <div className="dashboardCardIcon">✅</div>
+          <div className="dashboardCardIcon">✓</div>
           <div className="dashboardCardContent">
             <div className="dashboardCardValue">{overview.completed || 0}</div>
             <div className="dashboardCardLabel">Completed</div>
@@ -168,7 +168,7 @@ export function Dashboard({ onNavigateToTasks }) {
       {overdueTasks.length > 0 && (
         <div className="dashboardSection">
           <div className="dashboardSectionHeader">
-            <h3>⚠️ Overdue Tasks</h3>
+            <h3>Overdue Tasks</h3>
             <button 
               className="dashboardViewAll"
               onClick={() => handleViewTasks('today')}
@@ -200,7 +200,7 @@ export function Dashboard({ onNavigateToTasks }) {
       {todayTasks.length > 0 && (
         <div className="dashboardSection">
           <div className="dashboardSectionHeader">
-            <h3>📅 Due Today</h3>
+            <h3>Due Today</h3>
             <button 
               className="dashboardViewAll"
               onClick={() => handleViewTasks('today')}

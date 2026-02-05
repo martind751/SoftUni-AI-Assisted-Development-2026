@@ -66,8 +66,8 @@ export function Statistics() {
   return (
     <div className="statisticsContainer">
       <div className="statisticsHeader">
-        <h2>📊 Productivity Statistics</h2>
-        <p className="statisticsSubtitle">Track your progress and analyze your productivity patterns</p>
+        <h2>Statistics</h2>
+        <span className="statisticsSubtitle">Track your progress</span>
       </div>
 
       {/* Overview Cards */}
@@ -105,12 +105,12 @@ export function Statistics() {
         <div className="statsAlerts">
           {overview.overdue > 0 && (
             <div className="alert alertDanger">
-              <strong>⚠️ {overview.overdue}</strong> overdue task{overview.overdue !== 1 ? 's' : ''}
+              <strong>{overview.overdue}</strong> overdue task{overview.overdue !== 1 ? 's' : ''}
             </div>
           )}
           {overview.dueToday > 0 && (
             <div className="alert alertWarning">
-              <strong>📅 {overview.dueToday}</strong> task{overview.dueToday !== 1 ? 's' : ''} due today
+              <strong>{overview.dueToday}</strong> task{overview.dueToday !== 1 ? 's' : ''} due today
             </div>
           )}
         </div>

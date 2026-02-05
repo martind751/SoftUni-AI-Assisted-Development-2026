@@ -48,7 +48,7 @@ export function CategoryList({
   return (
     <div className="manageList">
       <div className="manageListHeader">
-        <h3>🏷️ Categories</h3>
+        <h3>Categories</h3>
         <button 
           type="button" 
           className="button buttonSmall buttonPrimary"

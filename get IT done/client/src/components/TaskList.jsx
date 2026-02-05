@@ -211,7 +211,7 @@ export function TaskList({
             className={`filterDropdownBtn ${hasFilters ? 'hasFilters' : ''}`}
             onClick={() => showFilterPanel ? setShowFilterPanel(false) : openFilterPanel()}
           >
-            <span className="filterIcon">⚙</span>
+            <span className="filterIcon">...</span>
             Filters & Sort
             {activeFilterCount > 0 && (
               <span className="filterBadge">{activeFilterCount}</span>

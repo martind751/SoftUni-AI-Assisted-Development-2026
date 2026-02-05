@@ -522,36 +522,38 @@ function App() {
           className={`navTab ${currentView === 'dashboard' ? 'navTabActive' : ''}`}
           onClick={() => setCurrentView('dashboard')}
         >
-          🏠 Dashboard
+          Dashboard
         </button>
         <button 
           className={`navTab ${currentView === 'tasks' ? 'navTabActive' : ''}`}
           onClick={() => setCurrentView('tasks')}
         >
-          📋 Tasks
+          Tasks
         </button>
         <button 
           className={`navTab ${currentView === 'statistics' ? 'navTabActive' : ''}`}
           onClick={() => setCurrentView('statistics')}
         >
-          📊 Statistics
+          Statistics
         </button>
         <button 
           className={`navTab ${currentView === 'manage' ? 'navTabActive' : ''}`}
           onClick={() => setCurrentView('manage')}
         >
-          ⚙️ Manage
+          Manage
         </button>
       </nav>
 
       <main className="boardLayout">
         {currentView === 'dashboard' ? (
-          <Dashboard 
-            onNavigateToTasks={(view) => {
-              setTaskFilters(prev => ({ ...prev, view: view || 'all' }))
-              setCurrentView('tasks')
-            }}
-          />
+          <section className="boardCard">
+            <Dashboard 
+              onNavigateToTasks={(view) => {
+                setTaskFilters(prev => ({ ...prev, view: view || 'all' }))
+                setCurrentView('tasks')
+              }}
+            />
+          </section>
         ) : currentView === 'tasks' ? (
           <section className="boardCard">
             <div className="taskListHeader">
@@ -627,27 +629,31 @@ function App() {
             </button>
           </section>
         ) : currentView === 'manage' ? (
-          <Manage
-            projects={projects}
-            categories={categories}
-            goals={goals}
-            tags={tags}
-            busy={busy}
-            onUpdateProject={handleUpdateProject}
-            onDeleteProject={handleDeleteProject}
-            onCreateProject={openCreateProjectModal}
-            onUpdateCategory={handleUpdateCategory}
-            onDeleteCategory={handleDeleteCategory}
-            onCreateCategory={openCreateCategoryModal}
-            onUpdateGoal={handleUpdateGoal}
-            onDeleteGoal={handleDeleteGoal}
-            onCreateGoal={openCreateGoalModal}
-            onUpdateTag={handleUpdateTag}
-            onDeleteTag={handleDeleteTag}
-            onCreateTag={openCreateTagModal}
-          />
+          <section className="boardCard">
+            <Manage
+              projects={projects}
+              categories={categories}
+              goals={goals}
+              tags={tags}
+              busy={busy}
+              onUpdateProject={handleUpdateProject}
+              onDeleteProject={handleDeleteProject}
+              onCreateProject={openCreateProjectModal}
+              onUpdateCategory={handleUpdateCategory}
+              onDeleteCategory={handleDeleteCategory}
+              onCreateCategory={openCreateCategoryModal}
+              onUpdateGoal={handleUpdateGoal}
+              onDeleteGoal={handleDeleteGoal}
+              onCreateGoal={openCreateGoalModal}
+              onUpdateTag={handleUpdateTag}
+              onDeleteTag={handleDeleteTag}
+              onCreateTag={openCreateTagModal}
+            />
+          </section>
         ) : (
-          <Statistics />
+          <section className="boardCard">
+            <Statistics />
+          </section>
         )}
       </main>
     </div>

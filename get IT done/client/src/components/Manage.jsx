@@ -26,8 +26,8 @@ export function Manage({
   return (
     <div className="manageContainer">
       <div className="manageHeader">
-        <h2>⚙️ Manage</h2>
-        <p className="manageSubtitle">Organize your projects, categories, goals, and tags</p>
+        <h2>Manage</h2>
+        <span className="manageSubtitle">Projects, categories, goals & tags</span>
       </div>
 
       <div className="manageGrid">
