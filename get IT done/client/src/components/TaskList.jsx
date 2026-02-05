@@ -5,6 +5,7 @@ const VIEW_MODE_LABELS = {
   all: 'All Tasks',
   active: 'Active',
   today: 'Today',
+  thisWeek: 'This Week',
   upcoming: 'Upcoming',
   completed: 'Completed'
 }

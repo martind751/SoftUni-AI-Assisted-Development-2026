@@ -12,12 +12,23 @@ function getViewModeFilter(view) {
   tomorrow.setDate(tomorrow.getDate() + 1);
   const endOfToday = new Date(today);
   endOfToday.setHours(23, 59, 59, 999);
+  
+  // Calculate end of week (Saturday 23:59:59)
+  const endOfWeek = new Date(today);
+  const daysUntilSaturday = 6 - today.getDay(); // Sunday = 0, Saturday = 6
+  endOfWeek.setDate(today.getDate() + daysUntilSaturday);
+  endOfWeek.setHours(23, 59, 59, 999);
 
   switch (view) {
     case 'today':
       return {
         status: { $ne: 'done' },
         dueDate: { $lte: endOfToday }
+      };
+    case 'thisWeek':
+      return {
+        status: { $ne: 'done' },
+        dueDate: { $gte: today, $lte: endOfWeek }
       };
     case 'upcoming':
       return {

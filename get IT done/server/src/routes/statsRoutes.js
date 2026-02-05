@@ -50,7 +50,7 @@ statsRouter.get(
       }
     });
 
-    // Tasks by project
+    // Tasks by project (simple count)
     const tasksByProject = {};
     allTasks.forEach(task => {
       if (task.projectId) {
@@ -59,6 +59,24 @@ statsRouter.get(
       } else {
         tasksByProject['No Project'] = (tasksByProject['No Project'] || 0) + 1;
       }
+    });
+
+    // Completion rate per project
+    const projectCompletionRates = {};
+    allTasks.forEach(task => {
+      const projectName = task.projectId?.name || 'No Project';
+      if (!projectCompletionRates[projectName]) {
+        projectCompletionRates[projectName] = { total: 0, completed: 0 };
+      }
+      projectCompletionRates[projectName].total++;
+      if (task.status === 'done') {
+        projectCompletionRates[projectName].completed++;
+      }
+    });
+    // Calculate rates
+    Object.keys(projectCompletionRates).forEach(project => {
+      const data = projectCompletionRates[project];
+      data.rate = data.total > 0 ? Math.round((data.completed / data.total) * 100) : 0;
     });
 
     // Overdue tasks
@@ -127,7 +145,8 @@ statsRouter.get(
       distribution: {
         byPriority: tasksByPriority,
         byCategory: tasksByCategory,
-        byProject: tasksByProject
+        byProject: tasksByProject,
+        projectCompletionRates
       },
       trend: completionTrend
     };

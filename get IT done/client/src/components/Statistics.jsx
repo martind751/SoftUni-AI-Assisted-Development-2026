@@ -248,22 +248,25 @@ export function Statistics() {
         </div>
       </div>
 
-      {/* Distribution by Project */}
+      {/* Distribution by Project with Completion Rates */}
       <div className="statsSection">
-        <h3>Tasks by Project</h3>
+        <h3>Completion Rate by Project</h3>
         <div className="distributionList">
-          {Object.entries(distribution.byProject)
-            .sort((a, b) => b[1] - a[1])
-            .map(([project, count]) => (
+          {Object.entries(distribution.projectCompletionRates || {})
+            .sort((a, b) => b[1].total - a[1].total)
+            .map(([project, data]) => (
               <div key={project} className="distributionItem">
                 <div className="distributionLabel">{project}</div>
                 <div className="distributionBar">
                   <div 
                     className="distributionBarFill distributionBarProject" 
-                    style={{ width: `${(count / overview.total * 100) || 0}%` }}
+                    style={{ width: `${data.rate}%` }}
                   ></div>
                 </div>
-                <div className="distributionValue">{count}</div>
+                <div className="distributionValue">
+                  <span className="completionRateValue">{data.rate}%</span>
+                  <span className="completionRateDetail">({data.completed}/{data.total})</span>
+                </div>
               </div>
             ))}
         </div>
