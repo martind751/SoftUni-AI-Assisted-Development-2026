@@ -3,14 +3,20 @@ import './App.css'
 import { useEffect, useState } from 'react'
 
 import { createTask, deleteTask, listTasks, updateTask } from './api/tasks'
-import { listProjects, createProject } from './api/projects'
-import { listCategories, createCategory } from './api/categories'
+import { listProjects, createProject, updateProject, deleteProject } from './api/projects'
+import { listCategories, createCategory, updateCategory, deleteCategory } from './api/categories'
+import { listGoals, createGoal, updateGoal, deleteGoal } from './api/goals'
+import { listTags, createTag, updateTag, deleteTag } from './api/tags'
 import { Modal } from './components/Modal'
 import { TaskForm } from './components/TaskForm'
 import { ProjectForm } from './components/ProjectForm'
 import { CategoryForm } from './components/CategoryForm'
+import { GoalForm } from './components/GoalForm'
+import { TagForm } from './components/TagForm'
 import { TaskList } from './components/TaskList'
 import { Statistics } from './components/Statistics'
+import { Dashboard } from './components/Dashboard'
+import { Manage } from './components/Manage'
 
 function normalizeTask(t) {
   return {
@@ -30,9 +36,11 @@ function App() {
 
   const [projects, setProjects] = useState([])
   const [categories, setCategories] = useState([])
+  const [goals, setGoals] = useState([])
+  const [tags, setTags] = useState([])
 
   // Navigation state
-  const [currentView, setCurrentView] = useState('tasks') // 'tasks' or 'statistics'
+  const [currentView, setCurrentView] = useState('dashboard') // 'dashboard', 'tasks', or 'statistics'
 
   // Filter and sort state for tasks
   const [taskFilters, setTaskFilters] = useState({
@@ -46,9 +54,7 @@ function App() {
   })
 
   const [editingTask, setEditingTask] = useState(null)
-  const [editingProject, setEditingProject] = useState(null) 
-  const [editingCategory, setEditingCategory] = useState(null)
-  const [activeModal, setActiveModal] = useState(null) // 'task', 'project', 'category'
+  const [activeModal, setActiveModal] = useState(null) // 'task', 'project', 'category', 'goal', 'tag'
 
   function openCreateTaskModal() {
     setEditingTask(null)
@@ -63,20 +69,24 @@ function App() {
   }
 
   function openCreateProjectModal() {
-    setEditingProject(null)
     setActiveModal('project')
   }
 
   function openCreateCategoryModal() {
-    setEditingCategory(null)
     setActiveModal('category')
+  }
+
+  function openCreateGoalModal() {
+    setActiveModal('goal')
+  }
+
+  function openCreateTagModal() {
+    setActiveModal('tag')
   }
 
   function closeModal() {
     setActiveModal(null)
     setEditingTask(null)
-    setEditingProject(null)
-    setEditingCategory(null)
     setTasksError('')
   }
 
@@ -136,16 +146,20 @@ function App() {
 
     async function loadProjectsAndCategories() {
       try {
-        const [projectsData, categoriesData] = await Promise.all([
+        const [projectsData, categoriesData, goalsData, tagsData] = await Promise.all([
           listProjects(),
-          listCategories()
+          listCategories(),
+          listGoals(),
+          listTags()
         ])
         if (!cancelled) {
           setProjects(projectsData)
           setCategories(categoriesData)
+          setGoals(goalsData)
+          setTags(tagsData)
         }
       } catch (e) {
-        console.error('Failed to load projects/categories:', e)
+        console.error('Failed to load projects/categories/goals/tags:', e)
       }
     }
 
@@ -187,26 +201,127 @@ function App() {
     }
   }
 
-  async function handleQuickCreateProject() {
-    const name = window.prompt('Enter project name:')
-    if (name?.trim()) {
-      try {
-        await handleCreateProject({ name: name.trim(), description: '' })
-      } catch (e) {
-        // Error is already handled in handleCreateProject
-      }
+  async function handleUpdateProject(id, payload) {
+    setBusy(true)
+    try {
+      const updated = await updateProject(id, payload)
+      setProjects((prev) => prev.map((p) => (p._id === id ? updated : p)))
+      return updated
+    } finally {
+      setBusy(false)
     }
   }
 
-  async function handleQuickCreateCategory() {
-    const name = window.prompt('Enter category name:')
-    if (name?.trim()) {
-      const color = window.prompt('Enter color (hex, e.g. #3b82f6):', '#3b82f6') || '#6b7280'
-      try {
-        await handleCreateCategory({ name: name.trim(), color })
-      } catch (e) {
-        // Error is already handled in handleCreateCategory
-      }
+  async function handleDeleteProject(id) {
+    setBusy(true)
+    try {
+      await deleteProject(id)
+      setProjects((prev) => prev.filter((p) => p._id !== id))
+      // Refetch tasks to update any that had this project
+      const options = {}
+      if (taskFilters.view && taskFilters.view !== 'all') options.view = taskFilters.view
+      const rows = await listTasks(options)
+      setTasks(rows.map(normalizeTask))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleUpdateCategory(id, payload) {
+    setBusy(true)
+    try {
+      const updated = await updateCategory(id, payload)
+      setCategories((prev) => prev.map((c) => (c._id === id ? updated : c)))
+      return updated
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleDeleteCategory(id) {
+    setBusy(true)
+    try {
+      await deleteCategory(id)
+      setCategories((prev) => prev.filter((c) => c._id !== id))
+      // Refetch tasks to update any that had this category
+      const options = {}
+      if (taskFilters.view && taskFilters.view !== 'all') options.view = taskFilters.view
+      const rows = await listTasks(options)
+      setTasks(rows.map(normalizeTask))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleCreateGoal(payload) {
+    setBusy(true)
+    try {
+      const created = await createGoal(payload)
+      setGoals((prev) => [...prev, created])
+      closeModal()
+      return created
+    } catch (e) {
+      setTasksError(e?.message || 'Failed to create goal')
+      throw e
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleUpdateGoal(id, payload) {
+    setBusy(true)
+    try {
+      const updated = await updateGoal(id, payload)
+      setGoals((prev) => prev.map((g) => (g._id === id ? updated : g)))
+      return updated
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleDeleteGoal(id) {
+    setBusy(true)
+    try {
+      await deleteGoal(id)
+      setGoals((prev) => prev.filter((g) => g._id !== id))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleCreateTag(payload) {
+    setBusy(true)
+    try {
+      const created = await createTag(payload)
+      setTags((prev) => [...prev, created])
+      closeModal()
+      return created
+    } catch (e) {
+      setTasksError(e?.message || 'Failed to create tag')
+      throw e
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleUpdateTag(id, payload) {
+    setBusy(true)
+    try {
+      const updated = await updateTag(id, payload)
+      setTags((prev) => prev.map((t) => (t._id === id ? updated : t)))
+      return updated
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleDeleteTag(id) {
+    setBusy(true)
+    try {
+      await deleteTag(id)
+      setTags((prev) => prev.filter((t) => t._id !== id))
+    } finally {
+      setBusy(false)
     }
   }
 
@@ -256,29 +371,6 @@ function App() {
       setTasksError(e?.message || 'Failed to update task')
     } finally {
       setBusy(false)
-    }
-  }
-
-  async function handleQuickCreateProject() {
-    const name = window.prompt('Enter project name:')
-    if (name?.trim()) {
-      try {
-        await handleCreateProject(name.trim())
-      } catch (e) {
-        // Error is already handled in handleCreateProject
-      }
-    }
-  }
-
-  async function handleQuickCreateCategory() {
-    const name = window.prompt('Enter category name:')
-    if (name?.trim()) {
-      const color = window.prompt('Enter color (hex, e.g. #3b82f6):', '#3b82f6') || '#6b7280'
-      try {
-        await handleCreateCategory(name.trim(), color)
-      } catch (e) {
-        // Error is already handled in handleCreateCategory
-      }
     }
   }
 
@@ -357,6 +449,8 @@ function App() {
           error={tasksError}
           projects={projects}
           categories={categories}
+          goals={goals}
+          tags={tags}
           onSubmit={editingTask ? handleSave : handleCreate}
           onCancel={closeModal}
           hideHeader
@@ -393,7 +487,43 @@ function App() {
         />
       </Modal>
 
+      <Modal 
+        isOpen={activeModal === 'goal'} 
+        onClose={closeModal}
+        title='New Goal'
+      >
+        <GoalForm
+          mode='create'
+          busy={busy}
+          error={tasksError}
+          onSubmit={handleCreateGoal}
+          onCancel={closeModal}
+          hideHeader
+        />
+      </Modal>
+
+      <Modal 
+        isOpen={activeModal === 'tag'} 
+        onClose={closeModal}
+        title='New Tag'
+      >
+        <TagForm
+          mode='create'
+          busy={busy}
+          error={tasksError}
+          onSubmit={handleCreateTag}
+          onCancel={closeModal}
+          hideHeader
+        />
+      </Modal>
+
       <nav className="appNav">
+        <button 
+          className={`navTab ${currentView === 'dashboard' ? 'navTabActive' : ''}`}
+          onClick={() => setCurrentView('dashboard')}
+        >
+          🏠 Dashboard
+        </button>
         <button 
           className={`navTab ${currentView === 'tasks' ? 'navTabActive' : ''}`}
           onClick={() => setCurrentView('tasks')}
@@ -406,10 +536,23 @@ function App() {
         >
           📊 Statistics
         </button>
+        <button 
+          className={`navTab ${currentView === 'manage' ? 'navTabActive' : ''}`}
+          onClick={() => setCurrentView('manage')}
+        >
+          ⚙️ Manage
+        </button>
       </nav>
 
       <main className="boardLayout">
-        {currentView === 'tasks' ? (
+        {currentView === 'dashboard' ? (
+          <Dashboard 
+            onNavigateToTasks={(view) => {
+              setTaskFilters(prev => ({ ...prev, view: view || 'all' }))
+              setCurrentView('tasks')
+            }}
+          />
+        ) : currentView === 'tasks' ? (
           <section className="boardCard">
             <div className="taskListHeader">
               <h2>Tasks</h2>
@@ -483,6 +626,26 @@ function App() {
               +
             </button>
           </section>
+        ) : currentView === 'manage' ? (
+          <Manage
+            projects={projects}
+            categories={categories}
+            goals={goals}
+            tags={tags}
+            busy={busy}
+            onUpdateProject={handleUpdateProject}
+            onDeleteProject={handleDeleteProject}
+            onCreateProject={openCreateProjectModal}
+            onUpdateCategory={handleUpdateCategory}
+            onDeleteCategory={handleDeleteCategory}
+            onCreateCategory={openCreateCategoryModal}
+            onUpdateGoal={handleUpdateGoal}
+            onDeleteGoal={handleDeleteGoal}
+            onCreateGoal={openCreateGoalModal}
+            onUpdateTag={handleUpdateTag}
+            onDeleteTag={handleDeleteTag}
+            onCreateTag={openCreateTagModal}
+          />
         ) : (
           <Statistics />
         )}

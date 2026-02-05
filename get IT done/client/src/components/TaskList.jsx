@@ -48,7 +48,8 @@ export function TaskList({
     status = '', 
     priority = '',
     sortBy = 'createdAt',
-    sortOrder = 'desc'
+    sortOrder = 'desc',
+    search = ''
   } = filters
 
   // Pending filter state for batch application
@@ -62,7 +63,9 @@ export function TaskList({
   })
 
   const [showFilterPanel, setShowFilterPanel] = useState(false)
+  const [searchInput, setSearchInput] = useState(search)
   const filterPanelRef = useRef(null)
+  const searchTimeoutRef = useRef(null)
 
   // Sync pending state when panel opens
   const openFilterPanel = () => {
@@ -90,14 +93,34 @@ export function TaskList({
     setShowFilterPanel(false)
   }
 
+  const handleSearchChange = (e) => {
+    const value = e.target.value
+    setSearchInput(value)
+    
+    // Debounce search
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current)
+    }
+    searchTimeoutRef.current = setTimeout(() => {
+      onFiltersChange?.({ ...filters, search: value })
+    }, 300)
+  }
+
+  const clearSearch = () => {
+    setSearchInput('')
+    onFiltersChange?.({ ...filters, search: '' })
+  }
+
   const clearAllFilters = () => {
+    setSearchInput('')
     const cleared = {
       projectId: '',
       categoryId: '',
       status: '',
       priority: '',
       sortBy: 'createdAt',
-      sortOrder: 'desc'
+      sortOrder: 'desc',
+      search: ''
     }
     setPendingFilters(cleared)
     onFiltersChange?.({ ...filters, ...cleared, view: 'all' })
@@ -113,48 +136,14 @@ export function TaskList({
     updatePendingFilter('sortOrder', pendingFilters.sortOrder === 'asc' ? 'desc' : 'asc')
   }
 
-  const hasFilters = projectId || categoryId || status || priority
+  const hasFilters = projectId || categoryId || status || priority || search
   const activeFilterCount = [projectId, categoryId, status, priority].filter(Boolean).length
-
-  // Get display names for active filters
-  const getActiveFilterDisplay = () => {
-    const chips = []
-    
-    if (projectId) {
-      const project = projects.find(p => p._id === projectId)
-      chips.push({ key: 'projectId', label: `Project: ${project?.name || 'Unknown'}`, value: projectId })
-    }
-    
-    if (categoryId) {
-      const category = categories.find(c => c._id === categoryId)
-      chips.push({ key: 'categoryId', label: `Category: ${category?.name || 'Unknown'}`, value: categoryId })
-    }
-    
-    if (status) {
-      const statusOption = STATUS_OPTIONS.find(opt => opt.value === status)
-      chips.push({ key: 'status', label: `Status: ${statusOption?.label || status}`, value: status })
-    }
-    
-    if (priority) {
-      const priorityOption = PRIORITY_OPTIONS.find(opt => opt.value === priority)
-      chips.push({ key: 'priority', label: `Priority: ${priorityOption?.label || priority}`, value: priority })
-    }
-    
-    return chips
-  }
 
   const removeFilter = (key) => {
     onFiltersChange?.({ ...filters, [key]: '' })
   }
 
-  const getSortDisplay = () => {
-    const sortOption = SORT_OPTIONS.find(opt => opt.value === sortBy)
-    const direction = sortOrder === 'asc' ? 'Ascending' : 'Descending'
-    return `${sortOption?.label || sortBy} (${direction})`
-  }
-
   const isDefaultSort = sortBy === 'createdAt' && sortOrder === 'desc'
-  const activeFilters = getActiveFilterDisplay()
 
   // Close panel when clicking outside
   useEffect(() => {
@@ -195,6 +184,26 @@ export function TaskList({
       </div>
 
       <div className="filterToolbar">
+        <div className="searchBox">
+          <span className="searchIcon">🔍</span>
+          <input
+            type="text"
+            className="searchInput"
+            placeholder="Search tasks..."
+            value={searchInput}
+            onChange={handleSearchChange}
+          />
+          {searchInput && (
+            <button
+              type="button"
+              className="searchClear"
+              onClick={clearSearch}
+              aria-label="Clear search"
+            >
+              ×
+            </button>
+          )}
+        </div>
         <div className="filterDropdownContainer" ref={filterPanelRef}>
           <button
             type="button"

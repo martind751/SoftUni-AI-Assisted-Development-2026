@@ -227,6 +227,53 @@
   }
 }
 
+/* Tag Selector */
+.tagSelector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  min-height: 42px;
+  align-items: center;
+}
+
+.tagSelector .noTags {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.tagOption {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  background: #e5e7eb;
+  color: #374151;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tagOption:hover {
+  background: #d1d5db;
+}
+
+.tagOption.selected {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.tagOption:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 @media (min-width: 480px) and (max-width: 767px) {
   .row3 {
     grid-template-columns: repeat(3, 1fr);
@@ -825,6 +872,66 @@
   margin-bottom: 16px;
   padding-bottom: 0;
   flex-wrap: wrap;
+}
+
+/* Search Box */
+.searchBox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 200px;
+  max-width: 320px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  font-size: 0.9rem;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 32px 8px 32px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 0.85rem;
+  transition: border-color var(--transition-fast);
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.searchInput::placeholder {
+  color: var(--muted);
+}
+
+.searchClear {
+  position: absolute;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: var(--border);
+  border-radius: 50%;
+  color: var(--fg);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.searchClear:hover {
+  background: var(--muted);
+  color: white;
 }
 
 /* Filter Dropdown Container */

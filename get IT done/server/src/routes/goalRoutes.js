@@ -20,4 +20,40 @@ goalRouter.post(
   })
 );
 
+goalRouter.get(
+  '/:id',
+  asyncHandler(async (req, res) => {
+    const goal = await Goal.findById(req.params.id).lean();
+    if (!goal) {
+      return res.status(404).json({ message: 'Goal not found' });
+    }
+    res.json({ goal });
+  })
+);
+
+goalRouter.patch(
+  '/:id',
+  asyncHandler(async (req, res) => {
+    const updated = await Goal.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    }).lean();
+    if (!updated) {
+      return res.status(404).json({ message: 'Goal not found' });
+    }
+    res.json({ goal: updated });
+  })
+);
+
+goalRouter.delete(
+  '/:id',
+  asyncHandler(async (req, res) => {
+    const deleted = await Goal.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ message: 'Goal not found' });
+    }
+    res.status(204).send();
+  })
+);
+
 module.exports = { goalRouter };

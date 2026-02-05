@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 const defaultDraft = {
   name: '',
@@ -17,11 +17,8 @@ const colorOptions = [
 ]
 
 export function CategoryForm({ mode, initialCategory, busy, error, onSubmit, onCancel, hideHeader = false }) {
+  // Form is remounted with a new key when switching between create/edit, so no useEffect needed
   const [draft, setDraft] = useState(initialCategory || defaultDraft)
-
-  useEffect(() => {
-    setDraft(initialCategory || defaultDraft)
-  }, [initialCategory])
 
   function setField(name, value) {
     setDraft((d) => ({ ...d, [name]: value }))

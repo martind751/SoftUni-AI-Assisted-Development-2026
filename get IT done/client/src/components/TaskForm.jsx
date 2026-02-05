@@ -7,7 +7,9 @@ const defaultDraft = {
   status: 'todo',
   dueDate: '',
   projectId: '',
-  categoryId: ''
+  categoryId: '',
+  goalId: '',
+  tags: []
 }
 
 function toInputDateString(value) {
@@ -17,7 +19,7 @@ function toInputDateString(value) {
   return d.toISOString().slice(0, 10)
 }
 
-export function TaskForm({ mode, initialTask, busy, error, projects = [], categories = [], onSubmit, onCancel, hideHeader = false }) {
+export function TaskForm({ mode, initialTask, busy, error, projects = [], categories = [], goals = [], tags = [], onSubmit, onCancel, hideHeader = false }) {
   const initialDraft = useMemo(() => {
     if (!initialTask) return defaultDraft
 
@@ -28,7 +30,9 @@ export function TaskForm({ mode, initialTask, busy, error, projects = [], catego
       status: initialTask.status || 'todo',
       dueDate: toInputDateString(initialTask.dueDate),
       projectId: initialTask.projectId?._id || initialTask.projectId || '',
-      categoryId: initialTask.categoryId?._id || initialTask.categoryId || ''
+      categoryId: initialTask.categoryId?._id || initialTask.categoryId || '',
+      goalId: initialTask.goalId?._id || initialTask.goalId || '',
+      tags: initialTask.tags?.map(t => t._id || t) || []
     }
   }, [initialTask])
 
@@ -68,8 +72,23 @@ export function TaskForm({ mode, initialTask, busy, error, projects = [], catego
     else payload.projectId = null
     if (draft.categoryId) payload.categoryId = draft.categoryId
     else payload.categoryId = null
+    if (draft.goalId) payload.goalId = draft.goalId
+    else payload.goalId = null
+    if (draft.tags?.length > 0) payload.tags = draft.tags
+    else payload.tags = []
 
     onSubmit(payload)
+  }
+
+  function handleTagToggle(tagId) {
+    setDraft((d) => {
+      const currentTags = d.tags || []
+      if (currentTags.includes(tagId)) {
+        return { ...d, tags: currentTags.filter((t) => t !== tagId) }
+      } else {
+        return { ...d, tags: [...currentTags, tagId] }
+      }
+    })
   }
 
   const submitLabel = mode === 'edit' ? 'Save Changes' : 'Add Task'
@@ -166,6 +185,43 @@ export function TaskForm({ mode, initialTask, busy, error, projects = [], catego
               <option key={c._id} value={c._id}>{c.name}</option>
             ))}
           </select>
+        </div>
+      </div>
+
+      <div className="row2">
+        <div className="field">
+          <label className="label">Goal</label>
+          <select
+            value={draft.goalId}
+            onChange={(e) => setField('goalId', e.target.value)}
+            disabled={busy}
+          >
+            <option value="">— No Goal —</option>
+            {goals.map((g) => (
+              <option key={g._id} value={g._id}>{g.title}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="field">
+          <label className="label">Tags</label>
+          <div className="tagSelector">
+            {tags.length === 0 ? (
+              <span className="noTags">No tags available</span>
+            ) : (
+              tags.map((tag) => (
+                <button
+                  key={tag._id}
+                  type="button"
+                  className={`tagOption ${draft.tags?.includes(tag._id) ? 'selected' : ''}`}
+                  onClick={() => handleTagToggle(tag._id)}
+                  disabled={busy}
+                >
+                  {tag.name}
+                </button>
+              ))
+            )}
+          </div>
         </div>
       </div>
 

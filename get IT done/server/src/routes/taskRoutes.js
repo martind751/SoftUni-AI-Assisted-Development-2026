@@ -42,7 +42,7 @@ const STATUS_ORDER = { todo: 1, in_progress: 2, done: 3 };
 taskRouter.get(
   '/',
   asyncHandler(async (req, res) => {
-    const { view, projectId, categoryId, status, priority, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
+    const { view, projectId, categoryId, status, priority, sortBy = 'createdAt', sortOrder = 'desc', search } = req.query;
     
     // Build filter based on query params
     const filter = { ...getViewModeFilter(view) };
@@ -57,6 +57,15 @@ taskRouter.get(
     }
     if (priority) {
       filter.priority = Number(priority);
+    }
+    
+    // Search filter for title and description
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), 'i');
+      filter.$or = [
+        { title: searchRegex },
+        { description: searchRegex }
+      ];
     }
 
     // Build sort object

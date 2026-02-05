@@ -1,13 +1,24 @@
 import { useState } from 'react'
 
 const defaultDraft = {
-  name: '',
-  description: ''
+  title: '',
+  description: '',
+  targetDate: ''
 }
 
-export function ProjectForm({ mode, initialProject, busy, error, onSubmit, onCancel, hideHeader = false }) {
+function getInitialDraft(initialGoal) {
+  if (!initialGoal) return defaultDraft
+  return {
+    ...initialGoal,
+    targetDate: initialGoal.targetDate 
+      ? new Date(initialGoal.targetDate).toISOString().split('T')[0] 
+      : ''
+  }
+}
+
+export function GoalForm({ mode, initialGoal, busy, error, onSubmit, onCancel, hideHeader = false }) {
   // Form is remounted with a new key when switching between create/edit, so no useEffect needed
-  const [draft, setDraft] = useState(initialProject || defaultDraft)
+  const [draft, setDraft] = useState(() => getInitialDraft(initialGoal))
 
   function setField(name, value) {
     setDraft((d) => ({ ...d, [name]: value }))
@@ -16,29 +27,33 @@ export function ProjectForm({ mode, initialProject, busy, error, onSubmit, onCan
   function handleSubmit(e) {
     e.preventDefault()
 
-    const name = draft.name.trim()
-    if (!name) return
+    const title = draft.title.trim()
+    if (!title) return
 
     const payload = {
-      name,
+      title,
       description: draft.description?.trim() || ''
+    }
+
+    if (draft.targetDate) {
+      payload.targetDate = new Date(draft.targetDate).toISOString()
     }
 
     onSubmit(payload)
   }
 
-  const submitLabel = mode === 'edit' ? 'Save Changes' : 'Create Project'
+  const submitLabel = mode === 'edit' ? 'Save Changes' : 'Create Goal'
 
   return (
     <form onSubmit={handleSubmit} className="form">
-      {!hideHeader && <h2 className="cardTitle">{mode === 'edit' ? 'Edit Project' : 'New Project'}</h2>}
+      {!hideHeader && <h2 className="cardTitle">{mode === 'edit' ? 'Edit Goal' : 'New Goal'}</h2>}
 
       <div className="field">
-        <label className="label">Project Name</label>
+        <label className="label">Goal Title</label>
         <input
-          value={draft.name}
-          onChange={(e) => setField('name', e.target.value)}
-          placeholder="Enter project name..."
+          value={draft.title}
+          onChange={(e) => setField('title', e.target.value)}
+          placeholder="Enter goal title..."
           disabled={busy}
           autoFocus={mode !== 'edit'}
         />
@@ -49,9 +64,19 @@ export function ProjectForm({ mode, initialProject, busy, error, onSubmit, onCan
         <textarea
           value={draft.description}
           onChange={(e) => setField('description', e.target.value)}
-          placeholder="Add project description..."
+          placeholder="Add goal description..."
           disabled={busy}
           rows={3}
+        />
+      </div>
+
+      <div className="field">
+        <label className="label">Target Date (optional)</label>
+        <input
+          type="date"
+          value={draft.targetDate}
+          onChange={(e) => setField('targetDate', e.target.value)}
+          disabled={busy}
         />
       </div>
 

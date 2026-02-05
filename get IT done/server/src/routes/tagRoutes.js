@@ -20,4 +20,40 @@ tagRouter.post(
   })
 );
 
+tagRouter.get(
+  '/:id',
+  asyncHandler(async (req, res) => {
+    const tag = await Tag.findById(req.params.id).lean();
+    if (!tag) {
+      return res.status(404).json({ message: 'Tag not found' });
+    }
+    res.json({ tag });
+  })
+);
+
+tagRouter.patch(
+  '/:id',
+  asyncHandler(async (req, res) => {
+    const updated = await Tag.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    }).lean();
+    if (!updated) {
+      return res.status(404).json({ message: 'Tag not found' });
+    }
+    res.json({ tag: updated });
+  })
+);
+
+tagRouter.delete(
+  '/:id',
+  asyncHandler(async (req, res) => {
+    const deleted = await Tag.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ message: 'Tag not found' });
+    }
+    res.status(204).send();
+  })
+);
+
 module.exports = { tagRouter };

@@ -1,13 +1,12 @@
 import { useState } from 'react'
 
 const defaultDraft = {
-  name: '',
-  description: ''
+  name: ''
 }
 
-export function ProjectForm({ mode, initialProject, busy, error, onSubmit, onCancel, hideHeader = false }) {
+export function TagForm({ mode, initialTag, busy, error, onSubmit, onCancel, hideHeader = false }) {
   // Form is remounted with a new key when switching between create/edit, so no useEffect needed
-  const [draft, setDraft] = useState(initialProject || defaultDraft)
+  const [draft, setDraft] = useState(initialTag || defaultDraft)
 
   function setField(name, value) {
     setDraft((d) => ({ ...d, [name]: value }))
@@ -19,39 +18,25 @@ export function ProjectForm({ mode, initialProject, busy, error, onSubmit, onCan
     const name = draft.name.trim()
     if (!name) return
 
-    const payload = {
-      name,
-      description: draft.description?.trim() || ''
-    }
+    const payload = { name }
 
     onSubmit(payload)
   }
 
-  const submitLabel = mode === 'edit' ? 'Save Changes' : 'Create Project'
+  const submitLabel = mode === 'edit' ? 'Save Changes' : 'Create Tag'
 
   return (
     <form onSubmit={handleSubmit} className="form">
-      {!hideHeader && <h2 className="cardTitle">{mode === 'edit' ? 'Edit Project' : 'New Project'}</h2>}
+      {!hideHeader && <h2 className="cardTitle">{mode === 'edit' ? 'Edit Tag' : 'New Tag'}</h2>}
 
       <div className="field">
-        <label className="label">Project Name</label>
+        <label className="label">Tag Name</label>
         <input
           value={draft.name}
           onChange={(e) => setField('name', e.target.value)}
-          placeholder="Enter project name..."
+          placeholder="Enter tag name..."
           disabled={busy}
           autoFocus={mode !== 'edit'}
-        />
-      </div>
-
-      <div className="field">
-        <label className="label">Description (optional)</label>
-        <textarea
-          value={draft.description}
-          onChange={(e) => setField('description', e.target.value)}
-          placeholder="Add project description..."
-          disabled={busy}
-          rows={3}
         />
       </div>
 
