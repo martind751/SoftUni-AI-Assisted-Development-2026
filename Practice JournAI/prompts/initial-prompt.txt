@@ -1,0 +1,5 @@
+Make a plan for a full-stack project called "Practice JournAI" (the casing matters). Practice JournAI is a personal web application designed by musicians, for musicians who want to systematically track their practice sessions, manage their repertoire of tunes, and visualize their progress. No features yet — just the skeleton and a heartbeat to prove everything connects.
+Tech stack: Go with Gin and Bun. GET /api/v1/health that pings the DB and returns status + timestamp. CORS allowing localhost:5173.
+Frontend: Vite + React 19 + TypeScript. TanStack Router, TanStack Query, Zod, Tailwind CSS v4. One page that fetches the health endpoint and displays it.
+Docker Compose with PostgreSQL 18.
+Keep it modular — I'll be adding domain packages (auth, tunes, sessions, genres).
