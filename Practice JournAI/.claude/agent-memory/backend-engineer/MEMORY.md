@@ -3,8 +3,9 @@
 ## Project Structure
 - **Go module**: `practice-journai`
 - **Entry point**: `cmd/server/main.go`
-- **Internal packages**: `internal/database`, `internal/health`, `internal/server`
-- **Planned domains**: auth, tunes, sessions, genres, tempologs (each under `internal/`)
+- **Internal packages**: `internal/database`, `internal/health`, `internal/server`, `internal/sessions`
+- **Implemented domains**: sessions (full CRUD)
+- **Planned domains**: auth, tunes, genres, tempologs (each under `internal/`)
 
 ## Key File Paths
 - `cmd/server/main.go` - Main entry point, loads .env, connects DB, starts Gin
@@ -34,7 +35,20 @@
 - Bun ORM with pgdialect
 - DSN format: `postgres://postgres:postgres@localhost:5432/practice_journai?sslmode=disable`
 
+## Migrations
+- Bun migrator system at `internal/database/migrations/`
+- `migrations.go` defines `var Migrations = migrate.NewMigrations()`
+- Each migration file uses `init()` + `Migrations.MustRegister(up, down)`
+- Migrator runs automatically on server start in `cmd/server/main.go`
+- Migration table: `bun_migrations` (Bun default)
+
+## Sessions Domain
+- Table: `sessions` (UUID PK, created_at, updated_at, due_date DATE, description TEXT, notes TEXT nullable)
+- Routes: GET/POST `/api/v1/sessions`, GET/PUT/DELETE `/api/v1/sessions/:id`
+- Create returns 201, Delete returns 204 (no body)
+- `google/uuid` used for UUID parsing in service layer
+
 ## Dependencies (installed)
 - gin, gin-contrib/cors
-- bun, bun/dialect/pgdialect, bun/driver/pgdriver, bun/extra/bundebug
-- joho/godotenv
+- bun, bun/dialect/pgdialect, bun/driver/pgdriver, bun/extra/bundebug, bun/migrate
+- joho/godotenv, google/uuid

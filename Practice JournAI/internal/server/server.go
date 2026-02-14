@@ -8,6 +8,7 @@ import (
 	"github.com/uptrace/bun"
 
 	"practice-journai/internal/health"
+	"practice-journai/internal/sessions"
 )
 
 // New creates and configures a Gin engine with CORS, route groups, and all
@@ -25,9 +26,22 @@ func New(db *bun.DB) *gin.Engine {
 
 	healthHandler := health.NewHandler(db)
 
+	sessionsRepo := sessions.NewRepository(db)
+	sessionsService := sessions.NewService(sessionsRepo)
+	sessionsHandler := sessions.NewHandler(sessionsService)
+
 	v1 := router.Group("/api/v1")
 	{
 		v1.GET("/health", healthHandler.HealthCheck)
+
+		sessionRoutes := v1.Group("/sessions")
+		{
+			sessionRoutes.GET("", sessionsHandler.List)
+			sessionRoutes.GET("/:id", sessionsHandler.GetByID)
+			sessionRoutes.POST("", sessionsHandler.Create)
+			sessionRoutes.PUT("/:id", sessionsHandler.Update)
+			sessionRoutes.DELETE("/:id", sessionsHandler.Delete)
+		}
 	}
 
 	return router

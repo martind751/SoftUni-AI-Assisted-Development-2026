@@ -6,8 +6,10 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/uptrace/bun/migrate"
 
 	"practice-journai/internal/database"
+	"practice-journai/internal/database/migrations"
 	"practice-journai/internal/server"
 )
 
@@ -34,6 +36,21 @@ func main() {
 	defer db.Close()
 
 	log.Printf("Connected to database successfully")
+
+	// Run migrations
+	migrator := migrate.NewMigrator(db, migrations.Migrations)
+	if err := migrator.Init(ctx); err != nil {
+		log.Fatalf("Failed to init migrator: %v", err)
+	}
+	group, err := migrator.Migrate(ctx)
+	if err != nil {
+		log.Fatalf("Failed to run migrations: %v", err)
+	}
+	if group.IsZero() {
+		log.Printf("No new migrations to run")
+	} else {
+		log.Printf("Migrated to %s", group)
+	}
 
 	router := server.New(db)
 
