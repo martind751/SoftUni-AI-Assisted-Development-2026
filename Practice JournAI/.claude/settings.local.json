@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker exec:*)",
+      "Bash(docker compose down:*)",
+      "Bash(docker compose:*)",
+      "Bash(go run:*)",
+      "Bash(DATABASE_URL=\"postgres://postgres:postgres@localhost:5433/practice_journai?sslmode=disable\" go test:*)",
+      "Bash(chmod:*)"
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+Can we have a single command that runs the project other that stops it?
