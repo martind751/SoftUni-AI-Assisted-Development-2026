@@ -39,7 +39,19 @@ background, foreground, primary, primary-foreground, muted, muted-foreground, de
   - Routes: list (/sessions/), new (/sessions/new), detail+edit (/sessions/$sessionId)
   - List route filters by activeGenre via query params
 
+- **songs**: full CRUD with MusicBrainz search integration
+  - Hooks: useSongs(filters?), useSong, useCreateSong, useUpdateSong, useDeleteSong, useMusicBrainzSearch
+  - Components: SongCard, SongForm (create+edit with MusicBrainz), MusicBrainzSearch (debounced)
+  - Routes: list (/songs/), new (/songs/new), detail+edit (/songs/$songId)
+  - List route filters by activeGenre, sorts by title/artist/created_at
+  - genreSchema is shared -- imported from sessions schema into songs schema
+
 ## API Endpoints (Sessions)
 - GET /api/v1/sessions?genre=&status= -> Session[]
 - GET/POST/PUT/DELETE /api/v1/sessions/:id
 - POST /api/v1/sessions/:id/notes, DELETE /api/v1/sessions/:id/notes/:noteId
+
+## API Endpoints (Songs)
+- GET /api/v1/songs?genre=&order_by=&order_dir= -> Song[]
+- GET/POST/PUT/DELETE /api/v1/songs/:id
+- GET /api/v1/songs/search/musicbrainz?q= -> MusicBrainzResult[]

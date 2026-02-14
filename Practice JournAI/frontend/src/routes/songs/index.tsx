@@ -1,40 +1,31 @@
 import { useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import {
-  useSessions,
-  type OrderByField,
+  useSongs,
+  type SongOrderByField,
   type OrderDir,
-} from '../../features/sessions/hooks/useSessions'
-import { SessionCard } from '../../features/sessions/components/SessionCard'
+} from '../../features/songs/hooks/useSongs'
+import { SongCard } from '../../features/songs/components/SongCard'
 import { Button } from '../../components/ui/button'
 import { useGenre } from '../../contexts/GenreContext'
-import type { SessionStatus } from '../../features/sessions/types/session.types'
 
-export const Route = createFileRoute('/sessions/')({
-  component: SessionsPage,
+export const Route = createFileRoute('/songs/')({
+  component: SongsPage,
 })
 
-const statusOptions: { value: SessionStatus | undefined; label: string }[] = [
-  { value: undefined, label: 'All' },
-  { value: 'planned', label: 'Planned' },
-  { value: 'completed', label: 'Completed' },
-  { value: 'skipped', label: 'Skipped' },
-]
-
-const sortOptions: { value: OrderByField; label: string }[] = [
-  { value: 'due_date', label: 'Due Date' },
+const sortOptions: { value: SongOrderByField; label: string }[] = [
+  { value: 'title', label: 'Title' },
+  { value: 'artist', label: 'Artist' },
   { value: 'created_at', label: 'Created' },
 ]
 
-function SessionsPage() {
+function SongsPage() {
   const { activeGenre } = useGenre()
-  const [status, setStatus] = useState<SessionStatus | undefined>(undefined)
-  const [orderBy, setOrderBy] = useState<OrderByField>('due_date')
+  const [orderBy, setOrderBy] = useState<SongOrderByField>('title')
   const [orderDir, setOrderDir] = useState<OrderDir>('asc')
 
-  const { data: sessions, isLoading, isError, error } = useSessions({
+  const { data: songs, isLoading, isError, error } = useSongs({
     genre: activeGenre === 'all' ? undefined : activeGenre,
-    status,
     orderBy,
     orderDir,
   })
@@ -42,45 +33,22 @@ function SessionsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">Practice Sessions</h2>
-        <Link to="/sessions/new">
-          <Button>New Session</Button>
+        <div className="flex items-center gap-2">
+          <h2 className="text-2xl font-semibold">Practice Songs</h2>
+          <span className="rounded-full bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
+            Beta
+          </span>
+        </div>
+        <Link to="/songs/new">
+          <Button>New Song</Button>
         </Link>
       </div>
 
-      {/* Filter & Sort Bar */}
+      {/* Sort Bar */}
       <div
         className="flex flex-wrap items-center gap-4 border border-border bg-card p-3 transition-all duration-500"
         style={{ borderRadius: 'var(--genre-radius-lg)' }}
       >
-        {/* Status Filter */}
-        <div
-          className="flex gap-1 bg-muted p-1 transition-all duration-500"
-          style={{ borderRadius: 'var(--genre-radius)' }}
-        >
-          {statusOptions.map((opt) => (
-            <button
-              key={opt.label}
-              onClick={() => setStatus(opt.value)}
-              className={`px-3 py-1.5 text-sm font-medium transition-all duration-300 ${
-                status === opt.value
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-              style={{
-                borderRadius: 'var(--genre-radius)',
-                boxShadow:
-                  status === opt.value ? 'var(--genre-shadow)' : 'none',
-              }}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Separator */}
-        <div className="h-6 w-px bg-border" />
-
         {/* Sort Field */}
         <div
           className="flex gap-1 bg-muted p-1 transition-all duration-500"
@@ -125,13 +93,13 @@ function SessionsPage() {
             <path d="M12 5v14" />
             <path d="M5 12l7-7 7 7" />
           </svg>
-          {orderDir === 'asc' ? 'Oldest first' : 'Newest first'}
+          {orderDir === 'asc' ? 'A to Z' : 'Z to A'}
         </button>
       </div>
 
       {isLoading && (
         <div className="animate-pulse rounded-lg bg-muted p-4">
-          <p className="text-muted-foreground">Loading sessions...</p>
+          <p className="text-muted-foreground">Loading songs...</p>
         </div>
       )}
 
@@ -143,18 +111,18 @@ function SessionsPage() {
         </div>
       )}
 
-      {sessions && sessions.length === 0 && (
+      {songs && songs.length === 0 && (
         <div className="rounded-lg border border-border bg-muted/50 p-8 text-center">
           <p className="text-muted-foreground">
-            No practice sessions yet. Create your first one!
+            No songs in your library yet. Add your first one!
           </p>
         </div>
       )}
 
-      {sessions && sessions.length > 0 && (
+      {songs && songs.length > 0 && (
         <div className="space-y-3">
-          {sessions.map((session) => (
-            <SessionCard key={session.id} session={session} />
+          {songs.map((song) => (
+            <SongCard key={song.id} song={song} />
           ))}
         </div>
       )}

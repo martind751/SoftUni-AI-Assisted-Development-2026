@@ -30,6 +30,12 @@ function RootComponent() {
                 >
                   Sessions
                 </Link>
+                <Link
+                  to="/songs"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Songs
+                </Link>
               </div>
               <div className="flex items-center gap-3">
                 <GenreSwitcher />

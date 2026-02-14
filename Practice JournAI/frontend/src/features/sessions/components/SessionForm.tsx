@@ -2,13 +2,19 @@ import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { Button } from '../../../components/ui/button'
 import { useGenre } from '../../../contexts/GenreContext'
-import type { CreateSessionInput, UpdateSessionInput, SessionStatus } from '../types/session.types'
+import type { CreateSessionInput, UpdateSessionInput, SessionStatus, Genre } from '../types/session.types'
 
 const genreLabels = {
   jazz: 'Jazz',
   blues: 'Blues',
   rock_metal: 'Rock/Metal',
 } as const
+
+const genreOptions: { value: Genre; label: string }[] = [
+  { value: 'jazz', label: 'Jazz' },
+  { value: 'blues', label: 'Blues' },
+  { value: 'rock_metal', label: 'Rock/Metal' },
+]
 
 interface SessionFormProps {
   defaultValues?: {
@@ -31,6 +37,12 @@ export function SessionForm({
 }: SessionFormProps) {
   const navigate = useNavigate()
   const { activeGenre } = useGenre()
+
+  const isAllGenre = activeGenre === 'all'
+  const [selectedGenre, setSelectedGenre] = useState<Genre>(
+    isAllGenre ? 'jazz' : activeGenre,
+  )
+  const genre = isAllGenre ? selectedGenre : activeGenre
 
   const [dueDate, setDueDate] = useState(defaultValues?.due_date ?? '')
   const [description, setDescription] = useState(
@@ -74,7 +86,7 @@ export function SessionForm({
       onSubmit({
         due_date: dueDate,
         description: description.trim(),
-        genre: activeGenre,
+        genre,
         status,
         duration_minutes: parsedDuration,
         energy_level: energyLevel,
@@ -83,7 +95,7 @@ export function SessionForm({
       onSubmit({
         due_date: dueDate,
         description: description.trim(),
-        genre: activeGenre,
+        genre,
         duration_minutes: parsedDuration,
         energy_level: energyLevel,
       } satisfies CreateSessionInput)
@@ -92,9 +104,32 @@ export function SessionForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="rounded-md bg-muted px-3 py-2 text-sm">
-        Genre: <span className="font-medium">{genreLabels[activeGenre]}</span>
-      </div>
+      {isAllGenre ? (
+        <div>
+          <label
+            htmlFor="genre"
+            className="mb-1 block text-sm font-medium text-foreground"
+          >
+            Genre
+          </label>
+          <select
+            id="genre"
+            value={selectedGenre}
+            onChange={(e) => setSelectedGenre(e.target.value as Genre)}
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            {genreOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : (
+        <div className="rounded-md bg-muted px-3 py-2 text-sm">
+          Genre: <span className="font-medium">{genreLabels[activeGenre]}</span>
+        </div>
+      )}
 
       <div>
         <label

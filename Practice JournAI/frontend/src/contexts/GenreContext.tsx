@@ -1,11 +1,12 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { Genre } from '../features/sessions/types/session.types'
 
+export type ViewGenre = Genre | 'all'
 export type ThemeMode = 'dark' | 'light'
 
 interface GenreContextValue {
-  activeGenre: Genre
-  setActiveGenre: (genre: Genre) => void
+  activeGenre: ViewGenre
+  setActiveGenre: (genre: ViewGenre) => void
   themeMode: ThemeMode
   toggleThemeMode: () => void
 }
@@ -15,9 +16,9 @@ const GenreContext = createContext<GenreContextValue | undefined>(undefined)
 const STORAGE_KEY = 'practice-journai-genre'
 const THEME_STORAGE_KEY = 'practice-journai-theme'
 
-function getInitialGenre(): Genre {
+function getInitialGenre(): ViewGenre {
   const stored = localStorage.getItem(STORAGE_KEY)
-  if (stored === 'jazz' || stored === 'blues' || stored === 'rock_metal') {
+  if (stored === 'jazz' || stored === 'blues' || stored === 'rock_metal' || stored === 'all') {
     return stored
   }
   return 'jazz'
@@ -32,7 +33,7 @@ function getInitialTheme(): ThemeMode {
 }
 
 export function GenreProvider({ children }: { children: ReactNode }) {
-  const [activeGenre, setActiveGenreState] = useState<Genre>(getInitialGenre)
+  const [activeGenre, setActiveGenreState] = useState<ViewGenre>(getInitialGenre)
   const [themeMode, setThemeMode] = useState<ThemeMode>(getInitialTheme)
 
   useEffect(() => {
@@ -43,7 +44,7 @@ export function GenreProvider({ children }: { children: ReactNode }) {
     document.documentElement.dataset.theme = themeMode
   }, [themeMode])
 
-  function setActiveGenre(genre: Genre) {
+  function setActiveGenre(genre: ViewGenre) {
     setActiveGenreState(genre)
     localStorage.setItem(STORAGE_KEY, genre)
   }

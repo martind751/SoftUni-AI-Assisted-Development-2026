@@ -9,6 +9,7 @@ import (
 
 	"practice-journai/internal/health"
 	"practice-journai/internal/sessions"
+	"practice-journai/internal/songs"
 )
 
 // New creates and configures a Gin engine with CORS, route groups, and all
@@ -30,6 +31,10 @@ func New(db *bun.DB) *gin.Engine {
 	sessionsService := sessions.NewService(sessionsRepo)
 	sessionsHandler := sessions.NewHandler(sessionsService)
 
+	songsRepo := songs.NewRepository(db)
+	songsService := songs.NewService(songsRepo)
+	songsHandler := songs.NewHandler(songsService)
+
 	v1 := router.Group("/api/v1")
 	{
 		v1.GET("/health", healthHandler.HealthCheck)
@@ -43,6 +48,16 @@ func New(db *bun.DB) *gin.Engine {
 			sessionRoutes.DELETE("/:id", sessionsHandler.Delete)
 			sessionRoutes.POST("/:id/notes", sessionsHandler.CreateNote)
 			sessionRoutes.DELETE("/:id/notes/:noteId", sessionsHandler.DeleteNote)
+		}
+
+		songRoutes := v1.Group("/songs")
+		{
+			songRoutes.GET("", songsHandler.List)
+			songRoutes.GET("/search/musicbrainz", songsHandler.SearchMusicBrainz)
+			songRoutes.GET("/:id", songsHandler.GetByID)
+			songRoutes.POST("", songsHandler.Create)
+			songRoutes.PUT("/:id", songsHandler.Update)
+			songRoutes.DELETE("/:id", songsHandler.Delete)
 		}
 	}
 

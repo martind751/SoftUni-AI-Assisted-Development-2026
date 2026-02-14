@@ -3,8 +3,8 @@
 ## Project Structure
 - **Go module**: `practice-journai`
 - **Entry point**: `cmd/server/main.go`
-- **Internal packages**: `internal/database`, `internal/health`, `internal/server`, `internal/sessions`
-- **Implemented domains**: sessions (full CRUD)
+- **Internal packages**: `internal/database`, `internal/health`, `internal/server`, `internal/sessions`, `internal/songs`
+- **Implemented domains**: sessions (full CRUD + notes), songs (full CRUD + MusicBrainz search)
 - **Planned domains**: auth, tunes, genres, tempologs (each under `internal/`)
 
 ## Key File Paths
@@ -47,6 +47,15 @@
 - Routes: GET/POST `/api/v1/sessions`, GET/PUT/DELETE `/api/v1/sessions/:id`
 - Create returns 201, Delete returns 204 (no body)
 - `google/uuid` used for UUID parsing in service layer
+
+## Songs Domain
+- Table: `songs` (UUID PK, created_at, updated_at, title TEXT, artist TEXT, genre VARCHAR(20), notes TEXT nullable)
+- Genre enum: jazz, blues, rock_metal (CHECK constraint, shared concept with sessions)
+- Routes: GET/POST `/api/v1/songs`, GET/PUT/DELETE `/api/v1/songs/:id`
+- MusicBrainz search: GET `/api/v1/songs/search/musicbrainz?q=<query>` (registered before /:id to avoid conflict)
+- Table alias: `so`
+- allowedOrderColumns: title, artist, created_at (default sort: so.title ASC)
+- Create returns 201, Delete returns 204, MusicBrainz errors return 502
 
 ## Dependencies (installed)
 - gin, gin-contrib/cors

@@ -10,7 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SongsIndexRouteImport } from './routes/songs/index'
 import { Route as SessionsIndexRouteImport } from './routes/sessions/index'
+import { Route as SongsNewRouteImport } from './routes/songs/new'
+import { Route as SongsSongIdRouteImport } from './routes/songs/$songId'
 import { Route as SessionsNewRouteImport } from './routes/sessions/new'
 import { Route as SessionsSessionIdRouteImport } from './routes/sessions/$sessionId'
 
@@ -19,9 +22,24 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SongsIndexRoute = SongsIndexRouteImport.update({
+  id: '/songs/',
+  path: '/songs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SessionsIndexRoute = SessionsIndexRouteImport.update({
   id: '/sessions/',
   path: '/sessions/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SongsNewRoute = SongsNewRouteImport.update({
+  id: '/songs/new',
+  path: '/songs/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SongsSongIdRoute = SongsSongIdRouteImport.update({
+  id: '/songs/$songId',
+  path: '/songs/$songId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SessionsNewRoute = SessionsNewRouteImport.update({
@@ -39,34 +57,68 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/sessions/$sessionId': typeof SessionsSessionIdRoute
   '/sessions/new': typeof SessionsNewRoute
+  '/songs/$songId': typeof SongsSongIdRoute
+  '/songs/new': typeof SongsNewRoute
   '/sessions/': typeof SessionsIndexRoute
+  '/songs/': typeof SongsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sessions/$sessionId': typeof SessionsSessionIdRoute
   '/sessions/new': typeof SessionsNewRoute
+  '/songs/$songId': typeof SongsSongIdRoute
+  '/songs/new': typeof SongsNewRoute
   '/sessions': typeof SessionsIndexRoute
+  '/songs': typeof SongsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/sessions/$sessionId': typeof SessionsSessionIdRoute
   '/sessions/new': typeof SessionsNewRoute
+  '/songs/$songId': typeof SongsSongIdRoute
+  '/songs/new': typeof SongsNewRoute
   '/sessions/': typeof SessionsIndexRoute
+  '/songs/': typeof SongsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sessions/$sessionId' | '/sessions/new' | '/sessions/'
+  fullPaths:
+    | '/'
+    | '/sessions/$sessionId'
+    | '/sessions/new'
+    | '/songs/$songId'
+    | '/songs/new'
+    | '/sessions/'
+    | '/songs/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sessions/$sessionId' | '/sessions/new' | '/sessions'
-  id: '__root__' | '/' | '/sessions/$sessionId' | '/sessions/new' | '/sessions/'
+  to:
+    | '/'
+    | '/sessions/$sessionId'
+    | '/sessions/new'
+    | '/songs/$songId'
+    | '/songs/new'
+    | '/sessions'
+    | '/songs'
+  id:
+    | '__root__'
+    | '/'
+    | '/sessions/$sessionId'
+    | '/sessions/new'
+    | '/songs/$songId'
+    | '/songs/new'
+    | '/sessions/'
+    | '/songs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SessionsSessionIdRoute: typeof SessionsSessionIdRoute
   SessionsNewRoute: typeof SessionsNewRoute
+  SongsSongIdRoute: typeof SongsSongIdRoute
+  SongsNewRoute: typeof SongsNewRoute
   SessionsIndexRoute: typeof SessionsIndexRoute
+  SongsIndexRoute: typeof SongsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -78,11 +130,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/songs/': {
+      id: '/songs/'
+      path: '/songs'
+      fullPath: '/songs/'
+      preLoaderRoute: typeof SongsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sessions/': {
       id: '/sessions/'
       path: '/sessions'
       fullPath: '/sessions/'
       preLoaderRoute: typeof SessionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/songs/new': {
+      id: '/songs/new'
+      path: '/songs/new'
+      fullPath: '/songs/new'
+      preLoaderRoute: typeof SongsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/songs/$songId': {
+      id: '/songs/$songId'
+      path: '/songs/$songId'
+      fullPath: '/songs/$songId'
+      preLoaderRoute: typeof SongsSongIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sessions/new': {
@@ -106,7 +179,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SessionsSessionIdRoute: SessionsSessionIdRoute,
   SessionsNewRoute: SessionsNewRoute,
+  SongsSongIdRoute: SongsSongIdRoute,
+  SongsNewRoute: SongsNewRoute,
   SessionsIndexRoute: SessionsIndexRoute,
+  SongsIndexRoute: SongsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -94,6 +94,32 @@
 }
 
 /* ══════════════════════════════════════════════════════════
+   All: unified view — bright teal/cyan primary,
+   clean dark base, shows all genres together
+   ══════════════════════════════════════════════════════════ */
+[data-genre="all"] {
+  --color-background: oklch(13% 0.02 220);
+  --color-foreground: oklch(90% 0.02 200);
+  --color-primary: oklch(65% 0.18 180);
+  --color-primary-foreground: oklch(98% 0 0);
+  --color-muted: oklch(18% 0.02 220);
+  --color-muted-foreground: oklch(55% 0.04 200);
+  --color-accent: oklch(58% 0.14 300);
+  --color-destructive: oklch(53% 0.22 27);
+  --color-border: oklch(26% 0.03 220);
+  --color-card: oklch(16% 0.02 220);
+  --color-card-foreground: oklch(90% 0.02 200);
+
+  --genre-radius: 10px;
+  --genre-radius-lg: 14px;
+  --genre-shadow: 0 4px 20px oklch(65% 0.18 180 / 0.12);
+  --genre-shadow-active: 0 0 20px oklch(65% 0.18 180 / 0.45);
+  --genre-gradient:
+    radial-gradient(ellipse at 20% 20%, oklch(22% 0.06 180 / 0.35) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, oklch(22% 0.06 300 / 0.2) 0%, transparent 45%);
+}
+
+/* ══════════════════════════════════════════════════════════
    Light mode overrides — inverted palettes per genre
    ══════════════════════════════════════════════════════════ */
 [data-theme="light"][data-genre="jazz"] {
@@ -154,6 +180,26 @@
   --genre-gradient:
     radial-gradient(ellipse at 50% 0%, oklch(90% 0.04 20 / 0.2) 0%, transparent 45%),
     radial-gradient(ellipse at 50% 100%, oklch(88% 0.02 15 / 0.15) 0%, transparent 40%);
+}
+
+[data-theme="light"][data-genre="all"] {
+  --color-background: oklch(96% 0.01 200);
+  --color-foreground: oklch(18% 0.02 220);
+  --color-primary: oklch(50% 0.18 180);
+  --color-primary-foreground: oklch(98% 0 0);
+  --color-muted: oklch(91% 0.01 200);
+  --color-muted-foreground: oklch(40% 0.04 220);
+  --color-accent: oklch(48% 0.14 300);
+  --color-destructive: oklch(50% 0.22 27);
+  --color-border: oklch(83% 0.02 200);
+  --color-card: oklch(98% 0.005 200);
+  --color-card-foreground: oklch(18% 0.02 220);
+
+  --genre-shadow: 0 4px 20px oklch(50% 0.18 180 / 0.1);
+  --genre-shadow-active: 0 0 20px oklch(50% 0.18 180 / 0.3);
+  --genre-gradient:
+    radial-gradient(ellipse at 20% 20%, oklch(90% 0.04 180 / 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, oklch(90% 0.04 300 / 0.15) 0%, transparent 45%);
 }
 
 @layer base {
