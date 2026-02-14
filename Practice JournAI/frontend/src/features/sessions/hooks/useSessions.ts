@@ -14,9 +14,14 @@ import type {
   CreateNoteInput,
 } from '../types/session.types'
 
-interface SessionFilters {
+export type OrderByField = 'due_date' | 'created_at'
+export type OrderDir = 'asc' | 'desc'
+
+export interface SessionFilters {
   genre?: Genre
   status?: SessionStatus
+  orderBy?: OrderByField
+  orderDir?: OrderDir
 }
 
 export const sessionKeys = {
@@ -30,6 +35,8 @@ async function fetchSessions(filters?: SessionFilters): Promise<Session[]> {
   const params = new URLSearchParams()
   if (filters?.genre) params.append('genre', filters.genre)
   if (filters?.status) params.append('status', filters.status)
+  if (filters?.orderBy) params.append('order_by', filters.orderBy)
+  if (filters?.orderDir) params.append('order_dir', filters.orderDir)
 
   const qs = params.toString()
   const url = `/api/v1/sessions${qs ? `?${qs}` : ''}`

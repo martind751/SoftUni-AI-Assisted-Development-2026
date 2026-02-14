@@ -22,8 +22,10 @@ func NewHandler(service *Service) *Handler {
 func (h *Handler) List(c *gin.Context) {
 	genre := c.Query("genre")
 	status := c.Query("status")
+	orderBy := c.Query("order_by")
+	orderDir := c.Query("order_dir")
 
-	sessions, err := h.service.List(c.Request.Context(), genre, status)
+	sessions, err := h.service.List(c.Request.Context(), genre, status, orderBy, orderDir)
 	if err != nil {
 		status := mapErrorToStatus(err)
 		c.JSON(status, ErrorResponse{Error: err.Error()})
@@ -121,7 +123,8 @@ func mapErrorToStatus(err error) int {
 		return http.StatusNotFound
 	case errors.Is(err, ErrInvalidID), errors.Is(err, ErrInvalidNoteID),
 		errors.Is(err, ErrInvalidDate), errors.Is(err, ErrInvalidGenre),
-		errors.Is(err, ErrInvalidStatus), errors.Is(err, ErrInvalidEnergy):
+		errors.Is(err, ErrInvalidStatus), errors.Is(err, ErrInvalidEnergy),
+		errors.Is(err, ErrInvalidOrderBy), errors.Is(err, ErrInvalidOrderDir):
 		return http.StatusBadRequest
 	default:
 		return http.StatusInternalServerError

@@ -2,14 +2,22 @@ package sessions
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
 
+var allowedOrderColumns = map[string]string{
+	"due_date":   "s.due_date",
+	"created_at": "s.created_at",
+}
+
 type ListFilters struct {
-	Genre  *Genre
-	Status *SessionStatus
+	Genre    *Genre
+	Status   *SessionStatus
+	OrderBy  string
+	OrderDir string
 }
 
 type Repository struct {
@@ -26,8 +34,7 @@ func (r *Repository) List(ctx context.Context, filters ListFilters) ([]Session, 
 		Model(&sessions).
 		Relation("Notes", func(q *bun.SelectQuery) *bun.SelectQuery {
 			return q.OrderExpr("sn.created_at ASC")
-		}).
-		OrderExpr("s.due_date ASC")
+		})
 
 	if filters.Genre != nil {
 		q = q.Where("s.genre = ?", *filters.Genre)
@@ -35,6 +42,16 @@ func (r *Repository) List(ctx context.Context, filters ListFilters) ([]Session, 
 	if filters.Status != nil {
 		q = q.Where("s.status = ?", *filters.Status)
 	}
+
+	col := "s.due_date"
+	if c, ok := allowedOrderColumns[filters.OrderBy]; ok {
+		col = c
+	}
+	dir := "ASC"
+	if filters.OrderDir == "desc" {
+		dir = "DESC"
+	}
+	q = q.OrderExpr(fmt.Sprintf("%s %s", col, dir))
 
 	err := q.Scan(ctx)
 	if err != nil {

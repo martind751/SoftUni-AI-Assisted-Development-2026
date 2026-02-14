@@ -16,9 +16,9 @@ function formatDate(dateString: string): string {
 }
 
 const statusStyles = {
-  planned: 'bg-blue-100 text-blue-800',
-  completed: 'bg-green-100 text-green-800',
-  skipped: 'bg-gray-100 text-gray-600',
+  planned: 'bg-primary/20 text-primary',
+  completed: 'bg-accent/20 text-accent',
+  skipped: 'bg-muted text-muted-foreground',
 } as const
 
 const statusLabels = {
@@ -32,7 +32,8 @@ export function SessionCard({ session }: SessionCardProps) {
     <Link
       to="/sessions/$sessionId"
       params={{ sessionId: session.id }}
-      className="block rounded-lg border border-border bg-background p-4 transition-colors hover:bg-muted"
+      className="block border border-border bg-card p-4 transition-all duration-300 hover:bg-muted"
+      style={{ borderRadius: 'var(--genre-radius-lg)', boxShadow: 'var(--genre-shadow)' }}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">

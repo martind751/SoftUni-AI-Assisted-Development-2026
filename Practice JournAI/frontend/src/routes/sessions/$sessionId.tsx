@@ -29,9 +29,9 @@ function formatDate(dateString: string): string {
 }
 
 const statusStyles = {
-  planned: 'bg-blue-100 text-blue-800',
-  completed: 'bg-green-100 text-green-800',
-  skipped: 'bg-gray-100 text-gray-600',
+  planned: 'bg-primary/20 text-primary',
+  completed: 'bg-accent/20 text-accent',
+  skipped: 'bg-muted text-muted-foreground',
 } as const
 
 const statusLabels = {
@@ -138,7 +138,7 @@ function SessionDetailPage() {
         </>
       ) : (
         <>
-          <div className="rounded-lg border border-border p-6">
+          <div className="border border-border p-6" style={{ borderRadius: 'var(--genre-radius-lg)', boxShadow: 'var(--genre-shadow)' }}>
             <div className="flex items-start justify-between gap-4">
               <h2 className="text-2xl font-semibold">{session.description}</h2>
               <span

@@ -17,7 +17,9 @@ var (
 	ErrInvalidDate   = errors.New("invalid date format, expected YYYY-MM-DD")
 	ErrInvalidGenre  = errors.New("invalid genre, must be: jazz, blues, rock_metal")
 	ErrInvalidStatus = errors.New("invalid status, must be: planned, completed, skipped")
-	ErrInvalidEnergy = errors.New("invalid energy level, must be between 1 and 5")
+	ErrInvalidEnergy  = errors.New("invalid energy level, must be between 1 and 5")
+	ErrInvalidOrderBy = errors.New("invalid order_by, must be: due_date, created_at")
+	ErrInvalidOrderDir = errors.New("invalid order_dir, must be: asc, desc")
 )
 
 type Service struct {
@@ -55,7 +57,7 @@ func validateEnergyLevel(level *int) error {
 	return nil
 }
 
-func (s *Service) List(ctx context.Context, genreFilter, statusFilter string) ([]SessionResponse, error) {
+func (s *Service) List(ctx context.Context, genreFilter, statusFilter, orderBy, orderDir string) ([]SessionResponse, error) {
 	var filters ListFilters
 
 	if genreFilter != "" {
@@ -71,6 +73,22 @@ func (s *Service) List(ctx context.Context, genreFilter, statusFilter string) ([
 			return nil, err
 		}
 		filters.Status = &st
+	}
+	if orderBy != "" {
+		switch orderBy {
+		case "due_date", "created_at":
+			filters.OrderBy = orderBy
+		default:
+			return nil, ErrInvalidOrderBy
+		}
+	}
+	if orderDir != "" {
+		switch orderDir {
+		case "asc", "desc":
+			filters.OrderDir = orderDir
+		default:
+			return nil, ErrInvalidOrderDir
+		}
 	}
 
 	sessions, err := s.repo.List(ctx, filters)
