@@ -6,7 +6,9 @@ import {
   useDeleteSession,
 } from '../../features/sessions/hooks/useSessions'
 import { SessionForm } from '../../features/sessions/components/SessionForm'
+import { SessionNotes } from '../../features/sessions/components/SessionNotes'
 import { Button } from '../../components/ui/button'
+import type { UpdateSessionInput } from '../../features/sessions/types/session.types'
 
 export const Route = createFileRoute('/sessions/$sessionId')({
   component: SessionDetailPage,
@@ -25,6 +27,24 @@ function formatDate(dateString: string): string {
     day: 'numeric',
   })
 }
+
+const statusStyles = {
+  planned: 'bg-blue-100 text-blue-800',
+  completed: 'bg-green-100 text-green-800',
+  skipped: 'bg-gray-100 text-gray-600',
+} as const
+
+const statusLabels = {
+  planned: 'Planned',
+  completed: 'Completed',
+  skipped: 'Skipped',
+} as const
+
+const genreLabels = {
+  jazz: 'Jazz',
+  blues: 'Blues',
+  rock_metal: 'Rock/Metal',
+} as const
 
 function SessionDetailPage() {
   const { sessionId } = Route.useParams()
@@ -91,11 +111,13 @@ function SessionDetailPage() {
             defaultValues={{
               due_date: session.due_date,
               description: session.description,
-              notes: session.notes,
+              status: session.status,
+              duration_minutes: session.duration_minutes,
+              energy_level: session.energy_level,
             }}
             onSubmit={(data) => {
               updateSession.mutate(
-                { id: sessionId, input: data },
+                { id: sessionId, input: data as UpdateSessionInput },
                 {
                   onSuccess: () => {
                     setIsEditing(false)
@@ -104,6 +126,7 @@ function SessionDetailPage() {
               )
             }}
             isSubmitting={updateSession.isPending}
+            isEdit
           />
           {updateSession.isError && (
             <div className="rounded-lg border border-destructive bg-destructive/10 p-4">
@@ -116,25 +139,33 @@ function SessionDetailPage() {
       ) : (
         <>
           <div className="rounded-lg border border-border p-6">
-            <h2 className="text-2xl font-semibold">{session.description}</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Due: {formatDate(session.due_date)}
-            </p>
-            {session.notes && (
-              <div className="mt-4">
-                <h3 className="text-sm font-medium text-muted-foreground">
-                  Notes
-                </h3>
-                <p className="mt-1 whitespace-pre-wrap text-foreground">
-                  {session.notes}
-                </p>
-              </div>
-            )}
+            <div className="flex items-start justify-between gap-4">
+              <h2 className="text-2xl font-semibold">{session.description}</h2>
+              <span
+                className={`inline-flex shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${statusStyles[session.status]}`}
+              >
+                {statusLabels[session.status]}
+              </span>
+            </div>
+
+            <div className="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
+              <span>Due: {formatDate(session.due_date)}</span>
+              <span>Genre: {genreLabels[session.genre]}</span>
+              {session.duration_minutes && (
+                <span>{session.duration_minutes} min</span>
+              )}
+              {session.energy_level && (
+                <span>Energy: {session.energy_level}/5</span>
+              )}
+            </div>
+
             <div className="mt-6 border-t border-border pt-4 text-xs text-muted-foreground">
               <p>Created: {formatDateTime(session.created_at)}</p>
               <p>Updated: {formatDateTime(session.updated_at)}</p>
             </div>
           </div>
+
+          <SessionNotes sessionId={session.id} notes={session.notes} />
 
           <div className="flex items-center gap-3">
             <Button onClick={() => setIsEditing(true)}>Edit</Button>

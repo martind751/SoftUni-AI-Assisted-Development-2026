@@ -1,14 +1,19 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useSessions } from '../../features/sessions/hooks/useSessions'
 import { SessionCard } from '../../features/sessions/components/SessionCard'
+import { GenreSwitcher } from '../../components/GenreSwitcher'
 import { Button } from '../../components/ui/button'
+import { useGenre } from '../../contexts/GenreContext'
 
 export const Route = createFileRoute('/sessions/')({
   component: SessionsPage,
 })
 
 function SessionsPage() {
-  const { data: sessions, isLoading, isError, error } = useSessions()
+  const { activeGenre } = useGenre()
+  const { data: sessions, isLoading, isError, error } = useSessions({
+    genre: activeGenre,
+  })
 
   return (
     <div className="space-y-6">
@@ -18,6 +23,8 @@ function SessionsPage() {
           <Button>New Session</Button>
         </Link>
       </div>
+
+      <GenreSwitcher />
 
       {isLoading && (
         <div className="animate-pulse rounded-lg bg-muted p-4">

@@ -41,6 +41,8 @@ func New(db *bun.DB) *gin.Engine {
 			sessionRoutes.POST("", sessionsHandler.Create)
 			sessionRoutes.PUT("/:id", sessionsHandler.Update)
 			sessionRoutes.DELETE("/:id", sessionsHandler.Delete)
+			sessionRoutes.POST("/:id/notes", sessionsHandler.CreateNote)
+			sessionRoutes.DELETE("/:id/notes/:noteId", sessionsHandler.DeleteNote)
 		}
 	}
 
