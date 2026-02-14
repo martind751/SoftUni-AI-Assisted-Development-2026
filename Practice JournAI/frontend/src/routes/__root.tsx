@@ -32,9 +32,12 @@ function RootComponent() {
                 </Link>
                 <Link
                   to="/songs"
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  className="flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Songs
+                  <span className="rounded-full bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+                    Beta
+                  </span>
                 </Link>
               </div>
               <div className="flex items-center gap-3">

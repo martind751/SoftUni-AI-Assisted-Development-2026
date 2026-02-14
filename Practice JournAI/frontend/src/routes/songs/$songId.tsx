@@ -17,6 +17,12 @@ function formatDateTime(dateString: string): string {
   return new Date(dateString).toLocaleString()
 }
 
+function formatDuration(seconds: number): string {
+  const m = Math.floor(seconds / 60)
+  const s = seconds % 60
+  return `${m}:${s.toString().padStart(2, '0')}`
+}
+
 const genreLabels = {
   jazz: 'Jazz',
   blues: 'Blues',
@@ -89,6 +95,10 @@ function SongDetailPage() {
               title: song.title,
               artist: song.artist,
               notes: song.notes,
+              duration_seconds: song.duration_seconds,
+              album: song.album,
+              release_year: song.release_year,
+              musicbrainz_artist_id: song.musicbrainz_artist_id,
             }}
             onSubmit={(data) => {
               updateSong.mutate(
@@ -119,6 +129,11 @@ function SongDetailPage() {
 
             <div className="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
               <span>Genre: {genreLabels[song.genre]}</span>
+              {song.album && <span>Album: {song.album}</span>}
+              {song.release_year && <span>Year: {song.release_year}</span>}
+              {song.duration_seconds && (
+                <span>Duration: {formatDuration(song.duration_seconds)}</span>
+              )}
             </div>
 
             {song.notes && (

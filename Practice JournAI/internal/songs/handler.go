@@ -86,15 +86,30 @@ func (h *Handler) Delete(c *gin.Context) {
 	c.Writer.WriteHeaderNow()
 }
 
-func (h *Handler) SearchMusicBrainz(c *gin.Context) {
+func (h *Handler) SearchMusicBrainzArtists(c *gin.Context) {
 	query := c.Query("q")
 	if query == "" {
 		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "query parameter 'q' is required"})
 		return
 	}
-	results, err := h.service.SearchMusicBrainz(c.Request.Context(), query)
+	results, err := h.service.SearchMusicBrainzArtists(c.Request.Context(), query)
 	if err != nil {
-		c.JSON(http.StatusBadGateway, ErrorResponse{Error: "failed to search MusicBrainz"})
+		c.JSON(http.StatusBadGateway, ErrorResponse{Error: "failed to search MusicBrainz artists"})
+		return
+	}
+	c.JSON(http.StatusOK, results)
+}
+
+func (h *Handler) SearchMusicBrainzRecordings(c *gin.Context) {
+	artistID := c.Query("arid")
+	if artistID == "" {
+		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "query parameter 'arid' is required"})
+		return
+	}
+	titleQuery := c.Query("q")
+	results, err := h.service.SearchMusicBrainzRecordings(c.Request.Context(), artistID, titleQuery)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, ErrorResponse{Error: "failed to search MusicBrainz recordings"})
 		return
 	}
 	c.JSON(http.StatusOK, results)

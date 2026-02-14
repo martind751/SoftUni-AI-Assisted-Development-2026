@@ -53,7 +53,8 @@ func New(db *bun.DB) *gin.Engine {
 		songRoutes := v1.Group("/songs")
 		{
 			songRoutes.GET("", songsHandler.List)
-			songRoutes.GET("/search/musicbrainz", songsHandler.SearchMusicBrainz)
+			songRoutes.GET("/search/musicbrainz/artists", songsHandler.SearchMusicBrainzArtists)
+			songRoutes.GET("/search/musicbrainz/recordings", songsHandler.SearchMusicBrainzRecordings)
 			songRoutes.GET("/:id", songsHandler.GetByID)
 			songRoutes.POST("", songsHandler.Create)
 			songRoutes.PUT("/:id", songsHandler.Update)

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import {
   useSongs,
@@ -19,10 +19,48 @@ const sortOptions: { value: SongOrderByField; label: string }[] = [
   { value: 'created_at', label: 'Created' },
 ]
 
+const BETA_DISMISSED_KEY = 'songs-beta-dismissed'
+
+function BetaDisclaimer({ onDismiss }: { onDismiss: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="mx-4 max-w-md rounded-xl border border-amber-500/30 bg-card p-6 shadow-2xl">
+        <div className="mb-4 flex items-center gap-2">
+          <span className="rounded-full bg-amber-500/20 px-2.5 py-1 text-sm font-bold text-amber-600 dark:text-amber-400">
+            Beta
+          </span>
+          <h3 className="text-lg font-semibold text-foreground">Songs Feature</h3>
+        </div>
+        <p className="mb-3 text-sm leading-relaxed text-muted-foreground">
+          The Songs feature is currently in <strong className="text-foreground">beta</strong>. Song search is powered by MusicBrainz, an open-source music database.
+        </p>
+        <p className="mb-5 text-sm leading-relaxed text-muted-foreground">
+          Search results may be incomplete, inaccurate, or missing popular tracks. You can always fill in song details manually.
+        </p>
+        <Button onClick={onDismiss} className="w-full">
+          Got it, continue
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 function SongsPage() {
   const { activeGenre } = useGenre()
   const [orderBy, setOrderBy] = useState<SongOrderByField>('title')
   const [orderDir, setOrderDir] = useState<OrderDir>('asc')
+  const [showBetaDialog, setShowBetaDialog] = useState(false)
+
+  useEffect(() => {
+    if (!sessionStorage.getItem(BETA_DISMISSED_KEY)) {
+      setShowBetaDialog(true)
+    }
+  }, [])
+
+  function handleDismissBeta() {
+    sessionStorage.setItem(BETA_DISMISSED_KEY, '1')
+    setShowBetaDialog(false)
+  }
 
   const { data: songs, isLoading, isError, error } = useSongs({
     genre: activeGenre === 'all' ? undefined : activeGenre,
@@ -32,10 +70,12 @@ function SongsPage() {
 
   return (
     <div className="space-y-6">
+      {showBetaDialog && <BetaDisclaimer onDismiss={handleDismissBeta} />}
+
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="text-2xl font-semibold">Practice Songs</h2>
-          <span className="rounded-full bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
+          <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
             Beta
           </span>
         </div>

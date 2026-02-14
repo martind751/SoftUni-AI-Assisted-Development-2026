@@ -2,13 +2,15 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   songSchema,
   songListSchema,
-  musicBrainzResultListSchema,
+  musicBrainzArtistResultListSchema,
+  musicBrainzRecordingResultListSchema,
 } from '../schemas/song.schema'
 import type {
   Song,
   CreateSongInput,
   UpdateSongInput,
-  MusicBrainzResult,
+  MusicBrainzArtistResult,
+  MusicBrainzRecordingResult,
 } from '../types/song.types'
 import type { Genre } from '../../sessions/types/session.types'
 
@@ -26,8 +28,10 @@ export const songKeys = {
   list: (filters?: SongFilters) =>
     [...songKeys.all, 'list', filters] as const,
   detail: (id: string) => [...songKeys.all, 'detail', id] as const,
-  musicBrainzSearch: (query: string) =>
-    [...songKeys.all, 'musicbrainz', query] as const,
+  musicBrainzArtists: (query: string) =>
+    [...songKeys.all, 'musicbrainz-artists', query] as const,
+  musicBrainzRecordings: (artistId: string) =>
+    [...songKeys.all, 'musicbrainz-recordings', artistId] as const,
 }
 
 async function fetchSongs(filters?: SongFilters): Promise<Song[]> {
@@ -93,15 +97,28 @@ async function deleteSong(id: string): Promise<void> {
   }
 }
 
-async function searchMusicBrainz(query: string): Promise<MusicBrainzResult[]> {
+async function searchMusicBrainzArtists(query: string): Promise<MusicBrainzArtistResult[]> {
   const response = await fetch(
-    `/api/v1/songs/search/musicbrainz?q=${encodeURIComponent(query)}`,
+    `/api/v1/songs/search/musicbrainz/artists?q=${encodeURIComponent(query)}`,
   )
   if (!response.ok) {
-    throw new Error(`Failed to search MusicBrainz: ${response.statusText}`)
+    throw new Error(`Failed to search artists: ${response.statusText}`)
   }
   const data: unknown = await response.json()
-  return musicBrainzResultListSchema.parse(data)
+  return musicBrainzArtistResultListSchema.parse(data)
+}
+
+async function searchMusicBrainzRecordings(artistId: string, query: string): Promise<MusicBrainzRecordingResult[]> {
+  const params = new URLSearchParams({ arid: artistId })
+  if (query) params.append('q', query)
+  const response = await fetch(
+    `/api/v1/songs/search/musicbrainz/recordings?${params.toString()}`,
+  )
+  if (!response.ok) {
+    throw new Error(`Failed to search recordings: ${response.statusText}`)
+  }
+  const data: unknown = await response.json()
+  return musicBrainzRecordingResultListSchema.parse(data)
 }
 
 export function useSongs(filters?: SongFilters) {
@@ -151,11 +168,20 @@ export function useDeleteSong() {
   })
 }
 
-export function useMusicBrainzSearch(query: string) {
+export function useMusicBrainzArtistSearch(query: string) {
   return useQuery({
-    queryKey: songKeys.musicBrainzSearch(query),
-    queryFn: () => searchMusicBrainz(query),
+    queryKey: songKeys.musicBrainzArtists(query),
+    queryFn: () => searchMusicBrainzArtists(query),
     enabled: query.length >= 2,
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
+export function useMusicBrainzRecordings(artistId: string, query: string = '') {
+  return useQuery({
+    queryKey: [...songKeys.musicBrainzRecordings(artistId), query],
+    queryFn: () => searchMusicBrainzRecordings(artistId, query),
+    enabled: !!artistId,
     staleTime: 5 * 60 * 1000,
   })
 }

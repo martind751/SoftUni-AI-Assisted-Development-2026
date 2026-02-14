@@ -39,9 +39,11 @@ background, foreground, primary, primary-foreground, muted, muted-foreground, de
   - Routes: list (/sessions/), new (/sessions/new), detail+edit (/sessions/$sessionId)
   - List route filters by activeGenre via query params
 
-- **songs**: full CRUD with MusicBrainz search integration
-  - Hooks: useSongs(filters?), useSong, useCreateSong, useUpdateSong, useDeleteSong, useMusicBrainzSearch
-  - Components: SongCard, SongForm (create+edit with MusicBrainz), MusicBrainzSearch (debounced)
+- **songs**: full CRUD with two-step MusicBrainz search (artist -> recordings)
+  - Song model includes: title, artist, genre, notes, duration_seconds, album, release_year, musicbrainz_artist_id
+  - Hooks: useSongs(filters?), useSong, useCreateSong, useUpdateSong, useDeleteSong, useMusicBrainzArtistSearch, useMusicBrainzRecordings
+  - Components: SongCard (shows album/year/duration), SongForm (create+edit with MusicBrainz), MusicBrainzSearch (two-step: artist search -> recording list)
+  - MusicBrainzSearch exports `MusicBrainzSelection` interface used by SongForm
   - Routes: list (/songs/), new (/songs/new), detail+edit (/songs/$songId)
   - List route filters by activeGenre, sorts by title/artist/created_at
   - genreSchema is shared -- imported from sessions schema into songs schema
@@ -54,4 +56,5 @@ background, foreground, primary, primary-foreground, muted, muted-foreground, de
 ## API Endpoints (Songs)
 - GET /api/v1/songs?genre=&order_by=&order_dir= -> Song[]
 - GET/POST/PUT/DELETE /api/v1/songs/:id
-- GET /api/v1/songs/search/musicbrainz?q= -> MusicBrainzResult[]
+- GET /api/v1/songs/search/musicbrainz/artists?q= -> MusicBrainzArtistResult[]
+- GET /api/v1/songs/search/musicbrainz/recordings?arid= -> MusicBrainzRecordingResult[]

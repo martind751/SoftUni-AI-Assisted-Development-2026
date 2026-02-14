@@ -3,7 +3,8 @@ import { useNavigate } from '@tanstack/react-router'
 import { Button } from '../../../components/ui/button'
 import { useGenre } from '../../../contexts/GenreContext'
 import { MusicBrainzSearch } from './MusicBrainzSearch'
-import type { CreateSongInput, UpdateSongInput, MusicBrainzResult } from '../types/song.types'
+import type { MusicBrainzSelection } from './MusicBrainzSearch'
+import type { CreateSongInput, UpdateSongInput } from '../types/song.types'
 import type { Genre } from '../../sessions/types/session.types'
 
 const genreLabels = {
@@ -23,6 +24,10 @@ interface SongFormProps {
     title: string
     artist: string
     notes: string | null
+    duration_seconds: number | null
+    album: string | null
+    release_year: number | null
+    musicbrainz_artist_id: string | null
   }
   onSubmit: (data: CreateSongInput | UpdateSongInput) => void
   isSubmitting: boolean
@@ -47,11 +52,19 @@ export function SongForm({
   const [title, setTitle] = useState(defaultValues?.title ?? '')
   const [artist, setArtist] = useState(defaultValues?.artist ?? '')
   const [notes, setNotes] = useState(defaultValues?.notes ?? '')
+  const [durationSeconds, setDurationSeconds] = useState<number | null>(defaultValues?.duration_seconds ?? null)
+  const [album, setAlbum] = useState(defaultValues?.album ?? '')
+  const [releaseYear, setReleaseYear] = useState<number | null>(defaultValues?.release_year ?? null)
+  const [musicbrainzArtistId, setMusicbrainzArtistId] = useState(defaultValues?.musicbrainz_artist_id ?? '')
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  function handleMusicBrainzSelect(result: MusicBrainzResult) {
+  function handleMusicBrainzSelect(result: MusicBrainzSelection) {
     setTitle(result.title)
     setArtist(result.artist)
+    setDurationSeconds(result.duration_seconds)
+    setAlbum(result.album ?? '')
+    setReleaseYear(result.release_year)
+    setMusicbrainzArtistId(result.musicbrainz_artist_id)
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -70,6 +83,10 @@ export function SongForm({
       artist: artist.trim(),
       genre,
       notes: notes.trim() || null,
+      duration_seconds: durationSeconds,
+      album: album.trim() || null,
+      release_year: releaseYear,
+      musicbrainz_artist_id: musicbrainzArtistId.trim() || null,
     })
   }
 
@@ -136,6 +153,28 @@ export function SongForm({
         {errors.artist && (
           <p className="mt-1 text-sm text-destructive">{errors.artist}</p>
         )}
+      </div>
+
+      <div>
+        <label htmlFor="album" className="mb-1 block text-sm font-medium text-foreground">Album</label>
+        <input id="album" type="text" value={album} onChange={(e) => setAlbum(e.target.value)}
+          placeholder="Album name (optional)"
+          className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="releaseYear" className="mb-1 block text-sm font-medium text-foreground">Release Year</label>
+          <input id="releaseYear" type="number" value={releaseYear ?? ''} onChange={(e) => setReleaseYear(e.target.value ? parseInt(e.target.value, 10) : null)}
+            placeholder="e.g. 1959"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
+        </div>
+        <div>
+          <label htmlFor="duration" className="mb-1 block text-sm font-medium text-foreground">Duration (seconds)</label>
+          <input id="duration" type="number" value={durationSeconds ?? ''} onChange={(e) => setDurationSeconds(e.target.value ? parseInt(e.target.value, 10) : null)}
+            placeholder="e.g. 240"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
+        </div>
       </div>
 
       <div>

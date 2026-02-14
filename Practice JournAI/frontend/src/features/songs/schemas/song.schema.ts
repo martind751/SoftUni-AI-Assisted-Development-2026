@@ -9,6 +9,10 @@ export const songSchema = z.object({
   artist: z.string(),
   genre: genreSchema,
   notes: z.string().nullable(),
+  duration_seconds: z.number().nullable(),
+  album: z.string().nullable(),
+  release_year: z.number().nullable(),
+  musicbrainz_artist_id: z.string().nullable(),
 })
 
 export const songListSchema = z.array(songSchema)
@@ -18,6 +22,10 @@ export const createSongInputSchema = z.object({
   artist: z.string().min(1, 'Artist is required'),
   genre: genreSchema,
   notes: z.string().nullable().optional(),
+  duration_seconds: z.number().nullable().optional(),
+  album: z.string().nullable().optional(),
+  release_year: z.number().nullable().optional(),
+  musicbrainz_artist_id: z.string().nullable().optional(),
 })
 
 export const updateSongInputSchema = z.object({
@@ -25,11 +33,25 @@ export const updateSongInputSchema = z.object({
   artist: z.string().min(1, 'Artist is required'),
   genre: genreSchema,
   notes: z.string().nullable().optional(),
+  duration_seconds: z.number().nullable().optional(),
+  album: z.string().nullable().optional(),
+  release_year: z.number().nullable().optional(),
+  musicbrainz_artist_id: z.string().nullable().optional(),
 })
 
-export const musicBrainzResultSchema = z.object({
+export const musicBrainzArtistResultSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  country: z.string(),
+  disambiguation: z.string(),
+})
+export const musicBrainzArtistResultListSchema = z.array(musicBrainzArtistResultSchema)
+
+export const musicBrainzRecordingResultSchema = z.object({
   title: z.string(),
   artist: z.string(),
+  duration_seconds: z.number().nullable(),
+  album: z.string().nullable(),
+  release_year: z.number().nullable(),
 })
-
-export const musicBrainzResultListSchema = z.array(musicBrainzResultSchema)
+export const musicBrainzRecordingResultListSchema = z.array(musicBrainzRecordingResultSchema)
