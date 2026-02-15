@@ -1,2 +1,0 @@
-Create CRUD for practice sessions in Practice JournAI.
-A practice session is a record of what the user plans to work on. It has a created date, a due date (when they plan to do the session), a description (what the session is about — e.g., "Work on Autumn Leaves comping at 140 BPM" or "Pentatonic runs across all positions"), and additional notes (anything extra — how it went, what to focus on next time, what felt hard).

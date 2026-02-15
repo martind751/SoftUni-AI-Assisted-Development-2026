@@ -1,4 +1,0 @@
-Build the genre layout system for Practice JournAI. The app has three switchable modes Jazz, Blues, and Rock/Metal - and each one should feel like a completely different world when you switch to it.
-Jazz - warm, smooth, classy. Think amber/orange tones, dark backgrounds like a late-night club. Use a saxophone as the genre symbol. The whole vibe should feel like sitting in a dimly lit jazz bar with a whiskey.
-Blues - deep, soulful, moody. Think indigo/deep blue palette with muted golds. Use a guitar as the genre symbol. Rounded, soft UI elements.
-Rock/Metal - aggressive, bold, high contrast. Think black and crimson red with sharp edges. Use a lightning bolt or horns as the genre symbol. It should feel loud just looking at it.

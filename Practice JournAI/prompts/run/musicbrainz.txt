@@ -1,1 +1,0 @@
-Can we try to integrate the MusicBrainz API and create a functionality called 'Practice Song' — based on sessions, but with the idea that we're practicing actual songs rather than concepts? Those songs should be sorted and available only within the three or four styles we currently have.
