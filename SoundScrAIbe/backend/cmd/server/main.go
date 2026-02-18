@@ -17,7 +17,7 @@ func main() {
 	}
 	defer db.Close()
 
-	srv := server.New(db)
+	srv := server.New(db, cfg)
 	log.Printf("SoundScrAIbe server starting on :%s", cfg.Port)
 	if err := srv.Run(":" + cfg.Port); err != nil {
 		log.Fatalf("server failed: %v", err)

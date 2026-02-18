@@ -1,4 +1,4 @@
-.PHONY: dev-backend dev-frontend build test docker-up docker-down migrate lint
+.PHONY: dev-backend dev-frontend build test docker-up docker-down migrate-up migrate-down migrate-create lint
 
 # Run Go backend with hot reload (requires: go install github.com/air-verse/air@latest)
 dev-backend:
@@ -25,9 +25,15 @@ docker-up:
 docker-down:
 	docker compose down
 
-# Placeholder for golang-migrate
-migrate:
-	@echo "Migration tooling not yet configured."
+# Database migrations (requires: go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest)
+migrate-up:
+	migrate -path backend/migrations -database "$(DATABASE_URL)" up
+
+migrate-down:
+	migrate -path backend/migrations -database "$(DATABASE_URL)" down 1
+
+migrate-create:
+	migrate create -ext sql -dir backend/migrations -seq $(name)
 
 # Lint
 lint:

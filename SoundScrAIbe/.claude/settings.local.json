@@ -19,7 +19,13 @@
       "Bash(powershell -Command:*)",
       "Bash(~/.bashrc)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git config:*)",
+      "Bash(go install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(curl:*)",
+      "Bash(export DATABASE_URL=\"postgres://soundscraibe:soundscraibe@localhost:5433/soundscraibe?sslmode=disable\")",
+      "Bash(migrate:*)"
     ]
   }
 }
