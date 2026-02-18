@@ -3,9 +3,14 @@ package database
 import (
 	"context"
 	"database/sql"
+	"embed"
+	"errors"
 	"fmt"
 	"time"
 
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/pgx/v5"
+	"github.com/golang-migrate/migrate/v4/source/iofs"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -27,4 +32,25 @@ func Connect(databaseURL string) (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+// RunMigrations applies all pending database migrations from the embedded filesystem.
+// It returns nil if migrations were applied successfully or if no new migrations exist.
+func RunMigrations(migrationsFS embed.FS, databaseURL string) error {
+	source, err := iofs.New(migrationsFS, ".")
+	if err != nil {
+		return fmt.Errorf("creating migration source: %w", err)
+	}
+
+	m, err := migrate.NewWithSourceInstance("iofs", source, databaseURL)
+	if err != nil {
+		return fmt.Errorf("creating migrate instance: %w", err)
+	}
+	defer m.Close()
+
+	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
+		return fmt.Errorf("running migrations: %w", err)
+	}
+
+	return nil
 }

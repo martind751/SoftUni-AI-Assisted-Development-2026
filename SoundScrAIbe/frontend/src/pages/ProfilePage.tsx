@@ -36,7 +36,24 @@ export default function ProfilePage() {
           />
         )}
         <h1 className="text-3xl font-bold mb-2">{user.display_name}</h1>
-        <p className="text-gray-400 mb-6">@{user.spotify_id}</p>
+        <a
+          href={`https://open.spotify.com/user/${user.spotify_id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-green-400 hover:text-green-300 hover:underline transition-colors inline-block mb-6"
+        >
+          Open in Spotify
+        </a>
+        <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm text-left mb-6">
+          <span className="text-gray-400">Email</span>
+          <span>{user.email}</span>
+          <span className="text-gray-400">Country</span>
+          <span>{user.country.toUpperCase()}</span>
+          <span className="text-gray-400">Subscription</span>
+          <span>{user.product.charAt(0).toUpperCase() + user.product.slice(1)}</span>
+          <span className="text-gray-400">Followers</span>
+          <span>{user.follower_count.toLocaleString()}</span>
+        </div>
         <button
           onClick={handleLogout}
           className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-full transition-colors"

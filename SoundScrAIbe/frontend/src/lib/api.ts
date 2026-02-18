@@ -22,6 +22,10 @@ export interface UserProfile {
   spotify_id: string
   display_name: string
   avatar_url: string
+  email: string
+  country: string
+  product: string
+  follower_count: number
 }
 
 export async function getMe(): Promise<UserProfile | null> {

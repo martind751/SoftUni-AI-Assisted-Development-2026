@@ -8,32 +8,40 @@ import (
 )
 
 type User struct {
-	ID           int64
-	SpotifyID    string
-	DisplayName  string
-	AvatarURL    string
-	AccessToken  string
-	RefreshToken string
-	TokenExpiry  time.Time
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	ID            int64
+	SpotifyID     string
+	DisplayName   string
+	AvatarURL     string
+	Email         string
+	Country       string
+	Product       string
+	FollowerCount int
+	AccessToken   string
+	RefreshToken  string
+	TokenExpiry   time.Time
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 }
 
 // Upsert creates or updates a user by spotify_id. Returns the user's ID.
 func Upsert(ctx context.Context, db *sql.DB, u *User) (int64, error) {
 	var id int64
 	err := db.QueryRowContext(ctx, `
-		INSERT INTO users (spotify_id, display_name, avatar_url, access_token, refresh_token, token_expiry)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		INSERT INTO users (spotify_id, display_name, avatar_url, email, country, product, follower_count, access_token, refresh_token, token_expiry)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 		ON CONFLICT (spotify_id) DO UPDATE SET
-			display_name  = EXCLUDED.display_name,
-			avatar_url    = EXCLUDED.avatar_url,
-			access_token  = EXCLUDED.access_token,
-			refresh_token = EXCLUDED.refresh_token,
-			token_expiry  = EXCLUDED.token_expiry,
-			updated_at    = now()
+			display_name   = EXCLUDED.display_name,
+			avatar_url     = EXCLUDED.avatar_url,
+			email          = EXCLUDED.email,
+			country        = EXCLUDED.country,
+			product        = EXCLUDED.product,
+			follower_count = EXCLUDED.follower_count,
+			access_token   = EXCLUDED.access_token,
+			refresh_token  = EXCLUDED.refresh_token,
+			token_expiry   = EXCLUDED.token_expiry,
+			updated_at     = now()
 		RETURNING id`,
-		u.SpotifyID, u.DisplayName, u.AvatarURL, u.AccessToken, u.RefreshToken, u.TokenExpiry,
+		u.SpotifyID, u.DisplayName, u.AvatarURL, u.Email, u.Country, u.Product, u.FollowerCount, u.AccessToken, u.RefreshToken, u.TokenExpiry,
 	).Scan(&id)
 	if err != nil {
 		return 0, fmt.Errorf("upserting user: %w", err)
@@ -45,9 +53,9 @@ func Upsert(ctx context.Context, db *sql.DB, u *User) (int64, error) {
 func GetByID(ctx context.Context, db *sql.DB, id int64) (*User, error) {
 	u := &User{}
 	err := db.QueryRowContext(ctx, `
-		SELECT id, spotify_id, display_name, avatar_url, access_token, refresh_token, token_expiry, created_at, updated_at
+		SELECT id, spotify_id, display_name, avatar_url, email, country, product, follower_count, access_token, refresh_token, token_expiry, created_at, updated_at
 		FROM users WHERE id = $1`, id,
-	).Scan(&u.ID, &u.SpotifyID, &u.DisplayName, &u.AvatarURL, &u.AccessToken, &u.RefreshToken, &u.TokenExpiry, &u.CreatedAt, &u.UpdatedAt)
+	).Scan(&u.ID, &u.SpotifyID, &u.DisplayName, &u.AvatarURL, &u.Email, &u.Country, &u.Product, &u.FollowerCount, &u.AccessToken, &u.RefreshToken, &u.TokenExpiry, &u.CreatedAt, &u.UpdatedAt)
 	if err != nil {
 		return nil, fmt.Errorf("getting user by id: %w", err)
 	}

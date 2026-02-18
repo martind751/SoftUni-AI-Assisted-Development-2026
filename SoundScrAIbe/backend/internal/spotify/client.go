@@ -29,11 +29,18 @@ type TokenResponse struct {
 	TokenType    string `json:"token_type"`
 }
 
+type Followers struct {
+	Total int `json:"total"`
+}
+
 type Profile struct {
-	ID          string  `json:"id"`
-	DisplayName string  `json:"display_name"`
-	Email       string  `json:"email"`
-	Images      []Image `json:"images"`
+	ID          string    `json:"id"`
+	DisplayName string    `json:"display_name"`
+	Email       string    `json:"email"`
+	Country     string    `json:"country"`
+	Product     string    `json:"product"`
+	Followers   Followers `json:"followers"`
+	Images      []Image   `json:"images"`
 }
 
 type Image struct {

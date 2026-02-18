@@ -6,6 +6,7 @@ import (
 	"soundscraibe/internal/config"
 	"soundscraibe/internal/database"
 	"soundscraibe/internal/server"
+	"soundscraibe/migrations"
 )
 
 func main() {
@@ -16,6 +17,11 @@ func main() {
 		log.Fatalf("failed to connect to database: %v", err)
 	}
 	defer db.Close()
+
+	if err := database.RunMigrations(migrations.FS, cfg.DatabaseURL); err != nil {
+		log.Fatalf("failed to run database migrations: %v", err)
+	}
+	log.Println("database migrations applied successfully")
 
 	srv := server.New(db, cfg)
 	log.Printf("SoundScrAIbe server starting on :%s", cfg.Port)

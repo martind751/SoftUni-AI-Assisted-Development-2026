@@ -53,12 +53,16 @@ func (h *handlers) SpotifyCallback(c *gin.Context) {
 
 	// Upsert user
 	u := &user.User{
-		SpotifyID:    profile.ID,
-		DisplayName:  profile.DisplayName,
-		AvatarURL:    profile.AvatarURL(),
-		AccessToken:  tokenResp.AccessToken,
-		RefreshToken: tokenResp.RefreshToken,
-		TokenExpiry:  time.Now().Add(time.Duration(tokenResp.ExpiresIn) * time.Second),
+		SpotifyID:     profile.ID,
+		DisplayName:   profile.DisplayName,
+		AvatarURL:     profile.AvatarURL(),
+		Email:         profile.Email,
+		Country:       profile.Country,
+		Product:       profile.Product,
+		FollowerCount: profile.Followers.Total,
+		AccessToken:   tokenResp.AccessToken,
+		RefreshToken:  tokenResp.RefreshToken,
+		TokenExpiry:   time.Now().Add(time.Duration(tokenResp.ExpiresIn) * time.Second),
 	}
 
 	userID, err := user.Upsert(c.Request.Context(), h.db, u)

@@ -19,8 +19,12 @@ func (h *handlers) Me(c *gin.Context) {
 	currentUser := u.(*user.User)
 
 	c.JSON(http.StatusOK, gin.H{
-		"spotify_id":   currentUser.SpotifyID,
-		"display_name": currentUser.DisplayName,
-		"avatar_url":   currentUser.AvatarURL,
+		"spotify_id":     currentUser.SpotifyID,
+		"display_name":   currentUser.DisplayName,
+		"avatar_url":     currentUser.AvatarURL,
+		"email":          currentUser.Email,
+		"country":        currentUser.Country,
+		"product":        currentUser.Product,
+		"follower_count": currentUser.FollowerCount,
 	})
 }
