@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:18
+    container_name: soundscraibe-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-soundscraibe}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-soundscraibe}
+      POSTGRES_DB: ${DB_NAME:-soundscraibe}
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U soundscraibe"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
