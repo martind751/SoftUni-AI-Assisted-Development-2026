@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"c:/Personal/Martin/IT/GitHub/AI-Assisted Development/SoundScrAIbe\" log --oneline -10)",
+      "Bash(go version:*)",
+      "Bash(node --version:*)",
+      "Bash(npm --version:*)",
+      "Bash(go mod init:*)",
+      "Bash(go get:*)",
+      "Bash(go mod tidy:*)",
+      "Bash(go build:*)",
+      "Bash(npm create:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(go vet:*)",
+      "Bash(winget install:*)",
+      "Bash(export PATH=\"$PATH:/c/Program Files \\(x86\\)/GnuWin32/bin\")",
+      "Bash(make:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(~/.bashrc)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}
