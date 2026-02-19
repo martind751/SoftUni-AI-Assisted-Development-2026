@@ -38,3 +38,37 @@ export async function getMe(): Promise<UserProfile | null> {
 export async function logout(): Promise<void> {
   await fetch('/api/auth/logout', { method: 'POST' })
 }
+
+export interface RecentTrack {
+  id: string
+  played_at: string
+  name: string
+  artists: string[]
+  album: string
+  album_cover: string
+  duration_ms: number
+}
+
+export async function getRecentlyPlayed(): Promise<RecentTrack[]> {
+  const res = await fetch('/api/recently-played')
+  if (!res.ok) throw new Error('Failed to fetch recently played')
+  const data = await res.json()
+  return data.items
+}
+
+export async function checkLikedSongs(ids: string[]): Promise<Record<string, boolean>> {
+  const res = await fetch(`/api/liked-songs/check?ids=${ids.join(',')}`)
+  if (!res.ok) throw new Error('Failed to check liked songs')
+  const data = await res.json()
+  return data.results
+}
+
+export async function saveLikedSong(trackId: string): Promise<void> {
+  const res = await fetch(`/api/liked-songs/${trackId}`, { method: 'PUT' })
+  if (!res.ok) throw new Error('Failed to save track')
+}
+
+export async function removeLikedSong(trackId: string): Promise<void> {
+  const res = await fetch(`/api/liked-songs/${trackId}`, { method: 'DELETE' })
+  if (!res.ok) throw new Error('Failed to remove track')
+}

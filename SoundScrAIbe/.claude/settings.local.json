@@ -25,7 +25,12 @@
       "Bash(npx tsc:*)",
       "Bash(curl:*)",
       "Bash(export DATABASE_URL=\"postgres://soundscraibe:soundscraibe@localhost:5433/soundscraibe?sslmode=disable\")",
-      "Bash(migrate:*)"
+      "Bash(migrate:*)",
+      "Bash(PGPASSWORD=soundscraibe psql:*)",
+      "Bash(docker ps:*)",
+      "Bash(docker exec:*)",
+      "Bash(git push:*)",
+      "WebFetch(domain:developer.spotify.com)"
     ]
   }
 }

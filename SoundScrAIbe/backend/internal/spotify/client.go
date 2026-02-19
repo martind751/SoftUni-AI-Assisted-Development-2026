@@ -12,8 +12,11 @@ import (
 )
 
 const (
-	tokenURL   = "https://accounts.spotify.com/api/token"
-	profileURL = "https://api.spotify.com/v1/me"
+	tokenURL          = "https://accounts.spotify.com/api/token"
+	profileURL        = "https://api.spotify.com/v1/me"
+	recentlyPlayedURL  = "https://api.spotify.com/v1/me/player/recently-played"
+	libraryURL         = "https://api.spotify.com/v1/me/library"
+	libraryContainsURL = "https://api.spotify.com/v1/me/library/contains"
 )
 
 type Config struct {
@@ -174,4 +177,155 @@ func GetProfile(ctx context.Context, accessToken string) (*Profile, error) {
 	}
 
 	return &profile, nil
+}
+
+type RecentlyPlayedResponse struct {
+	Items []PlayHistoryItem `json:"items"`
+}
+
+type PlayHistoryItem struct {
+	Track    Track  `json:"track"`
+	PlayedAt string `json:"played_at"`
+}
+
+type Track struct {
+	ID         string   `json:"id"`
+	Name       string   `json:"name"`
+	DurationMs int      `json:"duration_ms"`
+	Artists    []Artist `json:"artists"`
+	Album      Album    `json:"album"`
+}
+
+type Artist struct {
+	Name string `json:"name"`
+}
+
+type Album struct {
+	Name   string  `json:"name"`
+	Images []Image `json:"images"`
+}
+
+// CheckSavedTracks checks if the given track IDs are saved in the user's library.
+func CheckSavedTracks(ctx context.Context, accessToken string, ids []string) ([]bool, error) {
+	uris := make([]string, len(ids))
+	for i, id := range ids {
+		uris[i] = "spotify:track:" + id
+	}
+	u := libraryContainsURL + "?uris=" + strings.Join(uris, ",")
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	if err != nil {
+		return nil, fmt.Errorf("creating check-saved request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("checking saved tracks: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading check-saved response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("spotify check-saved error (status %d): %s", resp.StatusCode, string(body))
+	}
+
+	var result []bool
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("parsing check-saved response: %w", err)
+	}
+
+	return result, nil
+}
+
+// SaveTracks saves the given track IDs to the user's library using the new PUT /me/library endpoint.
+func SaveTracks(ctx context.Context, accessToken string, ids []string) error {
+	uris := make([]string, len(ids))
+	for i, id := range ids {
+		uris[i] = "spotify:track:" + id
+	}
+	u := libraryURL + "?uris=" + strings.Join(uris, ",")
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, u, nil)
+	if err != nil {
+		return fmt.Errorf("creating save-tracks request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("saving tracks: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("spotify save-tracks error (status %d): %s", resp.StatusCode, string(body))
+	}
+
+	return nil
+}
+
+// RemoveTracks removes the given track IDs from the user's library using the new DELETE /me/library endpoint.
+func RemoveTracks(ctx context.Context, accessToken string, ids []string) error {
+	uris := make([]string, len(ids))
+	for i, id := range ids {
+		uris[i] = "spotify:track:" + id
+	}
+	u := libraryURL + "?uris=" + strings.Join(uris, ",")
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u, nil)
+	if err != nil {
+		return fmt.Errorf("creating remove-tracks request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("removing tracks: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("spotify remove-tracks error (status %d): %s", resp.StatusCode, string(body))
+	}
+
+	return nil
+}
+
+// GetRecentlyPlayed fetches the user's recently played tracks (up to 50).
+func GetRecentlyPlayed(ctx context.Context, accessToken string) (*RecentlyPlayedResponse, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, recentlyPlayedURL+"?limit=50", nil)
+	if err != nil {
+		return nil, fmt.Errorf("creating recently-played request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("fetching recently played: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading recently-played response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("spotify recently-played error (status %d): %s", resp.StatusCode, string(body))
+	}
+
+	var result RecentlyPlayedResponse
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("parsing recently-played response: %w", err)
+	}
+
+	return &result, nil
 }

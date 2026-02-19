@@ -6,6 +6,7 @@ import (
 	"embed"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/golang-migrate/migrate/v4"
@@ -42,7 +43,15 @@ func RunMigrations(migrationsFS embed.FS, databaseURL string) error {
 		return fmt.Errorf("creating migration source: %w", err)
 	}
 
-	m, err := migrate.NewWithSourceInstance("iofs", source, databaseURL)
+	// The pgx/v5 migrate driver registers as "pgx5", not "postgres".
+	migrateURL := databaseURL
+	if strings.HasPrefix(migrateURL, "postgres://") {
+		migrateURL = "pgx5://" + strings.TrimPrefix(migrateURL, "postgres://")
+	} else if strings.HasPrefix(migrateURL, "postgresql://") {
+		migrateURL = "pgx5://" + strings.TrimPrefix(migrateURL, "postgresql://")
+	}
+
+	m, err := migrate.NewWithSourceInstance("iofs", source, migrateURL)
 	if err != nil {
 		return fmt.Errorf("creating migrate instance: %w", err)
 	}

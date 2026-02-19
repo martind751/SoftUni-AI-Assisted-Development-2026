@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 
@@ -54,6 +54,13 @@ export default function ProfilePage() {
           <span className="text-gray-400">Followers</span>
           <span>{user.follower_count.toLocaleString()}</span>
         </div>
+        <Link
+          to="/history"
+          className="text-green-400 hover:text-green-300 hover:underline transition-colors inline-block mb-6"
+        >
+          Listening History &rarr;
+        </Link>
+        <br />
         <button
           onClick={handleLogout}
           className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-full transition-colors"

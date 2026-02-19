@@ -43,6 +43,10 @@ func New(db *sql.DB, cfg *config.Config) *gin.Engine {
 		protected.Use(h.AuthRequired())
 		{
 			protected.GET("/me", h.Me)
+			protected.GET("/recently-played", h.RecentlyPlayed)
+			protected.GET("/liked-songs/check", h.CheckLikedSongs)
+			protected.PUT("/liked-songs/:trackId", h.SaveLikedSong)
+			protected.DELETE("/liked-songs/:trackId", h.RemoveLikedSong)
 		}
 	}
 
