@@ -19,6 +19,8 @@ const (
 	libraryContainsURL = "https://api.spotify.com/v1/me/library/contains"
 	topArtistsURL      = "https://api.spotify.com/v1/me/top/artists"
 	artistURL          = "https://api.spotify.com/v1/artists/"
+	trackURL           = "https://api.spotify.com/v1/tracks/"
+	audioFeaturesURL   = "https://api.spotify.com/v1/audio-features/"
 )
 
 type Config struct {
@@ -206,6 +208,52 @@ type Artist struct {
 type Album struct {
 	Name   string  `json:"name"`
 	Images []Image `json:"images"`
+}
+
+type ExternalURLs struct {
+	Spotify string `json:"spotify"`
+}
+
+type FullArtist struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type FullAlbum struct {
+	ID           string       `json:"id"`
+	Name         string       `json:"name"`
+	ReleaseDate  string       `json:"release_date"`
+	TotalTracks  int          `json:"total_tracks"`
+	Images       []Image      `json:"images"`
+	ExternalURLs ExternalURLs `json:"external_urls"`
+}
+
+type FullTrack struct {
+	ID           string       `json:"id"`
+	Name         string       `json:"name"`
+	DurationMs   int          `json:"duration_ms"`
+	Explicit     bool         `json:"explicit"`
+	TrackNumber  int          `json:"track_number"`
+	DiscNumber   int          `json:"disc_number"`
+	PreviewURL   *string      `json:"preview_url"`
+	Artists      []FullArtist `json:"artists"`
+	Album        FullAlbum    `json:"album"`
+	ExternalURLs ExternalURLs `json:"external_urls"`
+}
+
+type AudioFeatures struct {
+	Danceability     float64 `json:"danceability"`
+	Energy           float64 `json:"energy"`
+	Acousticness     float64 `json:"acousticness"`
+	Instrumentalness float64 `json:"instrumentalness"`
+	Liveness         float64 `json:"liveness"`
+	Speechiness      float64 `json:"speechiness"`
+	Valence          float64 `json:"valence"`
+	Tempo            float64 `json:"tempo"`
+	Key              int     `json:"key"`
+	Mode             int     `json:"mode"`
+	Loudness         float64 `json:"loudness"`
+	TimeSignature    int     `json:"time_signature"`
 }
 
 // TopArtist represents an artist from the /me/top/artists endpoint.
@@ -416,6 +464,70 @@ func GetRecentlyPlayed(ctx context.Context, accessToken string) (*RecentlyPlayed
 	var result RecentlyPlayedResponse
 	if err := json.Unmarshal(body, &result); err != nil {
 		return nil, fmt.Errorf("parsing recently-played response: %w", err)
+	}
+
+	return &result, nil
+}
+
+// GetTrack fetches a single track by ID.
+func GetTrack(ctx context.Context, accessToken, trackID string) (*FullTrack, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, trackURL+trackID, nil)
+	if err != nil {
+		return nil, fmt.Errorf("creating track request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("fetching track: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading track response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("spotify track error (status %d): %s", resp.StatusCode, string(body))
+	}
+
+	var result FullTrack
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("parsing track response: %w", err)
+	}
+
+	return &result, nil
+}
+
+// GetAudioFeatures fetches audio features for a single track by ID.
+func GetAudioFeatures(ctx context.Context, accessToken, trackID string) (*AudioFeatures, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, audioFeaturesURL+trackID, nil)
+	if err != nil {
+		return nil, fmt.Errorf("creating audio-features request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("fetching audio features: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading audio-features response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("spotify audio-features error (status %d): %s", resp.StatusCode, string(body))
+	}
+
+	var result AudioFeatures
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("parsing audio-features response: %w", err)
 	}
 
 	return &result, nil

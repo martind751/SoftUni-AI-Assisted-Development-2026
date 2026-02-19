@@ -158,7 +158,8 @@ export default function ListeningHistoryPage() {
               </h2>
               <div className="space-y-2">
                 {dayTracks.map((track, i) => (
-                  <div
+                  <Link
+                    to={`/track/${track.id}`}
                     key={`${track.played_at}-${i}`}
                     className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-900 transition-colors"
                   >
@@ -178,7 +179,11 @@ export default function ListeningHistoryPage() {
                       </p>
                     </div>
                     <button
-                      onClick={() => toggleLike(track.id)}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        toggleLike(track.id)
+                      }}
                       className={`flex-shrink-0 hover:scale-110 transition-transform ${
                         likedMap[track.id] ? 'text-green-400' : 'text-gray-500 hover:text-gray-300'
                       }`}
@@ -190,7 +195,7 @@ export default function ListeningHistoryPage() {
                       <p className="text-gray-400 text-sm">{formatDuration(track.duration_ms)}</p>
                       <p className="text-gray-500 text-xs">{formatTime(track.played_at)}</p>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>

@@ -95,3 +95,55 @@ export async function getArtistCharts(timeRange: TimeRange = 'medium_term'): Pro
   if (!res.ok) throw new Error('Failed to fetch artist charts')
   return res.json()
 }
+
+export interface TrackArtist {
+  id: string
+  name: string
+}
+
+export interface AudioFeatures {
+  danceability: number
+  energy: number
+  acousticness: number
+  instrumentalness: number
+  liveness: number
+  speechiness: number
+  valence: number
+  tempo: number
+  key: number
+  mode: number
+  loudness: number
+  time_signature: number
+}
+
+export interface ListeningStats {
+  play_count: number
+  first_played?: string
+  last_played?: string
+}
+
+export interface TrackDetail {
+  id: string
+  name: string
+  duration_ms: number
+  explicit: boolean
+  track_number: number
+  disc_number: number
+  preview_url: string | null
+  artists: TrackArtist[]
+  album_name: string
+  album_id: string
+  album_cover: string
+  release_date: string
+  total_tracks: number
+  spotify_url: string
+  is_liked: boolean
+  audio_features: AudioFeatures | null
+  listening_stats: ListeningStats
+}
+
+export async function getTrack(id: string): Promise<TrackDetail> {
+  const res = await fetch(`/api/tracks/${id}`)
+  if (!res.ok) throw new Error('Failed to fetch track')
+  return res.json()
+}
