@@ -1,4 +1,3 @@
-import { Link, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getArtistCharts, type ArtistChartItem, type ArtistChartsData, type TimeRange } from '../lib/api'
@@ -42,19 +41,12 @@ const TIME_RANGE_LABELS: { value: TimeRange; label: string }[] = [
 type ViewMode = 'plays' | 'time'
 
 export default function ArtistChartsPage() {
-  const { loading: authLoading, isLoggedIn } = useAuth()
-  const navigate = useNavigate()
+  const { isLoggedIn } = useAuth()
   const [data, setData] = useState<ArtistChartsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [timeRange, setTimeRange] = useState<TimeRange>('medium_term')
   const [viewMode, setViewMode] = useState<ViewMode>('plays')
-
-  useEffect(() => {
-    if (!authLoading && !isLoggedIn) {
-      navigate('/')
-    }
-  }, [authLoading, isLoggedIn, navigate])
 
   useEffect(() => {
     if (!isLoggedIn) return
@@ -66,7 +58,7 @@ export default function ArtistChartsPage() {
       .finally(() => setLoading(false))
   }, [isLoggedIn, timeRange])
 
-  if (authLoading || loading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
         <p className="text-gray-400">Loading charts...</p>
@@ -79,9 +71,6 @@ export default function ArtistChartsPage() {
       <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-400 mb-4">{error}</p>
-          <Link to="/profile" className="text-green-400 hover:text-green-300 hover:underline">
-            Back to Profile
-          </Link>
         </div>
       </div>
     )
@@ -99,13 +88,7 @@ export default function ArtistChartsPage() {
   return (
     <div className="min-h-screen bg-gray-950 text-white">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <Link
-          to="/profile"
-          className="text-green-400 hover:text-green-300 hover:underline transition-colors text-sm"
-        >
-          &larr; Profile
-        </Link>
-        <h1 className="text-3xl font-bold mt-4 mb-6">Artist Charts</h1>
+        <h1 className="text-3xl font-bold mb-6">Artist Charts</h1>
 
         {/* Time range tabs */}
         <div className="flex gap-2 mb-4">

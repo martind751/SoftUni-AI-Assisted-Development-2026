@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -20,7 +21,9 @@ const (
 	topArtistsURL      = "https://api.spotify.com/v1/me/top/artists"
 	artistURL          = "https://api.spotify.com/v1/artists/"
 	trackURL           = "https://api.spotify.com/v1/tracks/"
+	albumURL           = "https://api.spotify.com/v1/albums/"
 	audioFeaturesURL   = "https://api.spotify.com/v1/audio-features/"
+	searchURL          = "https://api.spotify.com/v1/search"
 )
 
 type Config struct {
@@ -222,8 +225,13 @@ type FullArtist struct {
 type FullAlbum struct {
 	ID           string       `json:"id"`
 	Name         string       `json:"name"`
+	AlbumType    string       `json:"album_type"`
 	ReleaseDate  string       `json:"release_date"`
 	TotalTracks  int          `json:"total_tracks"`
+	Label        string       `json:"label"`
+	Popularity   int          `json:"popularity"`
+	Genres       []string     `json:"genres"`
+	Artists      []Artist     `json:"artists"`
 	Images       []Image      `json:"images"`
 	ExternalURLs ExternalURLs `json:"external_urls"`
 }
@@ -258,12 +266,13 @@ type AudioFeatures struct {
 
 // TopArtist represents an artist from the /me/top/artists endpoint.
 type TopArtist struct {
-	ID         string    `json:"id"`
-	Name       string    `json:"name"`
-	Genres     []string  `json:"genres"`
-	Popularity int       `json:"popularity"`
-	Followers  Followers `json:"followers"`
-	Images     []Image   `json:"images"`
+	ID           string       `json:"id"`
+	Name         string       `json:"name"`
+	Genres       []string     `json:"genres"`
+	Popularity   int          `json:"popularity"`
+	Followers    Followers    `json:"followers"`
+	Images       []Image      `json:"images"`
+	ExternalURLs ExternalURLs `json:"external_urls"`
 }
 
 // ImageURL returns the URL of the first image, or empty string if none.
@@ -501,6 +510,38 @@ func GetTrack(ctx context.Context, accessToken, trackID string) (*FullTrack, err
 	return &result, nil
 }
 
+// GetAlbum fetches a single album by ID.
+func GetAlbum(ctx context.Context, accessToken, albumID string) (*FullAlbum, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, albumURL+albumID, nil)
+	if err != nil {
+		return nil, fmt.Errorf("creating album request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("fetching album: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading album response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("spotify album error (status %d): %s", resp.StatusCode, string(body))
+	}
+
+	var result FullAlbum
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("parsing album response: %w", err)
+	}
+
+	return &result, nil
+}
+
 // GetAudioFeatures fetches audio features for a single track by ID.
 func GetAudioFeatures(ctx context.Context, accessToken, trackID string) (*AudioFeatures, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, audioFeaturesURL+trackID, nil)
@@ -528,6 +569,92 @@ func GetAudioFeatures(ctx context.Context, accessToken, trackID string) (*AudioF
 	var result AudioFeatures
 	if err := json.Unmarshal(body, &result); err != nil {
 		return nil, fmt.Errorf("parsing audio-features response: %w", err)
+	}
+
+	return &result, nil
+}
+
+// SearchResponse represents the response from the Spotify search endpoint.
+type SearchResponse struct {
+	Tracks  *SearchTracks  `json:"tracks"`
+	Albums  *SearchAlbums  `json:"albums"`
+	Artists *SearchArtists `json:"artists"`
+}
+
+type SearchTracks struct {
+	Items []SearchTrack `json:"items"`
+}
+
+type SearchTrack struct {
+	ID         string   `json:"id"`
+	Name       string   `json:"name"`
+	DurationMs int      `json:"duration_ms"`
+	Artists    []Artist `json:"artists"`
+	Album      Album    `json:"album"`
+}
+
+type SearchAlbums struct {
+	Items []SearchAlbum `json:"items"`
+}
+
+type SearchAlbum struct {
+	ID           string       `json:"id"`
+	Name         string       `json:"name"`
+	AlbumType    string       `json:"album_type"`
+	ReleaseDate  string       `json:"release_date"`
+	Artists      []Artist     `json:"artists"`
+	Images       []Image      `json:"images"`
+	ExternalURLs ExternalURLs `json:"external_urls"`
+}
+
+type SearchArtists struct {
+	Items []SearchArtist `json:"items"`
+}
+
+type SearchArtist struct {
+	ID           string       `json:"id"`
+	Name         string       `json:"name"`
+	Genres       []string     `json:"genres"`
+	Popularity   int          `json:"popularity"`
+	Followers    Followers    `json:"followers"`
+	Images       []Image      `json:"images"`
+	ExternalURLs ExternalURLs `json:"external_urls"`
+}
+
+// Search queries the Spotify search endpoint for tracks, albums, and/or artists.
+func Search(ctx context.Context, accessToken, query, types string, limit int) (*SearchResponse, error) {
+	params := url.Values{
+		"q":     {query},
+		"type":  {types},
+		"limit": {strconv.Itoa(limit)},
+	}
+	reqURL := searchURL + "?" + params.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("creating search request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("searching spotify: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading search response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("spotify search error (status %d): %s", resp.StatusCode, string(body))
+	}
+
+	var result SearchResponse
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("parsing search response: %w", err)
 	}
 
 	return &result, nil

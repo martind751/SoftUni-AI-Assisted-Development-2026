@@ -1,7 +1,8 @@
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getTrack, saveLikedSong, removeLikedSong, type TrackDetail } from '../lib/api'
+import RatingShelfTags from '../components/RatingShelfTags'
 
 function formatDuration(ms: number): string {
   const minutes = Math.floor(ms / 60000)
@@ -49,18 +50,13 @@ function HeartIcon({ filled }: { filled: boolean }) {
 
 export default function TrackDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const { loading: authLoading, isLoggedIn } = useAuth()
-  const navigate = useNavigate()
+  const { isLoggedIn } = useAuth()
   const [track, setTrack] = useState<TrackDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [isLiked, setIsLiked] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
-
-  useEffect(() => {
-    if (!authLoading && !isLoggedIn) navigate('/')
-  }, [authLoading, isLoggedIn, navigate])
 
   useEffect(() => {
     if (!isLoggedIn || !id) return
@@ -111,7 +107,7 @@ export default function TrackDetailPage() {
     setIsPlaying(true)
   }
 
-  if (authLoading || loading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
         <p className="text-gray-400">Loading...</p>
@@ -138,13 +134,8 @@ export default function TrackDetailPage() {
   return (
     <div className="min-h-screen bg-gray-950 text-white">
       <div className="max-w-2xl mx-auto px-4 py-8">
-        {/* Back link */}
-        <Link to="/history" className="text-green-400 hover:text-green-300 hover:underline transition-colors text-sm">
-          &larr; Listening History
-        </Link>
-
         {/* Hero section */}
-        <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 mt-6 mb-8">
+        <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 mb-8">
           {track.album_cover ? (
             <img src={track.album_cover} alt={track.album_name} className="w-48 h-48 rounded-lg shadow-lg flex-shrink-0" />
           ) : (
@@ -153,10 +144,20 @@ export default function TrackDetailPage() {
           <div className="text-center sm:text-left">
             <h1 className="text-3xl font-bold mb-2">{track.name}</h1>
             <p className="text-lg text-gray-300 mb-1">
-              {track.artists.map((a) => a.name).join(', ')}
+              {track.artists.map((a, i) => (
+                <span key={a.id}>
+                  {i > 0 && ', '}
+                  <Link to={`/artist/${a.id}`} className="text-green-400 hover:text-green-300 hover:underline transition-colors">
+                    {a.name}
+                  </Link>
+                </span>
+              ))}
             </p>
             <p className="text-sm text-gray-400 mb-4">
-              {track.album_name} &middot; {track.release_date}
+              <Link to={`/album/${track.album_id}`} className="hover:text-green-400 hover:underline transition-colors">
+                {track.album_name}
+              </Link>
+              {' '}&middot; {track.release_date}
             </p>
             <div className="flex items-center gap-3 justify-center sm:justify-start">
               <button
@@ -255,6 +256,17 @@ export default function TrackDetailPage() {
             </div>
           </div>
         )}
+
+        {/* Rating, Shelf, Tags */}
+        <RatingShelfTags
+          entityType="track"
+          entityId={track.id}
+          entityName={track.name}
+          entityImageUrl={track.album_cover}
+          initialRating={track.rating}
+          initialShelf={track.shelf}
+          initialTags={track.tags}
+        />
 
         {/* Audio Features section */}
         {af ? (

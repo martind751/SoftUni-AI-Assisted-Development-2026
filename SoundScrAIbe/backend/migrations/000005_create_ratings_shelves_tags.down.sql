@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS item_tags;
+DROP TABLE IF EXISTS tags;
+DROP TABLE IF EXISTS shelves;
+DROP TABLE IF EXISTS ratings;
+DROP TABLE IF EXISTS entity_metadata;

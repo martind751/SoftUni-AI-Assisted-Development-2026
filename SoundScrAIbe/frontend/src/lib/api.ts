@@ -140,10 +140,198 @@ export interface TrackDetail {
   is_liked: boolean
   audio_features: AudioFeatures | null
   listening_stats: ListeningStats
+  rating: number | null
+  shelf: string | null
+  tags: string[]
 }
 
 export async function getTrack(id: string): Promise<TrackDetail> {
   const res = await fetch(`/api/tracks/${id}`)
   if (!res.ok) throw new Error('Failed to fetch track')
+  return res.json()
+}
+
+// --- Rating/Shelf/Tags types ---
+
+export interface AlbumArtist {
+  id: string
+  name: string
+}
+
+export interface AlbumImage {
+  url: string
+  height: number
+  width: number
+}
+
+export interface AlbumDetail {
+  id: string
+  name: string
+  album_type: string
+  release_date: string
+  total_tracks: number
+  label: string
+  popularity: number
+  genres: string[]
+  artists: AlbumArtist[]
+  images: AlbumImage[]
+  spotify_url: string
+  rating: number | null
+  shelf: string | null
+  tags: string[]
+}
+
+export async function getAlbum(id: string): Promise<AlbumDetail> {
+  const res = await fetch(`/api/albums/${id}`)
+  if (!res.ok) throw new Error('Failed to fetch album')
+  return res.json()
+}
+
+export interface ArtistDetail {
+  id: string
+  name: string
+  genres: string[]
+  popularity: number
+  followers: number
+  images: AlbumImage[]
+  spotify_url: string
+  listening_stats: ListeningStats
+  rating: number | null
+  shelf: string | null
+  tags: string[]
+}
+
+export async function getArtist(id: string): Promise<ArtistDetail> {
+  const res = await fetch(`/api/artists/${id}`)
+  if (!res.ok) throw new Error('Failed to fetch artist')
+  return res.json()
+}
+
+export async function setRating(
+  entityType: string, entityId: string, score: number,
+  name: string, imageUrl: string
+): Promise<void> {
+  const res = await fetch(`/api/ratings/${entityType}/${entityId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ score, name, image_url: imageUrl }),
+  })
+  if (!res.ok) throw new Error('Failed to set rating')
+}
+
+export async function deleteRating(entityType: string, entityId: string): Promise<void> {
+  const res = await fetch(`/api/ratings/${entityType}/${entityId}`, { method: 'DELETE' })
+  if (!res.ok) throw new Error('Failed to delete rating')
+}
+
+export async function setShelf(
+  entityType: string, entityId: string, status: string,
+  name: string, imageUrl: string
+): Promise<void> {
+  const res = await fetch(`/api/shelves/${entityType}/${entityId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status, name, image_url: imageUrl }),
+  })
+  if (!res.ok) throw new Error('Failed to set shelf')
+}
+
+export async function deleteShelf(entityType: string, entityId: string): Promise<void> {
+  const res = await fetch(`/api/shelves/${entityType}/${entityId}`, { method: 'DELETE' })
+  if (!res.ok) throw new Error('Failed to delete shelf')
+}
+
+export async function setTags(
+  entityType: string, entityId: string, tags: string[],
+  name: string, imageUrl: string
+): Promise<void> {
+  const res = await fetch(`/api/tags/${entityType}/${entityId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tags, name, image_url: imageUrl }),
+  })
+  if (!res.ok) throw new Error('Failed to set tags')
+}
+
+export async function getUserTags(): Promise<{ id: number; name: string }[]> {
+  const res = await fetch('/api/tags')
+  if (!res.ok) throw new Error('Failed to fetch tags')
+  const data = await res.json()
+  return data.tags
+}
+
+export interface LibraryItem {
+  entity_type: string
+  entity_id: string
+  name: string
+  image_url: string
+  rating: number | null
+  shelf: string | null
+  tags: string[]
+  extra: Record<string, string>
+}
+
+export interface LibraryResponse {
+  items: LibraryItem[]
+  total: number
+  page: number
+  limit: number
+}
+
+// --- Search types ---
+
+export interface SearchTrack {
+  id: string
+  name: string
+  artists: string[]
+  album: string
+  album_cover: string
+  duration_ms: number
+}
+
+export interface SearchAlbum {
+  id: string
+  name: string
+  artists: string[]
+  image_url: string
+  release_date: string
+  album_type: string
+}
+
+export interface SearchArtist {
+  id: string
+  name: string
+  image_url: string
+  genres: string[]
+  followers: number
+}
+
+export interface SearchResult {
+  tracks: SearchTrack[]
+  albums: SearchAlbum[]
+  artists: SearchArtist[]
+}
+
+export async function search(query: string, types: string[] = ['track', 'album', 'artist']): Promise<SearchResult> {
+  const params = new URLSearchParams({ q: query, types: types.join(',') })
+  const res = await fetch(`/api/search?${params}`)
+  if (!res.ok) throw new Error('Failed to search')
+  return res.json()
+}
+
+export async function getLibrary(params: {
+  entity_type?: string
+  shelf?: string
+  tag?: string
+  sort?: string
+  page?: number
+  limit?: number
+}): Promise<LibraryResponse> {
+  const searchParams = new URLSearchParams()
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== '') searchParams.set(k, String(v))
+  })
+  const res = await fetch(`/api/library?${searchParams}`)
+  if (!res.ok) throw new Error('Failed to fetch library')
   return res.json()
 }

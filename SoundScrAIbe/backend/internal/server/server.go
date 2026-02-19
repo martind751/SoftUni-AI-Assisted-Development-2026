@@ -49,6 +49,23 @@ func New(db *sql.DB, cfg *config.Config) *gin.Engine {
 			protected.DELETE("/liked-songs/:trackId", h.RemoveLikedSong)
 			protected.GET("/artist-charts", h.ArtistCharts)
 			protected.GET("/tracks/:id", h.TrackDetail)
+			protected.GET("/albums/:id", h.AlbumDetail)
+			protected.GET("/artists/:id", h.ArtistDetail)
+
+			protected.GET("/ratings/:entityType/:entityId", h.GetRating)
+			protected.PUT("/ratings/:entityType/:entityId", h.SetRating)
+			protected.DELETE("/ratings/:entityType/:entityId", h.DeleteRating)
+
+			protected.GET("/shelves/:entityType/:entityId", h.GetShelf)
+			protected.PUT("/shelves/:entityType/:entityId", h.SetShelf)
+			protected.DELETE("/shelves/:entityType/:entityId", h.DeleteShelf)
+
+			protected.GET("/tags/:entityType/:entityId", h.GetTags)
+			protected.PUT("/tags/:entityType/:entityId", h.SetTags)
+			protected.GET("/tags", h.GetUserTags)
+
+			protected.GET("/search", h.Search)
+			protected.GET("/library", h.Library)
 		}
 	}
 
