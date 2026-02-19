@@ -11,7 +11,7 @@ import (
 )
 
 func validShelfStatus(s string) bool {
-	return s == "listened" || s == "currently_listening" || s == "want_to_listen"
+	return s == "on_rotation" || s == "want_to_listen"
 }
 
 func (h *handlers) SetShelf(c *gin.Context) {
@@ -41,7 +41,7 @@ func (h *handlers) SetShelf(c *gin.Context) {
 	}
 
 	if !validShelfStatus(body.Status) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "status must be listened, currently_listening, or want_to_listen"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "status must be on_rotation or want_to_listen"})
 		return
 	}
 

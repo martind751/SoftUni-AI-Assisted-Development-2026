@@ -38,7 +38,7 @@ const FEATURES = [
   {
     icon: <ShelfIcon />,
     title: 'Organize',
-    description: 'Sort your music into shelves: Listened, Listening, or Want to Listen.',
+    description: 'Mark what\'s On Rotation, build your listening backlog, and organize with tags.',
   },
   {
     icon: <TagIcon />,
@@ -84,7 +84,7 @@ function LoggedOutHome() {
         </h1>
         <p className="text-xl sm:text-2xl text-gray-300 mb-3">Your personal music diary</p>
         <p className="text-gray-400 max-w-md text-center mb-12">
-          Rate, organize, and track your music. Like Goodreads, but for music.
+          Rate, organize, and track your music journey.
         </p>
 
         {/* Feature cards */}

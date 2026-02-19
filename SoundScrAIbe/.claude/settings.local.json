@@ -30,7 +30,11 @@
       "Bash(docker ps:*)",
       "Bash(docker exec:*)",
       "Bash(git push:*)",
-      "WebFetch(domain:developer.spotify.com)"
+      "WebFetch(domain:developer.spotify.com)",
+      "Bash(ls:*)",
+      "Bash(gh auth status:*)",
+      "Bash(gh auth switch:*)",
+      "Bash(./server.exe:*)"
     ]
   }
 }

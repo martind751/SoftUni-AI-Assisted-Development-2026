@@ -7,20 +7,12 @@ interface ShelfSelectorProps {
 
 const SHELF_OPTIONS: { key: string; label: string; icon: ReactNode }[] = [
   {
-    key: 'listened',
-    label: 'Listened',
+    key: 'on_rotation',
+    label: 'On Rotation',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
-  },
-  {
-    key: 'currently_listening',
-    label: 'Listening',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.047 8.287 8.287 0 009 9.601a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.468 5.99 5.99 0 00-1.925 3.547 5.975 5.975 0 01-2.133-1.001A3.75 3.75 0 0012 18z" />
       </svg>
     ),
   },
@@ -38,7 +30,7 @@ const SHELF_OPTIONS: { key: string; label: string; icon: ReactNode }[] = [
 export default function ShelfSelector({ value, onChange }: ShelfSelectorProps) {
   return (
     <div>
-      <p className="text-sm text-gray-400 mb-2">Shelf</p>
+      <p className="text-sm text-gray-400 mb-2">Collection</p>
       <div className="flex flex-wrap gap-2">
         {SHELF_OPTIONS.map(({ key, label, icon }) => {
           const isSelected = value === key

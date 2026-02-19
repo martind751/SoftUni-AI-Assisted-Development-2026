@@ -11,9 +11,8 @@ const ENTITY_TYPES = [
 ]
 
 const SHELF_OPTIONS = [
-  { key: '', label: 'All Shelves' },
-  { key: 'listened', label: 'Listened' },
-  { key: 'currently_listening', label: 'Currently Listening' },
+  { key: '', label: 'All' },
+  { key: 'on_rotation', label: 'On Rotation' },
   { key: 'want_to_listen', label: 'Want to Listen' },
 ]
 
@@ -24,17 +23,10 @@ const SORT_OPTIONS = [
 ]
 
 function shelfIcon(shelf: string | null): React.ReactNode {
-  if (shelf === 'listened') {
+  if (shelf === 'on_rotation') {
     return (
-      <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-green-400">
-        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
-      </svg>
-    )
-  }
-  if (shelf === 'currently_listening') {
-    return (
-      <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-green-400">
-        <path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4zm11 5.5a.75.75 0 00-1.5 0A6.5 6.5 0 013.5 9.5a.75.75 0 00-1.5 0 8 8 0 005.25 7.524V19H5.5a.75.75 0 000 1.5h9a.75.75 0 000-1.5h-1.75v-1.976A8 8 0 0018 9.5z" />
+      <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-orange-400">
+        <path fillRule="evenodd" d="M13.5 4.938a7 7 0 11-9.006 1.737c.202-.257.59-.218.793.039.278.352.594.672.943.954.332.269.786-.049.773-.476a5.977 5.977 0 01.572-2.759 6.026 6.026 0 012.486-2.665c.247-.14.55-.016.677.238A6.967 6.967 0 0013.5 4.938zM14 12a4 4 0 01-5.168 3.821 3.005 3.005 0 01-.498-1.312c-.07-.46.296-.78.724-.84a1.5 1.5 0 10-.636-2.882c-.378.166-.805-.024-.907-.41A5.992 5.992 0 0110 8a6.003 6.003 0 014 4z" clipRule="evenodd" />
       </svg>
     )
   }
