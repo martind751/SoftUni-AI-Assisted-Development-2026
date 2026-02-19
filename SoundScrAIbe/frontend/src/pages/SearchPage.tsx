@@ -24,7 +24,7 @@ function SearchIcon({ className = 'w-5 h-5' }: { className?: string }) {
 
 function SpinnerIcon() {
   return (
-    <svg className="w-6 h-6 animate-spin text-green-400" viewBox="0 0 24 24" fill="none">
+    <svg className="w-6 h-6 animate-spin text-indigo-400" viewBox="0 0 24 24" fill="none">
       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
     </svg>
@@ -35,18 +35,18 @@ function TrackRow({ track }: { track: SearchTrack }) {
   return (
     <Link
       to={`/track/${track.id}`}
-      className="flex items-center gap-3 bg-gray-900 hover:bg-gray-800 rounded-lg p-3 transition-colors"
+      className="flex items-center gap-3 bg-slate-900 hover:bg-slate-800 rounded-lg p-3 transition-colors"
     >
       {track.album_cover ? (
         <img src={track.album_cover} alt={track.album} className="w-10 h-10 rounded object-cover flex-shrink-0" />
       ) : (
-        <div className="w-10 h-10 rounded bg-gray-800 flex-shrink-0" />
+        <div className="w-10 h-10 rounded bg-slate-800 flex-shrink-0" />
       )}
       <div className="min-w-0 flex-1">
         <p className="text-white text-sm font-medium truncate">{track.name}</p>
-        <p className="text-gray-400 text-xs truncate">{track.artists.join(', ')}</p>
+        <p className="text-slate-400 text-xs truncate">{track.artists.join(', ')}</p>
       </div>
-      <span className="text-gray-500 text-xs flex-shrink-0">{formatDuration(track.duration_ms)}</span>
+      <span className="text-slate-500 text-xs flex-shrink-0">{formatDuration(track.duration_ms)}</span>
     </Link>
   )
 }
@@ -56,24 +56,24 @@ function AlbumCard({ album }: { album: SearchAlbum }) {
   return (
     <Link
       to={`/album/${album.id}`}
-      className="flex items-center gap-3 bg-gray-900 hover:bg-gray-800 rounded-lg p-3 transition-colors"
+      className="flex items-center gap-3 bg-slate-900 hover:bg-slate-800 rounded-lg p-3 transition-colors"
     >
       {album.image_url ? (
         <img src={album.image_url} alt={album.name} className="w-12 h-12 rounded object-cover flex-shrink-0" />
       ) : (
-        <div className="w-12 h-12 rounded bg-gray-800 flex-shrink-0" />
+        <div className="w-12 h-12 rounded bg-slate-800 flex-shrink-0" />
       )}
       <div className="min-w-0 flex-1">
         <p className="text-white text-sm font-medium truncate">{album.name}</p>
-        <p className="text-gray-400 text-xs truncate">{album.artists.join(', ')}</p>
+        <p className="text-slate-400 text-xs truncate">{album.artists.join(', ')}</p>
       </div>
       <div className="flex items-center gap-2 flex-shrink-0">
         {album.album_type && (
-          <span className="text-xs bg-gray-800 text-gray-300 px-2 py-0.5 rounded-full capitalize">
+          <span className="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full capitalize">
             {album.album_type}
           </span>
         )}
-        {year && <span className="text-gray-500 text-xs">{year}</span>}
+        {year && <span className="text-slate-500 text-xs">{year}</span>}
       </div>
     </Link>
   )
@@ -83,20 +83,20 @@ function ArtistCard({ artist }: { artist: SearchArtist }) {
   return (
     <Link
       to={`/artist/${artist.id}`}
-      className="flex items-center gap-3 bg-gray-900 hover:bg-gray-800 rounded-lg p-3 transition-colors"
+      className="flex items-center gap-3 bg-slate-900 hover:bg-slate-800 rounded-lg p-3 transition-colors"
     >
       {artist.image_url ? (
         <img src={artist.image_url} alt={artist.name} className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
       ) : (
-        <div className="w-12 h-12 rounded-full bg-gray-800 flex-shrink-0" />
+        <div className="w-12 h-12 rounded-full bg-slate-800 flex-shrink-0" />
       )}
       <div className="min-w-0 flex-1">
         <p className="text-white text-sm font-medium truncate">{artist.name}</p>
-        <p className="text-gray-400 text-xs truncate">
+        <p className="text-slate-400 text-xs truncate">
           {artist.genres.length > 0 ? artist.genres.slice(0, 3).join(', ') : 'Artist'}
         </p>
       </div>
-      <span className="text-gray-500 text-xs flex-shrink-0">{formatFollowers(artist.followers)} followers</span>
+      <span className="text-slate-500 text-xs flex-shrink-0">{formatFollowers(artist.followers)} followers</span>
     </Link>
   )
 }
@@ -156,12 +156,12 @@ export default function SearchPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-slate-950 text-white">
       <div className="max-w-3xl mx-auto px-4 py-8">
         {/* Search input */}
         <div className="flex justify-center mb-8">
           <div className="relative w-full max-w-xl">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
               <SearchIcon />
             </div>
             <input
@@ -170,14 +170,14 @@ export default function SearchPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search for tracks, albums, or artists..."
-              className="bg-gray-900 border border-gray-700 rounded-xl text-white text-lg px-12 py-3 w-full focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors placeholder:text-gray-500"
+              className="bg-slate-900 border border-slate-700 rounded-xl text-white text-lg px-12 py-3 w-full focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors placeholder:text-slate-500"
             />
           </div>
         </div>
 
         {/* Empty state */}
         {!searched && !loading && (
-          <p className="text-center text-gray-400 mt-16">Search for tracks, albums, or artists</p>
+          <p className="text-center text-slate-400 mt-16">Search for tracks, albums, or artists</p>
         )}
 
         {/* Loading */}
@@ -192,7 +192,7 @@ export default function SearchPage() {
 
         {/* No results */}
         {noResults && (
-          <p className="text-center text-gray-400 mt-16">No results found for &ldquo;{query}&rdquo;</p>
+          <p className="text-center text-slate-400 mt-16">No results found for &ldquo;{query}&rdquo;</p>
         )}
 
         {/* Results */}
@@ -206,8 +206,8 @@ export default function SearchPage() {
                   onClick={() => setActiveSection(section.key)}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                     activeSection === section.key
-                      ? 'bg-green-500 text-black font-semibold'
-                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                      ? 'bg-indigo-500 text-white font-semibold'
+                      : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                   }`}
                 >
                   {section.label} ({section.count})
@@ -227,13 +227,13 @@ export default function SearchPage() {
                 <ArtistCard key={artist.id} artist={artist} />
               ))}
               {activeSection === 'tracks' && results!.tracks.length === 0 && (
-                <p className="text-gray-500 text-sm text-center py-8">No tracks found</p>
+                <p className="text-slate-500 text-sm text-center py-8">No tracks found</p>
               )}
               {activeSection === 'albums' && results!.albums.length === 0 && (
-                <p className="text-gray-500 text-sm text-center py-8">No albums found</p>
+                <p className="text-slate-500 text-sm text-center py-8">No albums found</p>
               )}
               {activeSection === 'artists' && results!.artists.length === 0 && (
-                <p className="text-gray-500 text-sm text-center py-8">No artists found</p>
+                <p className="text-slate-500 text-sm text-center py-8">No artists found</p>
               )}
             </div>
           </>

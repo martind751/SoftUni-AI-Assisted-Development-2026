@@ -40,6 +40,14 @@ function SearchIcon() {
   )
 }
 
+function StatsIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18h18M7 16v-3m4 3v-6m4 6v-4m4 4V7" />
+    </svg>
+  )
+}
+
 function LogoutIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5">
@@ -60,6 +68,12 @@ const NAV_ITEMS: NavItem[] = [
     path: '/artist-charts',
     matchPrefixes: ['/artist-charts'],
     icon: <ChartIcon />,
+  },
+  {
+    label: 'Stats',
+    path: '/stats',
+    matchPrefixes: ['/stats'],
+    icon: <StatsIcon />,
   },
   {
     label: 'Library',
@@ -87,13 +101,13 @@ export default function Navbar() {
   const isSearchActive = location.pathname === '/search'
 
   return (
-    <nav className="sticky top-0 z-50 bg-gray-950/90 backdrop-blur-sm border-b border-gray-800">
+    <nav className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-sm border-b border-slate-800">
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
         {/* Brand */}
         <Link
           to="/"
           className={`text-lg font-bold transition-colors flex-shrink-0 ${
-            isHome ? 'text-green-400' : 'text-white hover:text-green-400'
+            isHome ? 'text-indigo-400' : 'text-white hover:text-indigo-400'
           }`}
         >
           SoundScrAIbe
@@ -109,8 +123,8 @@ export default function Navbar() {
                 to={item.path}
                 className={`flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-sm transition-colors ${
                   active
-                    ? 'text-green-400'
-                    : 'text-gray-400 hover:text-white'
+                    ? 'text-indigo-400'
+                    : 'text-slate-400 hover:text-white'
                 }`}
                 aria-current={active ? 'page' : undefined}
               >
@@ -127,8 +141,8 @@ export default function Navbar() {
             to="/search"
             className={`flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-sm transition-colors ${
               isSearchActive
-                ? 'text-green-400'
-                : 'text-gray-400 hover:text-white'
+                ? 'text-indigo-400'
+                : 'text-slate-400 hover:text-white'
             }`}
             aria-label="Search"
             title="Search"
@@ -143,13 +157,13 @@ export default function Navbar() {
               <img
                 src={user.avatar_url}
                 alt={user.display_name}
-                className="w-8 h-8 rounded-full object-cover hover:ring-2 hover:ring-green-400 transition-all"
+                className="w-8 h-8 rounded-full object-cover hover:ring-2 hover:ring-indigo-400 transition-all"
               />
             </Link>
           )}
           <button
             onClick={handleLogout}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-slate-400 hover:text-white transition-colors"
             aria-label="Log out"
             title="Log out"
           >

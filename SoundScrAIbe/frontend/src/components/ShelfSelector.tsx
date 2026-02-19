@@ -30,7 +30,7 @@ const SHELF_OPTIONS: { key: string; label: string; icon: ReactNode }[] = [
 export default function ShelfSelector({ value, onChange }: ShelfSelectorProps) {
   return (
     <div>
-      <p className="text-sm text-gray-400 mb-2">Collection</p>
+      <p className="text-sm text-slate-400 mb-2">Collection</p>
       <div className="flex flex-wrap gap-2">
         {SHELF_OPTIONS.map(({ key, label, icon }) => {
           const isSelected = value === key
@@ -41,8 +41,8 @@ export default function ShelfSelector({ value, onChange }: ShelfSelectorProps) {
               onClick={() => onChange(isSelected ? null : key)}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full transition-colors ${
                 isSelected
-                  ? 'bg-green-500 text-black font-semibold'
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  ? 'bg-indigo-500 text-white font-semibold'
+                  : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
               }`}
               aria-label={isSelected ? `Remove from ${label}` : `Add to ${label}`}
             >

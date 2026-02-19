@@ -109,15 +109,15 @@ export default function ListeningHistoryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
-        <p className="text-gray-400">Loading...</p>
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+        <p className="text-slate-400">Loading...</p>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-400 mb-4">{error}</p>
         </div>
@@ -134,23 +134,23 @@ export default function ListeningHistoryPage() {
     : 0
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-slate-950 text-white">
       <div className="max-w-2xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-4">Listening History</h1>
 
         {tracks.length > 0 && Object.keys(likedMap).length > 0 && (
-          <p className="text-gray-400 text-sm mb-6">
-            <span className="text-green-400 font-medium">{likedCount}</span> of{' '}
+          <p className="text-slate-400 text-sm mb-6">
+            <span className="text-indigo-400 font-medium">{likedCount}</span> of{' '}
             <span className="font-medium text-white">{uniqueTrackIds.length}</span> unique tracks liked ({likedPercentage}%)
           </p>
         )}
 
         {tracks.length === 0 ? (
-          <p className="text-gray-400">No recently played tracks.</p>
+          <p className="text-slate-400">No recently played tracks.</p>
         ) : (
           grouped.map(([dayLabel, dayTracks]) => (
             <div key={dayLabel} className="mb-8">
-              <h2 className="text-gray-400 text-sm font-semibold uppercase tracking-wide mb-3">
+              <h2 className="text-slate-400 text-sm font-semibold uppercase tracking-wide mb-3">
                 {dayLabel}
               </h2>
               <div className="space-y-2">
@@ -158,7 +158,7 @@ export default function ListeningHistoryPage() {
                   <Link
                     to={`/track/${track.id}`}
                     key={`${track.played_at}-${i}`}
-                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-900 transition-colors"
+                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-900 transition-colors"
                   >
                     {track.album_cover ? (
                       <img
@@ -167,11 +167,11 @@ export default function ListeningHistoryPage() {
                         className="w-12 h-12 rounded flex-shrink-0"
                       />
                     ) : (
-                      <div className="w-12 h-12 rounded bg-gray-800 flex-shrink-0" />
+                      <div className="w-12 h-12 rounded bg-slate-800 flex-shrink-0" />
                     )}
                     <div className="min-w-0 flex-1">
                       <p className="font-medium truncate">{track.name}</p>
-                      <p className="text-gray-400 text-sm truncate">
+                      <p className="text-slate-400 text-sm truncate">
                         {track.artists.join(', ')} &middot; {track.album}
                       </p>
                     </div>
@@ -182,15 +182,15 @@ export default function ListeningHistoryPage() {
                         toggleLike(track.id)
                       }}
                       className={`flex-shrink-0 hover:scale-110 transition-transform ${
-                        likedMap[track.id] ? 'text-green-400' : 'text-gray-500 hover:text-gray-300'
+                        likedMap[track.id] ? 'text-indigo-400' : 'text-slate-500 hover:text-slate-300'
                       }`}
                       aria-label={likedMap[track.id] ? 'Remove from liked songs' : 'Add to liked songs'}
                     >
                       <HeartIcon filled={likedMap[track.id] ?? false} />
                     </button>
                     <div className="text-right flex-shrink-0">
-                      <p className="text-gray-400 text-sm">{formatDuration(track.duration_ms)}</p>
-                      <p className="text-gray-500 text-xs">{formatTime(track.played_at)}</p>
+                      <p className="text-slate-400 text-sm">{formatDuration(track.duration_ms)}</p>
+                      <p className="text-slate-500 text-xs">{formatTime(track.played_at)}</p>
                     </div>
                   </Link>
                 ))}

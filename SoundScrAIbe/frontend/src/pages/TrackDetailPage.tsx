@@ -109,18 +109,18 @@ export default function TrackDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
-        <p className="text-gray-400">Loading...</p>
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+        <p className="text-slate-400">Loading...</p>
       </div>
     )
   }
 
   if (error || !track) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-400 mb-4">{error || 'Track not found'}</p>
-          <Link to="/history" className="text-green-400 hover:text-green-300 hover:underline">
+          <Link to="/history" className="text-indigo-400 hover:text-indigo-300 hover:underline">
             Back to Listening History
           </Link>
         </div>
@@ -132,29 +132,29 @@ export default function TrackDetailPage() {
   const stats = track.listening_stats
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-slate-950 text-white">
       <div className="max-w-2xl mx-auto px-4 py-8">
         {/* Hero section */}
         <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 mb-8">
           {track.album_cover ? (
             <img src={track.album_cover} alt={track.album_name} className="w-48 h-48 rounded-lg shadow-lg flex-shrink-0" />
           ) : (
-            <div className="w-48 h-48 rounded-lg bg-gray-800 flex-shrink-0" />
+            <div className="w-48 h-48 rounded-lg bg-slate-800 flex-shrink-0" />
           )}
           <div className="text-center sm:text-left">
             <h1 className="text-3xl font-bold mb-2">{track.name}</h1>
-            <p className="text-lg text-gray-300 mb-1">
+            <p className="text-lg text-slate-300 mb-1">
               {track.artists.map((a, i) => (
                 <span key={a.id}>
                   {i > 0 && ', '}
-                  <Link to={`/artist/${a.id}`} className="text-green-400 hover:text-green-300 hover:underline transition-colors">
+                  <Link to={`/artist/${a.id}`} className="text-indigo-400 hover:text-indigo-300 hover:underline transition-colors">
                     {a.name}
                   </Link>
                 </span>
               ))}
             </p>
-            <p className="text-sm text-gray-400 mb-4">
-              <Link to={`/album/${track.album_id}`} className="hover:text-green-400 hover:underline transition-colors">
+            <p className="text-sm text-slate-400 mb-4">
+              <Link to={`/album/${track.album_id}`} className="hover:text-indigo-400 hover:underline transition-colors">
                 {track.album_name}
               </Link>
               {' '}&middot; {track.release_date}
@@ -162,7 +162,7 @@ export default function TrackDetailPage() {
             <div className="flex items-center gap-3 justify-center sm:justify-start">
               <button
                 onClick={toggleLike}
-                className={`hover:scale-110 transition-transform ${isLiked ? 'text-green-400' : 'text-gray-500 hover:text-gray-300'}`}
+                className={`hover:scale-110 transition-transform ${isLiked ? 'text-indigo-400' : 'text-slate-500 hover:text-slate-300'}`}
                 aria-label={isLiked ? 'Remove from liked songs' : 'Add to liked songs'}
               >
                 <HeartIcon filled={isLiked} />
@@ -172,8 +172,8 @@ export default function TrackDetailPage() {
                   onClick={togglePreview}
                   className={`inline-flex items-center gap-1.5 px-4 py-1.5 text-sm font-semibold rounded-full transition-colors ${
                     isPlaying
-                      ? 'bg-white text-black hover:bg-gray-200'
-                      : 'bg-gray-800 text-white hover:bg-gray-700'
+                      ? 'bg-white text-black hover:bg-slate-200'
+                      : 'bg-slate-800 text-white hover:bg-slate-700'
                   }`}
                 >
                   {isPlaying ? (
@@ -198,7 +198,7 @@ export default function TrackDetailPage() {
                   href={track.spotify_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-green-500 hover:bg-green-400 text-black text-sm font-semibold rounded-full transition-colors"
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-indigo-500 hover:bg-indigo-400 text-white text-sm font-semibold rounded-full transition-colors"
                 >
                   Open in Spotify
                 </a>
@@ -209,24 +209,24 @@ export default function TrackDetailPage() {
 
         {/* Metadata grid */}
         <div className="grid grid-cols-3 gap-4 mb-8">
-          <div className="bg-gray-900 rounded-lg p-4 text-center">
-            <p className="text-gray-400 text-xs uppercase tracking-wide mb-1">Duration</p>
+          <div className="bg-slate-900 rounded-lg p-4 text-center">
+            <p className="text-slate-400 text-xs uppercase tracking-wide mb-1">Duration</p>
             <p className="text-lg font-semibold">{formatDuration(track.duration_ms)}</p>
           </div>
-          <div className="bg-gray-900 rounded-lg p-4 text-center">
-            <p className="text-gray-400 text-xs uppercase tracking-wide mb-1">Track</p>
+          <div className="bg-slate-900 rounded-lg p-4 text-center">
+            <p className="text-slate-400 text-xs uppercase tracking-wide mb-1">Track</p>
             <p className="text-lg font-semibold">
               {track.track_number} of {track.total_tracks}
-              {track.disc_number > 1 && <span className="text-gray-400 text-sm"> (Disc {track.disc_number})</span>}
+              {track.disc_number > 1 && <span className="text-slate-400 text-sm"> (Disc {track.disc_number})</span>}
             </p>
           </div>
-          <div className="bg-gray-900 rounded-lg p-4 text-center">
-            <p className="text-gray-400 text-xs uppercase tracking-wide mb-1">Content</p>
+          <div className="bg-slate-900 rounded-lg p-4 text-center">
+            <p className="text-slate-400 text-xs uppercase tracking-wide mb-1">Content</p>
             <p className="text-lg font-semibold">
               {track.explicit ? (
-                <span className="inline-block px-2 py-0.5 bg-gray-700 text-white text-xs font-bold rounded uppercase">Explicit</span>
+                <span className="inline-block px-2 py-0.5 bg-slate-700 text-white text-xs font-bold rounded uppercase">Explicit</span>
               ) : (
-                <span className="text-gray-300">Clean</span>
+                <span className="text-slate-300">Clean</span>
               )}
             </p>
           </div>
@@ -234,23 +234,23 @@ export default function TrackDetailPage() {
 
         {/* Listening Stats */}
         {stats.play_count > 0 && (
-          <div className="bg-gray-900 rounded-xl p-6 mb-8">
+          <div className="bg-slate-900 rounded-xl p-6 mb-8">
             <h2 className="text-xl font-bold mb-4">Your Listening History</h2>
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
-                <p className="text-3xl font-bold text-green-400">{stats.play_count}</p>
-                <p className="text-gray-400 text-sm">{stats.play_count === 1 ? 'play' : 'plays'}</p>
+                <p className="text-3xl font-bold text-indigo-400">{stats.play_count}</p>
+                <p className="text-slate-400 text-sm">{stats.play_count === 1 ? 'play' : 'plays'}</p>
               </div>
               {stats.first_played && (
                 <div className="text-center">
                   <p className="text-lg font-semibold">{formatRelativeDate(stats.first_played)}</p>
-                  <p className="text-gray-400 text-sm">first played</p>
+                  <p className="text-slate-400 text-sm">first played</p>
                 </div>
               )}
               {stats.last_played && (
                 <div className="text-center">
                   <p className="text-lg font-semibold">{formatRelativeDate(stats.last_played)}</p>
-                  <p className="text-gray-400 text-sm">last played</p>
+                  <p className="text-slate-400 text-sm">last played</p>
                 </div>
               )}
             </div>
@@ -270,7 +270,7 @@ export default function TrackDetailPage() {
 
         {/* Audio Features section */}
         {af ? (
-          <div className="bg-gray-900 rounded-xl p-6">
+          <div className="bg-slate-900 rounded-xl p-6">
             <h2 className="text-xl font-bold mb-6">Audio Features</h2>
 
             {/* Bar meters for 0-1 features */}
@@ -286,12 +286,12 @@ export default function TrackDetailPage() {
               ] as [string, number][]).map(([label, value]) => (
                 <div key={label}>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-300">{label}</span>
-                    <span className="text-gray-400">{Math.round(value * 100)}%</span>
+                    <span className="text-slate-300">{label}</span>
+                    <span className="text-slate-400">{Math.round(value * 100)}%</span>
                   </div>
-                  <div className="bg-gray-800 rounded-full h-2.5">
+                  <div className="bg-slate-800 rounded-full h-2.5">
                     <div
-                      className="bg-green-500 rounded-full h-2.5 transition-all"
+                      className="bg-indigo-500 rounded-full h-2.5 transition-all"
                       style={{ width: `${value * 100}%` }}
                     />
                   </div>
@@ -301,28 +301,28 @@ export default function TrackDetailPage() {
 
             {/* Value cards for non-0-1 features */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="bg-gray-800 rounded-lg p-3 text-center">
-                <p className="text-gray-400 text-xs uppercase tracking-wide mb-1">Tempo</p>
+              <div className="bg-slate-800 rounded-lg p-3 text-center">
+                <p className="text-slate-400 text-xs uppercase tracking-wide mb-1">Tempo</p>
                 <p className="font-semibold">{Math.round(af.tempo)} BPM</p>
               </div>
-              <div className="bg-gray-800 rounded-lg p-3 text-center">
-                <p className="text-gray-400 text-xs uppercase tracking-wide mb-1">Key</p>
+              <div className="bg-slate-800 rounded-lg p-3 text-center">
+                <p className="text-slate-400 text-xs uppercase tracking-wide mb-1">Key</p>
                 <p className="font-semibold">{keyToString(af.key, af.mode)}</p>
               </div>
-              <div className="bg-gray-800 rounded-lg p-3 text-center">
-                <p className="text-gray-400 text-xs uppercase tracking-wide mb-1">Loudness</p>
+              <div className="bg-slate-800 rounded-lg p-3 text-center">
+                <p className="text-slate-400 text-xs uppercase tracking-wide mb-1">Loudness</p>
                 <p className="font-semibold">{af.loudness.toFixed(1)} dB</p>
               </div>
-              <div className="bg-gray-800 rounded-lg p-3 text-center">
-                <p className="text-gray-400 text-xs uppercase tracking-wide mb-1">Time Sig</p>
+              <div className="bg-slate-800 rounded-lg p-3 text-center">
+                <p className="text-slate-400 text-xs uppercase tracking-wide mb-1">Time Sig</p>
                 <p className="font-semibold">{af.time_signature}/4</p>
               </div>
             </div>
           </div>
         ) : (
-          <div className="bg-gray-900 rounded-xl p-6">
+          <div className="bg-slate-900 rounded-xl p-6">
             <h2 className="text-xl font-bold mb-3">Audio Features</h2>
-            <p className="text-gray-400 text-sm">
+            <p className="text-slate-400 text-sm">
               Audio features like danceability, energy, tempo, and key are not available for this app.
               This data requires extended Spotify API access.
             </p>

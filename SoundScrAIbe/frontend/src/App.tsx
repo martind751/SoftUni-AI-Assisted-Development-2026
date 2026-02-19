@@ -13,6 +13,7 @@ import ArtistDetailPage from './pages/ArtistDetailPage'
 import LibraryLandingPage from './pages/LibraryLandingPage'
 import LibraryGroupPage from './pages/LibraryGroupPage'
 import SearchPage from './pages/SearchPage'
+import StatsPage from './pages/StatsPage'
 
 function AuthLayout() {
   const { isLoggedIn, loading } = useAuth()
@@ -24,8 +25,8 @@ function AuthLayout() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
-        <p className="text-gray-400">Loading...</p>
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+        <p className="text-slate-400">Loading...</p>
       </div>
     )
   }
@@ -57,6 +58,7 @@ function App() {
           <Route path="/artist/:id" element={<ArtistDetailPage />} />
           <Route path="/library" element={<LibraryLandingPage />} />
           <Route path="/library/:group" element={<LibraryGroupPage />} />
+          <Route path="/stats" element={<StatsPage />} />
           <Route path="/search" element={<SearchPage />} />
         </Route>
       </Routes>

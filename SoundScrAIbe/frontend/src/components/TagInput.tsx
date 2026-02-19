@@ -50,19 +50,19 @@ export default function TagInput({ tags, onChange, suggestions }: TagInputProps)
 
   return (
     <div>
-      <p className="text-sm text-gray-400 mb-2">Tags</p>
+      <p className="text-sm text-slate-400 mb-2">Tags</p>
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-2">
           {tags.map((tag) => (
             <span
               key={tag}
-              className="inline-flex items-center gap-1 bg-green-500/20 text-green-400 text-sm px-2 py-0.5 rounded-full"
+              className="inline-flex items-center gap-1 bg-indigo-500/20 text-indigo-400 text-sm px-2 py-0.5 rounded-full"
             >
               {tag}
               <button
                 type="button"
                 onClick={() => removeTag(tag)}
-                className="hover:text-green-200 transition-colors"
+                className="hover:text-indigo-200 transition-colors"
                 aria-label={`Remove tag ${tag}`}
               >
                 <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
@@ -84,16 +84,16 @@ export default function TagInput({ tags, onChange, suggestions }: TagInputProps)
           onFocus={() => setShowSuggestions(true)}
           onKeyDown={handleKeyDown}
           placeholder="Add a tag..."
-          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-green-500 transition-colors"
+          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
         />
         {showSuggestions && filteredSuggestions.length > 0 && (
-          <div className="absolute z-10 left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-40 overflow-y-auto">
+          <div className="absolute z-10 left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-lg shadow-lg max-h-40 overflow-y-auto">
             {filteredSuggestions.map((suggestion) => (
               <button
                 key={suggestion}
                 type="button"
                 onClick={() => addTag(suggestion)}
-                className="block w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
+                className="block w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
               >
                 {suggestion}
               </button>

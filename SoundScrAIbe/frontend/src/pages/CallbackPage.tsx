@@ -37,15 +37,15 @@ export default function CallbackPage() {
   }, [navigate, checkAuth])
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+    <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
       <div className="text-center">
         {error ? (
           <div>
             <p className="text-red-400 mb-4">{error}</p>
-            <a href="/" className="text-green-400 hover:underline">Back to home</a>
+            <a href="/" className="text-indigo-400 hover:underline">Back to home</a>
           </div>
         ) : (
-          <p className="text-gray-400">Signing you in...</p>
+          <p className="text-slate-400">Signing you in...</p>
         )}
       </div>
     </div>

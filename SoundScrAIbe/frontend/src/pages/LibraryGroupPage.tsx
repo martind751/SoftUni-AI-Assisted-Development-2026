@@ -37,7 +37,7 @@ function shelfIcon(shelf: string | null): React.ReactNode {
   }
   if (shelf === 'want_to_listen') {
     return (
-      <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-green-400">
+      <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-indigo-400">
         <path d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 15zm-6.5-5a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5A.75.75 0 013.5 10zm13 0a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75z" />
       </svg>
     )
@@ -122,11 +122,11 @@ export default function LibraryGroupPage() {
   const totalPages = Math.ceil(total / PAGE_LIMIT)
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-slate-950 text-white">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <Link
           to="/library"
-          className="text-green-400 hover:text-green-300 hover:underline transition-colors text-sm mb-4 inline-block"
+          className="text-indigo-400 hover:text-indigo-300 hover:underline transition-colors text-sm mb-4 inline-block"
         >
           &larr; My Library
         </Link>
@@ -143,8 +143,8 @@ export default function LibraryGroupPage() {
                 onClick={() => setEntityType(et.key)}
                 className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
                   entityType === et.key
-                    ? 'bg-green-500 text-black font-semibold'
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                    ? 'bg-indigo-500 text-white font-semibold'
+                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
                 }`}
               >
                 {et.label}
@@ -157,7 +157,7 @@ export default function LibraryGroupPage() {
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value)}
-              className="bg-gray-800 text-gray-300 text-sm rounded-lg px-3 py-1.5 border border-gray-700 focus:outline-none focus:border-green-500"
+              className="bg-slate-800 text-slate-300 text-sm rounded-lg px-3 py-1.5 border border-slate-700 focus:outline-none focus:border-indigo-500"
             >
               {SORT_OPTIONS.map((opt) => (
                 <option key={opt.key} value={opt.key}>
@@ -178,15 +178,15 @@ export default function LibraryGroupPage() {
         {/* Loading state */}
         {loading && !error && (
           <div className="text-center py-12">
-            <p className="text-gray-400">Loading...</p>
+            <p className="text-slate-400">Loading...</p>
           </div>
         )}
 
         {/* Empty state */}
         {!loading && !error && items.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-gray-400 text-lg">No items in this group yet.</p>
-            <p className="text-gray-500 text-sm mt-2">
+            <p className="text-slate-400 text-lg">No items in this group yet.</p>
+            <p className="text-slate-500 text-sm mt-2">
               Rate, shelve, or tag music from detail pages to build your collection.
             </p>
           </div>
@@ -200,7 +200,7 @@ export default function LibraryGroupPage() {
                 <Link
                   key={`${item.entity_type}-${item.entity_id}`}
                   to={entityLink(item)}
-                  className="group bg-gray-900 rounded-lg overflow-hidden hover:brightness-110 transition-all"
+                  className="group bg-slate-900 rounded-lg overflow-hidden hover:brightness-110 transition-all"
                 >
                   {item.image_url ? (
                     <img
@@ -211,28 +211,28 @@ export default function LibraryGroupPage() {
                       }`}
                     />
                   ) : (
-                    <div className="w-full aspect-square bg-gray-800" />
+                    <div className="w-full aspect-square bg-slate-800" />
                   )}
                   <div className="p-3">
-                    <p className="text-sm font-semibold truncate group-hover:text-green-400 transition-colors">
+                    <p className="text-sm font-semibold truncate group-hover:text-indigo-400 transition-colors">
                       {item.name}
                     </p>
                     <div className="flex items-center gap-2 mt-1.5">
-                      <span className="text-xs text-gray-500 uppercase">{item.entity_type}</span>
+                      <span className="text-xs text-slate-500 uppercase">{item.entity_type}</span>
                       {item.rating !== null && (
-                        <span className="text-xs font-bold text-green-400">{item.rating}/10</span>
+                        <span className="text-xs font-bold text-indigo-400">{item.rating}/10</span>
                       )}
                       {shelfIcon(item.shelf)}
                     </div>
                     {item.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1.5">
                         {item.tags.slice(0, 3).map((tag) => (
-                          <span key={tag} className="text-xs bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded-full">
+                          <span key={tag} className="text-xs bg-indigo-500/20 text-indigo-400 px-1.5 py-0.5 rounded-full">
                             {tag}
                           </span>
                         ))}
                         {item.tags.length > 3 && (
-                          <span className="text-xs text-gray-500">+{item.tags.length - 3}</span>
+                          <span className="text-xs text-slate-500">+{item.tags.length - 3}</span>
                         )}
                       </div>
                     )}
@@ -248,18 +248,18 @@ export default function LibraryGroupPage() {
                   type="button"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page <= 1}
-                  className="px-4 py-2 text-sm rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-2 text-sm rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Previous
                 </button>
-                <span className="text-sm text-gray-400">
+                <span className="text-sm text-slate-400">
                   Page {page} of {totalPages}
                 </span>
                 <button
                   type="button"
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page >= totalPages}
-                  className="px-4 py-2 text-sm rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-2 text-sm rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Next
                 </button>

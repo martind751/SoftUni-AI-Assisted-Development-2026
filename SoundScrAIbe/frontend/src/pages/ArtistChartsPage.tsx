@@ -18,15 +18,15 @@ function CustomTooltip({ active, payload }: any) {
   const dataKey: string = payload[0].dataKey
 
   return (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg p-3">
+    <div className="bg-slate-800 border border-slate-700 rounded-lg p-3">
       <p className="text-white font-medium">{item.artist_name}</p>
-      <p className="text-green-400 text-sm">
+      <p className="text-indigo-400 text-sm">
         {dataKey === 'play_count'
           ? `${item.play_count} plays`
           : formatListeningTime(item.listening_time_ms)}
       </p>
       {item.spotify_rank > 0 && (
-        <p className="text-gray-400 text-xs mt-1">Spotify Rank: #{item.spotify_rank}</p>
+        <p className="text-slate-400 text-xs mt-1">Spotify Rank: #{item.spotify_rank}</p>
       )}
     </div>
   )
@@ -60,15 +60,15 @@ export default function ArtistChartsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
-        <p className="text-gray-400">Loading charts...</p>
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+        <p className="text-slate-400">Loading charts...</p>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-400 mb-4">{error}</p>
         </div>
@@ -86,7 +86,7 @@ export default function ArtistChartsPage() {
   const statLabel = viewMode === 'plays' ? 'Play Count' : 'Listening Time'
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-slate-950 text-white">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Artist Charts</h1>
 
@@ -98,8 +98,8 @@ export default function ArtistChartsPage() {
               onClick={() => setTimeRange(value)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 timeRange === value
-                  ? 'bg-green-500 text-black'
-                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  ? 'bg-indigo-500 text-white'
+                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
               }`}
             >
               {label}
@@ -113,8 +113,8 @@ export default function ArtistChartsPage() {
             onClick={() => setViewMode('plays')}
             className={`px-3 py-1.5 rounded text-sm transition-colors ${
               viewMode === 'plays'
-                ? 'text-white border border-green-500'
-                : 'text-gray-400 border border-gray-700 hover:border-gray-500'
+                ? 'text-white border border-indigo-500'
+                : 'text-slate-400 border border-slate-700 hover:border-slate-500'
             }`}
           >
             Play Count
@@ -123,8 +123,8 @@ export default function ArtistChartsPage() {
             onClick={() => setViewMode('time')}
             className={`px-3 py-1.5 rounded text-sm transition-colors ${
               viewMode === 'time'
-                ? 'text-white border border-green-500'
-                : 'text-gray-400 border border-gray-700 hover:border-gray-500'
+                ? 'text-white border border-indigo-500'
+                : 'text-slate-400 border border-slate-700 hover:border-slate-500'
             }`}
           >
             Listening Time
@@ -132,14 +132,14 @@ export default function ArtistChartsPage() {
         </div>
 
         {artists.length === 0 ? (
-          <p className="text-gray-400">
+          <p className="text-slate-400">
             No listening data yet. Play some music on Spotify and come back!
           </p>
         ) : (
           <>
             {/* Chart section */}
-            <div className="bg-gray-900 rounded-xl p-4 mb-8">
-              <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4">
+            <div className="bg-slate-900 rounded-xl p-4 mb-8">
+              <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-4">
                 Top Artists by {statLabel}
               </h2>
               <ResponsiveContainer width="100%" height={chartHeight}>
@@ -160,7 +160,7 @@ export default function ArtistChartsPage() {
                     tickFormatter={viewMode === 'time' ? formatListeningTime : undefined}
                   />
                   <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
-                  <Bar dataKey={dataKey} fill="#22C55E" radius={[0, 4, 4, 0]} barSize={24} />
+                  <Bar dataKey={dataKey} fill="#6366F1" radius={[0, 4, 4, 0]} barSize={24} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -170,9 +170,9 @@ export default function ArtistChartsPage() {
               {artists.map((artist, index) => (
                 <div
                   key={artist.artist_id}
-                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-900 transition-colors"
+                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-900 transition-colors"
                 >
-                  <span className="text-gray-500 text-sm w-6 text-right flex-shrink-0">
+                  <span className="text-slate-500 text-sm w-6 text-right flex-shrink-0">
                     {index + 1}
                   </span>
                   {artist.artist_image_url ? (
@@ -182,19 +182,19 @@ export default function ArtistChartsPage() {
                       className="w-10 h-10 rounded-full flex-shrink-0 object-cover"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-gray-800 flex-shrink-0" />
+                    <div className="w-10 h-10 rounded-full bg-slate-800 flex-shrink-0" />
                   )}
                   <div className="min-w-0 flex-1">
                     <p className="font-medium truncate">{artist.artist_name}</p>
                     {artist.spotify_rank > 0 && (
-                      <span className="text-xs text-gray-500 bg-gray-800 px-2 py-0.5 rounded-full">
+                      <span className="text-xs text-slate-500 bg-slate-800 px-2 py-0.5 rounded-full">
                         Spotify #{artist.spotify_rank}
                       </span>
                     )}
                   </div>
                   <div className="text-right flex-shrink-0">
-                    <p className="text-gray-300 text-sm">{artist.play_count} plays</p>
-                    <p className="text-gray-500 text-xs">{formatListeningTime(artist.listening_time_ms)}</p>
+                    <p className="text-slate-300 text-sm">{artist.play_count} plays</p>
+                    <p className="text-slate-500 text-xs">{formatListeningTime(artist.listening_time_ms)}</p>
                   </div>
                 </div>
               ))}

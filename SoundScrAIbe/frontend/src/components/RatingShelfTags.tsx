@@ -86,7 +86,7 @@ export default function RatingShelfTags({
   }
 
   return (
-    <div className="bg-gray-900 rounded-xl p-6 mb-8">
+    <div className="bg-slate-900 rounded-xl p-6 mb-8">
       <h2 className="text-xl font-bold mb-5">Your Rating & Collection</h2>
       <div className="space-y-5">
         <RatingSelector value={rating} onChange={handleRatingChange} />

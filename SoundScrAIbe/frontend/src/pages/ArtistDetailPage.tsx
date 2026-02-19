@@ -37,18 +37,18 @@ export default function ArtistDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
-        <p className="text-gray-400">Loading...</p>
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+        <p className="text-slate-400">Loading...</p>
       </div>
     )
   }
 
   if (error || !artist) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-400 mb-4">{error || 'Artist not found'}</p>
-          <Link to="/library" className="text-green-400 hover:text-green-300 hover:underline">
+          <Link to="/library" className="text-indigo-400 hover:text-indigo-300 hover:underline">
             Back to Library
           </Link>
         </div>
@@ -60,27 +60,27 @@ export default function ArtistDetailPage() {
   const stats = artist.listening_stats
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-slate-950 text-white">
       <div className="max-w-2xl mx-auto px-4 py-8">
         {/* Hero section */}
         <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 mb-8">
           {artistImage ? (
             <img src={artistImage} alt={artist.name} className="w-48 h-48 rounded-full shadow-lg flex-shrink-0 object-cover" />
           ) : (
-            <div className="w-48 h-48 rounded-full bg-gray-800 flex-shrink-0" />
+            <div className="w-48 h-48 rounded-full bg-slate-800 flex-shrink-0" />
           )}
           <div className="text-center sm:text-left">
             <h1 className="text-3xl font-bold mb-2">{artist.name}</h1>
             {artist.genres.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mb-3 justify-center sm:justify-start">
                 {artist.genres.map((genre) => (
-                  <span key={genre} className="px-2.5 py-0.5 bg-gray-800 text-gray-300 text-xs rounded-full">
+                  <span key={genre} className="px-2.5 py-0.5 bg-slate-800 text-slate-300 text-xs rounded-full">
                     {genre}
                   </span>
                 ))}
               </div>
             )}
-            <p className="text-sm text-gray-400 mb-1">
+            <p className="text-sm text-slate-400 mb-1">
               {artist.followers.toLocaleString()} followers &middot; Popularity {artist.popularity}
             </p>
           </div>
@@ -88,23 +88,23 @@ export default function ArtistDetailPage() {
 
         {/* Listening Stats */}
         {stats.play_count > 0 && (
-          <div className="bg-gray-900 rounded-xl p-6 mb-8">
+          <div className="bg-slate-900 rounded-xl p-6 mb-8">
             <h2 className="text-xl font-bold mb-4">Your Listening History</h2>
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
-                <p className="text-3xl font-bold text-green-400">{stats.play_count}</p>
-                <p className="text-gray-400 text-sm">{stats.play_count === 1 ? 'play' : 'plays'}</p>
+                <p className="text-3xl font-bold text-indigo-400">{stats.play_count}</p>
+                <p className="text-slate-400 text-sm">{stats.play_count === 1 ? 'play' : 'plays'}</p>
               </div>
               {stats.first_played && (
                 <div className="text-center">
                   <p className="text-lg font-semibold">{formatRelativeDate(stats.first_played)}</p>
-                  <p className="text-gray-400 text-sm">first played</p>
+                  <p className="text-slate-400 text-sm">first played</p>
                 </div>
               )}
               {stats.last_played && (
                 <div className="text-center">
                   <p className="text-lg font-semibold">{formatRelativeDate(stats.last_played)}</p>
-                  <p className="text-gray-400 text-sm">last played</p>
+                  <p className="text-slate-400 text-sm">last played</p>
                 </div>
               )}
             </div>
@@ -129,7 +129,7 @@ export default function ArtistDetailPage() {
               href={artist.spotify_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-green-500 hover:bg-green-400 text-black text-sm font-semibold rounded-full transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-indigo-500 hover:bg-indigo-400 text-white text-sm font-semibold rounded-full transition-colors"
             >
               Open in Spotify
             </a>
