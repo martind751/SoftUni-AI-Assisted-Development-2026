@@ -137,6 +137,12 @@ export default function ListeningHistoryPage() {
 
   const grouped = groupByDay(tracks)
 
+  const uniqueTrackIds = [...new Set(tracks.map((t) => t.id))]
+  const likedCount = uniqueTrackIds.filter((id) => likedMap[id]).length
+  const likedPercentage = uniqueTrackIds.length > 0
+    ? Math.round((likedCount / uniqueTrackIds.length) * 100)
+    : 0
+
   return (
     <div className="min-h-screen bg-gray-950 text-white">
       <div className="max-w-2xl mx-auto px-4 py-8">
@@ -146,7 +152,14 @@ export default function ListeningHistoryPage() {
         >
           &larr; Profile
         </Link>
-        <h1 className="text-3xl font-bold mt-4 mb-8">Listening History</h1>
+        <h1 className="text-3xl font-bold mt-4 mb-4">Listening History</h1>
+
+        {tracks.length > 0 && Object.keys(likedMap).length > 0 && (
+          <p className="text-gray-400 text-sm mb-6">
+            <span className="text-green-400 font-medium">{likedCount}</span> of{' '}
+            <span className="font-medium text-white">{uniqueTrackIds.length}</span> unique tracks liked ({likedPercentage}%)
+          </p>
+        )}
 
         {tracks.length === 0 ? (
           <p className="text-gray-400">No recently played tracks.</p>
