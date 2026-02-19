@@ -1,12 +1,14 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 
+	"soundscraibe/internal/spotify"
 	"soundscraibe/internal/user"
 
 	"github.com/gin-gonic/gin"
@@ -60,6 +62,12 @@ func (h *handlers) Library(c *gin.Context) {
 		argN++
 		whereFilters = append(whereFilters, fmt.Sprintf("s.status = $%d", argN))
 		args = append(args, shelf)
+	}
+
+	// Rated filter
+	rated := c.Query("rated")
+	if rated == "true" {
+		whereFilters = append(whereFilters, "r.score IS NOT NULL")
 	}
 
 	// Min rating filter
@@ -194,5 +202,164 @@ func (h *handlers) Library(c *gin.Context) {
 		"total": total,
 		"page":  page,
 		"limit": limit,
+	})
+}
+
+// fetchCovers runs a query that returns a single image_url column and collects the results.
+func (h *handlers) fetchCovers(ctx context.Context, query string, args ...interface{}) []string {
+	rows, err := h.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return []string{}
+	}
+	defer rows.Close()
+
+	var covers []string
+	for rows.Next() {
+		var url string
+		if err := rows.Scan(&url); err == nil && url != "" {
+			covers = append(covers, url)
+		}
+	}
+	if covers == nil {
+		covers = []string{}
+	}
+	return covers
+}
+
+// LibrarySummary returns item counts and recent cover art for each library group.
+func (h *handlers) LibrarySummary(c *gin.Context) {
+	u, exists := c.Get("user")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "not authenticated"})
+		return
+	}
+	currentUser := u.(*user.User)
+
+	entityType := c.Query("entity_type")
+
+	ctx := c.Request.Context()
+
+	var rated, onRotation, wantToListen int
+	countArgs := []interface{}{currentUser.ID}
+	entityFilter := ""
+	if entityType != "" && validEntityType(entityType) {
+		entityFilter = " AND em.entity_type = $2"
+		countArgs = append(countArgs, entityType)
+	}
+
+	err := h.db.QueryRowContext(ctx, fmt.Sprintf(`
+		SELECT
+			COUNT(DISTINCT CASE WHEN r.score IS NOT NULL THEN (em.entity_type, em.entity_id) END) AS rated,
+			COUNT(DISTINCT CASE WHEN s.status = 'on_rotation' THEN (em.entity_type, em.entity_id) END) AS on_rotation,
+			COUNT(DISTINCT CASE WHEN s.status = 'want_to_listen' THEN (em.entity_type, em.entity_id) END) AS want_to_listen
+		FROM entity_metadata em
+		LEFT JOIN ratings r ON r.user_id = $1 AND r.entity_type = em.entity_type AND r.entity_id = em.entity_id
+		LEFT JOIN shelves s ON s.user_id = $1 AND s.entity_type = em.entity_type AND s.entity_id = em.entity_id
+		WHERE (r.id IS NOT NULL OR s.id IS NOT NULL OR EXISTS (SELECT 1 FROM item_tags it WHERE it.user_id = $1 AND it.entity_type = em.entity_type AND it.entity_id = em.entity_id))%s
+	`, entityFilter), countArgs...).Scan(&rated, &onRotation, &wantToListen)
+	if err != nil {
+		log.Printf("failed to query library summary for user %d: %v", currentUser.ID, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to load library summary"})
+		return
+	}
+
+	// Fetch recent covers for each DB-backed group
+	ratedCoverArgs := []interface{}{currentUser.ID}
+	if entityType != "" && validEntityType(entityType) {
+		ratedCoverArgs = append(ratedCoverArgs, entityType)
+	}
+	ratedCovers := h.fetchCovers(ctx, fmt.Sprintf(`
+		SELECT em.image_url
+		FROM entity_metadata em
+		JOIN ratings r ON r.user_id = $1 AND r.entity_type = em.entity_type AND r.entity_id = em.entity_id
+		WHERE r.score IS NOT NULL%s
+		ORDER BY r.updated_at DESC
+		LIMIT 4
+	`, entityFilter), ratedCoverArgs...)
+
+	onRotationCoverArgs := []interface{}{currentUser.ID}
+	if entityType != "" && validEntityType(entityType) {
+		onRotationCoverArgs = append(onRotationCoverArgs, entityType)
+	}
+	onRotationCovers := h.fetchCovers(ctx, fmt.Sprintf(`
+		SELECT em.image_url
+		FROM entity_metadata em
+		JOIN shelves s ON s.user_id = $1 AND s.entity_type = em.entity_type AND s.entity_id = em.entity_id
+		WHERE s.status = 'on_rotation'%s
+		ORDER BY s.updated_at DESC
+		LIMIT 4
+	`, entityFilter), onRotationCoverArgs...)
+
+	wantToListenCoverArgs := []interface{}{currentUser.ID}
+	if entityType != "" && validEntityType(entityType) {
+		wantToListenCoverArgs = append(wantToListenCoverArgs, entityType)
+	}
+	wantToListenCovers := h.fetchCovers(ctx, fmt.Sprintf(`
+		SELECT em.image_url
+		FROM entity_metadata em
+		JOIN shelves s ON s.user_id = $1 AND s.entity_type = em.entity_type AND s.entity_id = em.entity_id
+		WHERE s.status = 'want_to_listen'%s
+		ORDER BY s.updated_at DESC
+		LIMIT 4
+	`, entityFilter), wantToListenCoverArgs...)
+
+	// Favorites: filter by entity_type when set
+	favorites := 0
+	favCovers := []string{}
+
+	switch entityType {
+	case "track", "":
+		// When "track" or no filter, always include tracks
+		if resp, err := spotify.GetSavedTracks(ctx, currentUser.AccessToken, 4, 0); err == nil {
+			favorites += resp.Total
+			for _, item := range resp.Items {
+				if len(item.Track.Album.Images) > 0 {
+					favCovers = append(favCovers, item.Track.Album.Images[0].URL)
+				}
+			}
+		}
+		if entityType == "" {
+			// No filter = include all types
+			if resp, err := spotify.GetSavedAlbums(ctx, currentUser.AccessToken, 1, 0); err == nil {
+				favorites += resp.Total
+			}
+			if resp, err := spotify.GetFollowedArtists(ctx, currentUser.AccessToken, 1, ""); err == nil {
+				favorites += resp.Total
+			}
+		}
+	case "album":
+		if resp, err := spotify.GetSavedAlbums(ctx, currentUser.AccessToken, 4, 0); err == nil {
+			favorites += resp.Total
+			for _, item := range resp.Items {
+				if len(item.Album.Images) > 0 {
+					favCovers = append(favCovers, item.Album.Images[0].URL)
+				}
+			}
+		}
+	case "artist":
+		if resp, err := spotify.GetFollowedArtists(ctx, currentUser.AccessToken, 4, ""); err == nil {
+			favorites += resp.Total
+			for _, item := range resp.Items {
+				if item.ImageURL() != "" {
+					favCovers = append(favCovers, item.ImageURL())
+				}
+			}
+		}
+	}
+
+	if favCovers == nil {
+		favCovers = []string{}
+	}
+
+	type groupSummary struct {
+		Count  int      `json:"count"`
+		Covers []string `json:"covers"`
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"rated":          groupSummary{Count: rated, Covers: ratedCovers},
+		"on_rotation":    groupSummary{Count: onRotation, Covers: onRotationCovers},
+		"want_to_listen": groupSummary{Count: wantToListen, Covers: wantToListenCovers},
+		"favorites":      groupSummary{Count: favorites, Covers: favCovers},
 	})
 }

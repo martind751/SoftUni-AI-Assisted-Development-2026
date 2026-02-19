@@ -23,7 +23,9 @@ Future: AI-powered insights and recommendations via Claude API.
 - **Rating System** — Rate tracks, albums, and artists 1-10 (Goodreads-style)
 - **Collections** — Mark music as "On Rotation" or "Want to Listen"
 - **Tags** — Custom user-defined tags per item (normalized, autocomplete)
-- **Library View** — Filterable/sortable grid of all your rated, shelved, and tagged music
+- **Library Landing** — Pre-screen with 4 group cards (Rated, On Rotation, Want to Listen, Favorites) showing cover art previews and item counts
+- **Library Groups** — Filterable/sortable grid per group with entity type tabs and pagination
+- **Favorites** — Browse your Spotify liked tracks, saved albums, and followed artists
 
 ### Listening Analytics
 - **Recently Played** — Synced from Spotify with local persistence
@@ -81,6 +83,8 @@ Future: AI-powered insights and recommendations via Claude API.
 | GET/PUT | `/api/tags/:entityType/:entityId` | Tag items |
 | GET | `/api/tags` | All user tags |
 | GET | `/api/library` | Filtered library (query: `entity_type`, `shelf`, `tag`, `sort`, `page`, `limit`) |
+| GET | `/api/library/summary` | Library group counts + cover art previews |
+| GET | `/api/library/favorites` | Spotify liked tracks/saved albums/followed artists (query: `entity_type`, `page`, `limit`) |
 
 ## Database Schema
 

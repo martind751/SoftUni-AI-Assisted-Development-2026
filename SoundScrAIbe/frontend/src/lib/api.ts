@@ -323,6 +323,7 @@ export async function getLibrary(params: {
   entity_type?: string
   shelf?: string
   tag?: string
+  rated?: string
   sort?: string
   page?: number
   limit?: number
@@ -333,5 +334,40 @@ export async function getLibrary(params: {
   })
   const res = await fetch(`/api/library?${searchParams}`)
   if (!res.ok) throw new Error('Failed to fetch library')
+  return res.json()
+}
+
+export interface GroupSummary {
+  count: number
+  covers: string[]
+}
+
+export interface LibrarySummary {
+  rated: GroupSummary
+  on_rotation: GroupSummary
+  want_to_listen: GroupSummary
+  favorites: GroupSummary
+}
+
+export async function getLibrarySummary(entityType?: string): Promise<LibrarySummary> {
+  const params = new URLSearchParams()
+  if (entityType) params.set('entity_type', entityType)
+  const query = params.toString()
+  const res = await fetch(`/api/library/summary${query ? '?' + query : ''}`)
+  if (!res.ok) throw new Error('Failed to fetch library summary')
+  return res.json()
+}
+
+export async function getFavorites(params: {
+  entity_type?: string
+  page?: number
+  limit?: number
+}): Promise<LibraryResponse> {
+  const searchParams = new URLSearchParams()
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== '') searchParams.set(k, String(v))
+  })
+  const res = await fetch(`/api/library/favorites?${searchParams}`)
+  if (!res.ok) throw new Error('Failed to fetch favorites')
   return res.json()
 }

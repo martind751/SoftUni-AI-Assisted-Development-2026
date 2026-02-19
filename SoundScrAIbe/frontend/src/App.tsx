@@ -10,7 +10,8 @@ import ArtistChartsPage from './pages/ArtistChartsPage'
 import TrackDetailPage from './pages/TrackDetailPage'
 import AlbumDetailPage from './pages/AlbumDetailPage'
 import ArtistDetailPage from './pages/ArtistDetailPage'
-import LibraryPage from './pages/LibraryPage'
+import LibraryLandingPage from './pages/LibraryLandingPage'
+import LibraryGroupPage from './pages/LibraryGroupPage'
 import SearchPage from './pages/SearchPage'
 
 function AuthLayout() {
@@ -54,7 +55,8 @@ function App() {
           <Route path="/track/:id" element={<TrackDetailPage />} />
           <Route path="/album/:id" element={<AlbumDetailPage />} />
           <Route path="/artist/:id" element={<ArtistDetailPage />} />
-          <Route path="/library" element={<LibraryPage />} />
+          <Route path="/library" element={<LibraryLandingPage />} />
+          <Route path="/library/:group" element={<LibraryGroupPage />} />
           <Route path="/search" element={<SearchPage />} />
         </Route>
       </Routes>

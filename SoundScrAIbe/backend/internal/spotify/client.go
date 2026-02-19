@@ -19,11 +19,15 @@ const (
 	libraryURL         = "https://api.spotify.com/v1/me/library"
 	libraryContainsURL = "https://api.spotify.com/v1/me/library/contains"
 	topArtistsURL      = "https://api.spotify.com/v1/me/top/artists"
+	topTracksURL       = "https://api.spotify.com/v1/me/top/tracks"
 	artistURL          = "https://api.spotify.com/v1/artists/"
 	trackURL           = "https://api.spotify.com/v1/tracks/"
 	albumURL           = "https://api.spotify.com/v1/albums/"
 	audioFeaturesURL   = "https://api.spotify.com/v1/audio-features/"
 	searchURL          = "https://api.spotify.com/v1/search"
+	savedTracksURL     = "https://api.spotify.com/v1/me/tracks"
+	savedAlbumsURL     = "https://api.spotify.com/v1/me/albums"
+	followedArtistsURL = "https://api.spotify.com/v1/me/following"
 )
 
 type Config struct {
@@ -209,6 +213,7 @@ type Artist struct {
 }
 
 type Album struct {
+	ID     string  `json:"id"`
 	Name   string  `json:"name"`
 	Images []Image `json:"images"`
 }
@@ -288,6 +293,21 @@ type TopArtistsResponse struct {
 	Items []TopArtist `json:"items"`
 }
 
+// TopTrack represents a track from the /me/top/tracks endpoint.
+type TopTrack struct {
+	ID           string       `json:"id"`
+	Name         string       `json:"name"`
+	DurationMs   int          `json:"duration_ms"`
+	Artists      []Artist     `json:"artists"`
+	Album        Album        `json:"album"`
+	ExternalURLs ExternalURLs `json:"external_urls"`
+}
+
+// TopTracksResponse is the response from GET /me/top/tracks.
+type TopTracksResponse struct {
+	Items []TopTrack `json:"items"`
+}
+
 // GetTopArtists fetches the user's top artists for the given time range.
 func GetTopArtists(ctx context.Context, accessToken, timeRange string, limit int) (*TopArtistsResponse, error) {
 	u := fmt.Sprintf("%s?time_range=%s&limit=%d", topArtistsURL, timeRange, limit)
@@ -316,6 +336,39 @@ func GetTopArtists(ctx context.Context, accessToken, timeRange string, limit int
 	var result TopArtistsResponse
 	if err := json.Unmarshal(body, &result); err != nil {
 		return nil, fmt.Errorf("parsing top-artists response: %w", err)
+	}
+
+	return &result, nil
+}
+
+// GetTopTracks fetches the user's top tracks for the given time range.
+func GetTopTracks(ctx context.Context, accessToken, timeRange string, limit int) (*TopTracksResponse, error) {
+	u := fmt.Sprintf("%s?time_range=%s&limit=%d", topTracksURL, timeRange, limit)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	if err != nil {
+		return nil, fmt.Errorf("creating top-tracks request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("fetching top tracks: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading top-tracks response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("spotify top-tracks error (status %d): %s", resp.StatusCode, string(body))
+	}
+
+	var result TopTracksResponse
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("parsing top-tracks response: %w", err)
 	}
 
 	return &result, nil
@@ -621,6 +674,41 @@ type SearchArtist struct {
 	ExternalURLs ExternalURLs `json:"external_urls"`
 }
 
+type SavedTrackItem struct {
+	AddedAt string    `json:"added_at"`
+	Track   FullTrack `json:"track"`
+}
+
+type SavedTracksResponse struct {
+	Items  []SavedTrackItem `json:"items"`
+	Total  int              `json:"total"`
+	Next   *string          `json:"next"`
+}
+
+type SavedAlbumItem struct {
+	AddedAt string    `json:"added_at"`
+	Album   FullAlbum `json:"album"`
+}
+
+type SavedAlbumsResponse struct {
+	Items []SavedAlbumItem `json:"items"`
+	Total int              `json:"total"`
+	Next  *string          `json:"next"`
+}
+
+type FollowedArtistsWrapper struct {
+	Artists FollowedArtistsResponse `json:"artists"`
+}
+
+type FollowedArtistsResponse struct {
+	Items   []TopArtist `json:"items"`
+	Total   int         `json:"total"`
+	Next    *string     `json:"next"`
+	Cursors *struct {
+		After string `json:"after"`
+	} `json:"cursors"`
+}
+
 // Search queries the Spotify search endpoint for tracks, albums, and/or artists.
 func Search(ctx context.Context, accessToken, query, types string, limit int) (*SearchResponse, error) {
 	params := url.Values{
@@ -658,4 +746,106 @@ func Search(ctx context.Context, accessToken, query, types string, limit int) (*
 	}
 
 	return &result, nil
+}
+
+// GetSavedTracks fetches the user's saved/liked tracks with pagination.
+func GetSavedTracks(ctx context.Context, accessToken string, limit, offset int) (*SavedTracksResponse, error) {
+	u := fmt.Sprintf("%s?limit=%d&offset=%d", savedTracksURL, limit, offset)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	if err != nil {
+		return nil, fmt.Errorf("creating saved-tracks request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("fetching saved tracks: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading saved-tracks response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("spotify saved-tracks error (status %d): %s", resp.StatusCode, string(body))
+	}
+
+	var result SavedTracksResponse
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("parsing saved-tracks response: %w", err)
+	}
+
+	return &result, nil
+}
+
+// GetSavedAlbums fetches the user's saved albums with pagination.
+func GetSavedAlbums(ctx context.Context, accessToken string, limit, offset int) (*SavedAlbumsResponse, error) {
+	u := fmt.Sprintf("%s?limit=%d&offset=%d", savedAlbumsURL, limit, offset)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	if err != nil {
+		return nil, fmt.Errorf("creating saved-albums request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("fetching saved albums: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading saved-albums response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("spotify saved-albums error (status %d): %s", resp.StatusCode, string(body))
+	}
+
+	var result SavedAlbumsResponse
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("parsing saved-albums response: %w", err)
+	}
+
+	return &result, nil
+}
+
+// GetFollowedArtists fetches the user's followed artists with cursor-based pagination.
+func GetFollowedArtists(ctx context.Context, accessToken string, limit int, after string) (*FollowedArtistsResponse, error) {
+	u := fmt.Sprintf("%s?type=artist&limit=%d", followedArtistsURL, limit)
+	if after != "" {
+		u += "&after=" + after
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	if err != nil {
+		return nil, fmt.Errorf("creating followed-artists request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("fetching followed artists: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading followed-artists response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("spotify followed-artists error (status %d): %s", resp.StatusCode, string(body))
+	}
+
+	var wrapper FollowedArtistsWrapper
+	if err := json.Unmarshal(body, &wrapper); err != nil {
+		return nil, fmt.Errorf("parsing followed-artists response: %w", err)
+	}
+
+	return &wrapper.Artists, nil
 }

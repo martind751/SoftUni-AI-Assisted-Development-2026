@@ -18,7 +18,7 @@ func (h *handlers) SpotifyAuthConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"client_id":    h.cfg.SpotifyClientID,
 		"redirect_uri": h.cfg.SpotifyRedirectURI,
-		"scope":        "user-read-private user-read-email user-read-recently-played user-library-read user-library-modify user-top-read",
+		"scope":        "user-read-private user-read-email user-read-recently-played user-library-read user-library-modify user-top-read user-follow-read",
 	})
 }
 

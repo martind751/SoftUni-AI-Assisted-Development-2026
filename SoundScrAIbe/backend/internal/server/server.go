@@ -65,6 +65,8 @@ func New(db *sql.DB, cfg *config.Config) *gin.Engine {
 			protected.GET("/tags", h.GetUserTags)
 
 			protected.GET("/search", h.Search)
+			protected.GET("/library/summary", h.LibrarySummary)
+			protected.GET("/library/favorites", h.GetFavorites)
 			protected.GET("/library", h.Library)
 		}
 	}

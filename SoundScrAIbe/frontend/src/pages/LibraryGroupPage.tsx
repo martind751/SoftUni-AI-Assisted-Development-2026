@@ -1,7 +1,16 @@
-import { Link } from 'react-router-dom'
+import { Link, useParams, Navigate, useSearchParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { getLibrary, type LibraryItem, type LibraryResponse } from '../lib/api'
+import { getLibrary, getFavorites, type LibraryItem, type LibraryResponse } from '../lib/api'
+
+const VALID_GROUPS = ['rated', 'on-rotation', 'want-to-listen', 'favorites'] as const
+
+const GROUP_TITLES: Record<string, string> = {
+  'rated': 'Rated',
+  'on-rotation': 'On Rotation',
+  'want-to-listen': 'Want to Listen',
+  'favorites': 'Favorites',
+}
 
 const ENTITY_TYPES = [
   { key: '', label: 'All' },
@@ -10,17 +19,13 @@ const ENTITY_TYPES = [
   { key: 'artist', label: 'Artists' },
 ]
 
-const SHELF_OPTIONS = [
-  { key: '', label: 'All' },
-  { key: 'on_rotation', label: 'On Rotation' },
-  { key: 'want_to_listen', label: 'Want to Listen' },
-]
-
 const SORT_OPTIONS = [
   { key: 'rating_desc', label: 'Rating (High to Low)' },
   { key: 'name_asc', label: 'Name (A-Z)' },
   { key: 'recent', label: 'Recent' },
 ]
+
+const PAGE_LIMIT = 20
 
 function shelfIcon(shelf: string | null): React.ReactNode {
   if (shelf === 'on_rotation') {
@@ -47,37 +52,70 @@ function entityLink(item: LibraryItem): string {
   return '#'
 }
 
-const PAGE_LIMIT = 20
-
-export default function LibraryPage() {
+export default function LibraryGroupPage() {
+  const { group } = useParams<{ group: string }>()
   const { isLoggedIn } = useAuth()
   const [data, setData] = useState<LibraryResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [entityType, setEntityType] = useState('')
-  const [shelf, setShelf] = useState('')
+  const [searchParams] = useSearchParams()
+  const [entityType, setEntityType] = useState(searchParams.get('type') || '')
   const [sort, setSort] = useState('recent')
   const [page, setPage] = useState(1)
 
+  const isFavorites = group === 'favorites'
+  const isValidGroup = VALID_GROUPS.includes(group as typeof VALID_GROUPS[number])
+
   useEffect(() => {
-    if (!isLoggedIn) return
+    if (!isLoggedIn || !isValidGroup) return
     setLoading(true)
-    getLibrary({
-      entity_type: entityType || undefined,
-      shelf: shelf || undefined,
-      sort: sort || undefined,
-      page,
-      limit: PAGE_LIMIT,
-    })
+    setError('')
+
+    let request: Promise<LibraryResponse>
+
+    if (group === 'favorites') {
+      request = getFavorites({ entity_type: entityType || undefined, page, limit: PAGE_LIMIT })
+    } else if (group === 'rated') {
+      request = getLibrary({
+        rated: 'true',
+        entity_type: entityType || undefined,
+        sort: sort || undefined,
+        page,
+        limit: PAGE_LIMIT,
+      })
+    } else if (group === 'on-rotation') {
+      request = getLibrary({
+        shelf: 'on_rotation',
+        entity_type: entityType || undefined,
+        sort: sort || undefined,
+        page,
+        limit: PAGE_LIMIT,
+      })
+    } else {
+      // want-to-listen
+      request = getLibrary({
+        shelf: 'want_to_listen',
+        entity_type: entityType || undefined,
+        sort: sort || undefined,
+        page,
+        limit: PAGE_LIMIT,
+      })
+    }
+
+    request
       .then((res) => setData(res))
       .catch(() => setError('Failed to load library.'))
       .finally(() => setLoading(false))
-  }, [isLoggedIn, entityType, shelf, sort, page])
+  }, [isLoggedIn, isValidGroup, group, entityType, sort, page])
 
   // Reset page when filters change
   useEffect(() => {
     setPage(1)
-  }, [entityType, shelf, sort])
+  }, [entityType, sort, group])
+
+  if (!isValidGroup) {
+    return <Navigate to="/library" replace />
+  }
 
   const items = data?.items ?? []
   const total = data?.total ?? 0
@@ -86,7 +124,13 @@ export default function LibraryPage() {
   return (
     <div className="min-h-screen bg-gray-950 text-white">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">My Library</h1>
+        <Link
+          to="/library"
+          className="text-green-400 hover:text-green-300 hover:underline transition-colors text-sm mb-4 inline-block"
+        >
+          &larr; My Library
+        </Link>
+        <h1 className="text-3xl font-bold mb-6">{GROUP_TITLES[group!]}</h1>
 
         {/* Filter bar */}
         <div className="flex flex-wrap items-center gap-3 mb-6">
@@ -108,31 +152,20 @@ export default function LibraryPage() {
             ))}
           </div>
 
-          {/* Shelf dropdown */}
-          <select
-            value={shelf}
-            onChange={(e) => setShelf(e.target.value)}
-            className="bg-gray-800 text-gray-300 text-sm rounded-lg px-3 py-1.5 border border-gray-700 focus:outline-none focus:border-green-500"
-          >
-            {SHELF_OPTIONS.map((opt) => (
-              <option key={opt.key} value={opt.key}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-
-          {/* Sort dropdown */}
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
-            className="bg-gray-800 text-gray-300 text-sm rounded-lg px-3 py-1.5 border border-gray-700 focus:outline-none focus:border-green-500"
-          >
-            {SORT_OPTIONS.map((opt) => (
-              <option key={opt.key} value={opt.key}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+          {/* Sort dropdown - hidden for favorites */}
+          {!isFavorites && (
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              className="bg-gray-800 text-gray-300 text-sm rounded-lg px-3 py-1.5 border border-gray-700 focus:outline-none focus:border-green-500"
+            >
+              {SORT_OPTIONS.map((opt) => (
+                <option key={opt.key} value={opt.key}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         {/* Error state */}
@@ -152,7 +185,7 @@ export default function LibraryPage() {
         {/* Empty state */}
         {!loading && !error && items.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-gray-400 text-lg">No items in your library yet.</p>
+            <p className="text-gray-400 text-lg">No items in this group yet.</p>
             <p className="text-gray-500 text-sm mt-2">
               Rate, shelve, or tag music from detail pages to build your collection.
             </p>

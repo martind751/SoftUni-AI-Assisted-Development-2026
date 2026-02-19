@@ -4,6 +4,14 @@ All notable changes to SoundScrAIbe are documented here. Updated after every maj
 
 ## 2026-02-19
 
+### Added
+- **Library pre-screen** — Landing page at `/library` with 4 group cards (Rated, On Rotation, Want to Listen, Favorites) showing 2x2 cover art grids and item counts
+- **Library group pages** — Each group has its own detail view at `/library/:group` with entity type tabs, sort, and pagination
+- **Favorites group** — Browse Spotify liked tracks, saved albums, and followed artists with entity type filtering
+- **Library summary endpoint** — `GET /api/library/summary` returns counts and cover art for each group
+- **Favorites endpoint** — `GET /api/library/favorites` fetches Spotify saved items by entity type
+- **Spotify API additions** — `GetSavedTracks`, `GetSavedAlbums`, `GetFollowedArtists` client functions
+
 ### Changed
 - **Reworked shelf system** — Replaced Goodreads-style shelves (listened/currently listening/want to listen) with music-native model: "On Rotation" (what you're vibing with) and "Want to Listen" (your backlog). Ratings now serve as the primary "I engaged with this" signal, making the old "Listened" shelf redundant.
 - **Migration 000006** — Removes `listened` shelf entries, renames `currently_listening` to `on_rotation`
