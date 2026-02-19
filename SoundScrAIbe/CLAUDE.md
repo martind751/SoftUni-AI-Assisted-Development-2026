@@ -101,6 +101,12 @@ When a new database migration is created, the orchestrator MUST apply it before 
 - Always DROP the old constraint BEFORE modifying data that would violate it
 - golang-migrate runs the entire `.sql` file as a single execution — order matters
 
+## Git Conventions
+
+- When committing, **never stage files that are in `.gitignore`** (e.g. `.claude/agent-memory/`, `*.exe`, `.env`, `node_modules/`)
+- Always check `git status` and exclude gitignored/untracked files that shouldn't be committed
+- Use the `martind751` GitHub account for pushing (switch with `gh auth switch --user martind751` if needed)
+
 ## Project Conventions
 
 - **Ports**: Backend 8080, Frontend dev 5173, Docker PostgreSQL 5433
