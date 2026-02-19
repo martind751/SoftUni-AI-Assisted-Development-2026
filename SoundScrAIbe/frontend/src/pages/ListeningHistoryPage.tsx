@@ -2,6 +2,10 @@ import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getRecentlyPlayed, checkLikedSongs, saveLikedSong, removeLikedSong, type RecentTrack } from '../lib/api'
+import { formatDuration } from '../lib/format'
+import PageShell from '../components/PageShell'
+import LoadingState from '../components/LoadingState'
+import ErrorState from '../components/ErrorState'
 
 function isSameDay(a: Date, b: Date): boolean {
   return (
@@ -38,12 +42,6 @@ function groupByDay(tracks: RecentTrack[]): [string, RecentTrack[]][] {
   }
 
   return Array.from(groups.entries())
-}
-
-function formatDuration(ms: number): string {
-  const minutes = Math.floor(ms / 60000)
-  const seconds = Math.floor((ms % 60000) / 1000)
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`
 }
 
 function formatTime(isoString: string): string {
@@ -107,23 +105,8 @@ export default function ListeningHistoryPage() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-        <p className="text-slate-400">Loading...</p>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-400 mb-4">{error}</p>
-        </div>
-      </div>
-    )
-  }
+  if (loading) return <LoadingState />
+  if (error) return <ErrorState message={error} />
 
   const grouped = groupByDay(tracks)
 
@@ -134,10 +117,7 @@ export default function ListeningHistoryPage() {
     : 0
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-4">Listening History</h1>
-
+    <PageShell title="Listening History">
         {tracks.length > 0 && Object.keys(likedMap).length > 0 && (
           <p className="text-slate-400 text-sm mb-6">
             <span className="text-indigo-400 font-medium">{likedCount}</span> of{' '}
@@ -198,7 +178,6 @@ export default function ListeningHistoryPage() {
             </div>
           ))
         )}
-      </div>
-    </div>
+    </PageShell>
   )
 }

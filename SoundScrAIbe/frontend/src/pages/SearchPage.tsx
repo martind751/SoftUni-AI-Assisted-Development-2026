@@ -1,18 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { search, type SearchResult, type SearchTrack, type SearchAlbum, type SearchArtist } from '../lib/api'
-
-function formatDuration(ms: number): string {
-  const minutes = Math.floor(ms / 60000)
-  const seconds = Math.floor((ms % 60000) / 1000)
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`
-}
-
-function formatFollowers(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`
-  return n.toLocaleString()
-}
+import { formatDuration, formatCompactNumber } from '../lib/format'
+import PageShell from '../components/PageShell'
+import PillGroup from '../components/PillGroup'
 
 function SearchIcon({ className = 'w-5 h-5' }: { className?: string }) {
   return (
@@ -96,7 +87,7 @@ function ArtistCard({ artist }: { artist: SearchArtist }) {
           {artist.genres.length > 0 ? artist.genres.slice(0, 3).join(', ') : 'Artist'}
         </p>
       </div>
-      <span className="text-slate-500 text-xs flex-shrink-0">{formatFollowers(artist.followers)} followers</span>
+      <span className="text-slate-500 text-xs flex-shrink-0">{formatCompactNumber(artist.followers)} followers</span>
     </Link>
   )
 }
@@ -156,8 +147,7 @@ export default function SearchPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <div className="max-w-3xl mx-auto px-4 py-8">
+    <PageShell>
         {/* Search input */}
         <div className="flex justify-center mb-8">
           <div className="relative w-full max-w-xl">
@@ -199,20 +189,13 @@ export default function SearchPage() {
         {hasResults && !loading && (
           <>
             {/* Section tabs */}
-            <div className="flex gap-2 mb-6">
-              {sections.map((section) => (
-                <button
-                  key={section.key}
-                  onClick={() => setActiveSection(section.key)}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                    activeSection === section.key
-                      ? 'bg-indigo-500 text-white font-semibold'
-                      : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                  }`}
-                >
-                  {section.label} ({section.count})
-                </button>
-              ))}
+            <div className="mb-6">
+              <PillGroup
+                options={sections.map((s) => ({ value: s.key, label: `${s.label} (${s.count})` }))}
+                value={activeSection}
+                onChange={setActiveSection}
+                size="md"
+              />
             </div>
 
             {/* Active section content */}
@@ -238,7 +221,6 @@ export default function SearchPage() {
             </div>
           </>
         )}
-      </div>
-    </div>
+    </PageShell>
   )
 }

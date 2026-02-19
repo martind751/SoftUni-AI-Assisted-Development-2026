@@ -2,11 +2,11 @@ import { Routes, Route, Outlet, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Navbar from './components/Navbar'
+import LoadingState from './components/LoadingState'
 import HomePage from './pages/HomePage'
 import CallbackPage from './pages/CallbackPage'
 import ProfilePage from './pages/ProfilePage'
 import ListeningHistoryPage from './pages/ListeningHistoryPage'
-import ArtistChartsPage from './pages/ArtistChartsPage'
 import TrackDetailPage from './pages/TrackDetailPage'
 import AlbumDetailPage from './pages/AlbumDetailPage'
 import ArtistDetailPage from './pages/ArtistDetailPage'
@@ -14,6 +14,8 @@ import LibraryLandingPage from './pages/LibraryLandingPage'
 import LibraryGroupPage from './pages/LibraryGroupPage'
 import SearchPage from './pages/SearchPage'
 import StatsPage from './pages/StatsPage'
+import RankingsPage from './pages/RankingsPage'
+import DashboardPage from './pages/DashboardPage'
 
 function AuthLayout() {
   const { isLoggedIn, loading } = useAuth()
@@ -23,13 +25,7 @@ function AuthLayout() {
     if (!loading && !isLoggedIn) navigate('/')
   }, [loading, isLoggedIn, navigate])
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-        <p className="text-slate-400">Loading...</p>
-      </div>
-    )
-  }
+  if (loading) return <LoadingState />
 
   if (!isLoggedIn) return null
 
@@ -50,15 +46,16 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/callback" element={<CallbackPage />} />
         <Route element={<AuthLayout />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/history" element={<ListeningHistoryPage />} />
-          <Route path="/artist-charts" element={<ArtistChartsPage />} />
           <Route path="/track/:id" element={<TrackDetailPage />} />
           <Route path="/album/:id" element={<AlbumDetailPage />} />
           <Route path="/artist/:id" element={<ArtistDetailPage />} />
           <Route path="/library" element={<LibraryLandingPage />} />
           <Route path="/library/:group" element={<LibraryGroupPage />} />
           <Route path="/stats" element={<StatsPage />} />
+          <Route path="/rankings" element={<RankingsPage />} />
           <Route path="/search" element={<SearchPage />} />
         </Route>
       </Routes>

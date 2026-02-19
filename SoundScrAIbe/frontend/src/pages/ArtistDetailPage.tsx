@@ -1,24 +1,12 @@
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getArtist, type ArtistDetail } from '../lib/api'
+import { formatRelativeDate } from '../lib/format'
 import RatingShelfTags from '../components/RatingShelfTags'
-
-function formatRelativeDate(isoString: string): string {
-  const date = new Date(isoString)
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-  if (diffDays === 0) return 'Today'
-  if (diffDays === 1) return 'Yesterday'
-  if (diffDays < 7) return `${diffDays} days ago`
-  if (diffDays < 30) {
-    const weeks = Math.floor(diffDays / 7)
-    return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`
-  }
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
+import LoadingState from '../components/LoadingState'
+import ErrorState from '../components/ErrorState'
+import PageShell from '../components/PageShell'
 
 export default function ArtistDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -35,33 +23,15 @@ export default function ArtistDetailPage() {
       .finally(() => setLoading(false))
   }, [isLoggedIn, id])
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-        <p className="text-slate-400">Loading...</p>
-      </div>
-    )
-  }
+  if (loading) return <LoadingState />
 
-  if (error || !artist) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-400 mb-4">{error || 'Artist not found'}</p>
-          <Link to="/library" className="text-indigo-400 hover:text-indigo-300 hover:underline">
-            Back to Library
-          </Link>
-        </div>
-      </div>
-    )
-  }
+  if (error || !artist) return <ErrorState message={error || 'Artist not found'} backTo="/library" backLabel="Back to Library" />
 
   const artistImage = artist.images.length > 0 ? artist.images[0].url : ''
   const stats = artist.listening_stats
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <div className="max-w-2xl mx-auto px-4 py-8">
+    <PageShell narrow>
         {/* Hero section */}
         <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 mb-8">
           {artistImage ? (
@@ -135,7 +105,6 @@ export default function ArtistDetailPage() {
             </a>
           </div>
         )}
-      </div>
-    </div>
+    </PageShell>
   )
 }

@@ -17,11 +17,13 @@
 
 ## Design System
 - Dark theme: `bg-gray-950` page bg, `bg-gray-900` cards, `bg-gray-800` inputs/sub-cards
-- Accent: `green-400` (text/links), `green-500` (buttons/fills)
+- Accent: `indigo-400` (text/links), `indigo-500` (buttons/fills)
+- Gradient: `from-indigo-400 to-violet-500` (hero title)
 - Card pattern: `bg-gray-900 rounded-xl p-6 mb-8`
 - Pill buttons: `rounded-full` with `px-3 py-1.5 text-sm`
-- Selected state: `bg-green-500 text-black font-semibold`
-- Links: `text-green-400 hover:text-green-300 hover:underline transition-colors`
+- Selected state: `bg-indigo-500 text-white font-semibold`
+- Links: `text-indigo-400 hover:text-indigo-300 hover:underline transition-colors`
+- Recharts bar fill hex: `#6366F1` (indigo-500)
 
 ## Auth Pattern
 - `useAuth()` hook from AuthContext

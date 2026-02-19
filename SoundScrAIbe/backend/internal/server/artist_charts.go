@@ -139,14 +139,16 @@ func syncListeningHistory(ctx context.Context, db *sql.DB, currentUser *user.Use
 
 		for _, artist := range item.Track.Artists {
 			_, err := db.ExecContext(ctx,
-				`INSERT INTO listening_history (user_id, track_id, track_name, artist_id, artist_name, duration_ms, played_at)
-				 VALUES ($1, $2, $3, $4, $5, $6, $7)
-				 ON CONFLICT (user_id, track_id, artist_id, played_at) DO NOTHING`,
+				`INSERT INTO listening_history (user_id, track_id, track_name, artist_id, artist_name, album_id, album_name, duration_ms, played_at)
+				 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+				 ON CONFLICT (user_id, track_id, artist_id, played_at) DO UPDATE SET album_id = EXCLUDED.album_id, album_name = EXCLUDED.album_name`,
 				currentUser.ID,
 				item.Track.ID,
 				item.Track.Name,
 				artist.ID,
 				artist.Name,
+				item.Track.Album.ID,
+				item.Track.Album.Name,
 				item.Track.DurationMs,
 				playedAt,
 			)

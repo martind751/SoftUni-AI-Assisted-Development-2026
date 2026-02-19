@@ -3,6 +3,9 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getAlbum, type AlbumDetail } from '../lib/api'
 import RatingShelfTags from '../components/RatingShelfTags'
+import LoadingState from '../components/LoadingState'
+import ErrorState from '../components/ErrorState'
+import PageShell from '../components/PageShell'
 
 function formatAlbumType(type: string): string {
   if (type === 'single') return 'Single'
@@ -25,32 +28,14 @@ export default function AlbumDetailPage() {
       .finally(() => setLoading(false))
   }, [isLoggedIn, id])
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-        <p className="text-slate-400">Loading...</p>
-      </div>
-    )
-  }
+  if (loading) return <LoadingState />
 
-  if (error || !album) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-400 mb-4">{error || 'Album not found'}</p>
-          <Link to="/library" className="text-indigo-400 hover:text-indigo-300 hover:underline">
-            Back to Library
-          </Link>
-        </div>
-      </div>
-    )
-  }
+  if (error || !album) return <ErrorState message={error || 'Album not found'} backTo="/library" backLabel="Back to Library" />
 
   const coverImage = album.images.length > 0 ? album.images[0].url : ''
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <div className="max-w-2xl mx-auto px-4 py-8">
+    <PageShell narrow>
         {/* Hero section */}
         <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 mb-8">
           {coverImage ? (
@@ -121,7 +106,6 @@ export default function AlbumDetailPage() {
             </a>
           </div>
         )}
-      </div>
-    </div>
+    </PageShell>
   )
 }

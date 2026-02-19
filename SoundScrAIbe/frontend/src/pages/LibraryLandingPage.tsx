@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getLibrarySummary, type LibrarySummary } from '../lib/api'
+import PillGroup from '../components/PillGroup'
+import PageShell from '../components/PageShell'
 
 const GROUPS = [
   { key: 'rated', label: 'Rated', countKey: 'rated' as keyof LibrarySummary },
@@ -10,11 +12,11 @@ const GROUPS = [
   { key: 'favorites', label: 'Favorites', countKey: 'favorites' as keyof LibrarySummary },
 ]
 
-const ENTITY_TYPES = [
-  { key: '', label: 'All' },
-  { key: 'track', label: 'Tracks' },
-  { key: 'album', label: 'Albums' },
-  { key: 'artist', label: 'Artists' },
+const ENTITY_TYPE_OPTIONS = [
+  { value: '', label: 'All' },
+  { value: 'track', label: 'Tracks' },
+  { value: 'album', label: 'Albums' },
+  { value: 'artist', label: 'Artists' },
 ]
 
 function CoverGrid({ covers }: { covers: string[] }) {
@@ -51,26 +53,10 @@ export default function LibraryLandingPage() {
   }, [isLoggedIn, entityType])
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">My Library</h1>
-
+    <PageShell title="My Library">
         {/* Entity type filter tabs */}
-        <div className="flex gap-1.5 mb-6">
-          {ENTITY_TYPES.map((et) => (
-            <button
-              key={et.key}
-              type="button"
-              onClick={() => setEntityType(et.key)}
-              className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
-                entityType === et.key
-                  ? 'bg-indigo-500 text-white font-semibold'
-                  : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-              }`}
-            >
-              {et.label}
-            </button>
-          ))}
+        <div className="mb-6">
+          <PillGroup options={ENTITY_TYPE_OPTIONS} value={entityType} onChange={setEntityType} size="md" />
         </div>
 
         {error && (
@@ -111,7 +97,6 @@ export default function LibraryLandingPage() {
             })}
           </div>
         )}
-      </div>
-    </div>
+    </PageShell>
   )
 }

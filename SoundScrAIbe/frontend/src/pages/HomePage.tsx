@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { getSpotifyAuthConfig } from '../lib/api'
 import { generateCodeVerifier, generateCodeChallenge } from '../lib/pkce'
-import Navbar from '../components/Navbar'
+import LoadingState from '../components/LoadingState'
 
 function StarIcon() {
   return (
@@ -45,13 +45,6 @@ const FEATURES = [
     title: 'Tag & Discover',
     description: 'Create custom tags to categorize your music and discover patterns in your taste.',
   },
-]
-
-const QUICK_LINKS = [
-  { label: 'Library', description: 'Browse your rated and shelved music', path: '/library' },
-  { label: 'Listening History', description: 'See your recently played tracks', path: '/history' },
-  { label: 'Artist Charts', description: 'Your most listened-to artists', path: '/artist-charts' },
-  { label: 'Search Music', description: 'Find tracks, albums, and artists', path: '/search' },
 ]
 
 function LoggedOutHome() {
@@ -110,66 +103,11 @@ function LoggedOutHome() {
   )
 }
 
-function LoggedInHome() {
-  const { user } = useAuth()
-
-  return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <Navbar />
-      <div className="max-w-3xl mx-auto px-4 py-10">
-        {/* Welcome header */}
-        <div className="flex items-center gap-4 mb-10">
-          {user?.avatar_url && (
-            <img
-              src={user.avatar_url}
-              alt={user.display_name}
-              className="w-14 h-14 rounded-full object-cover"
-            />
-          )}
-          <div>
-            <h1 className="text-2xl font-bold">Welcome back, {user?.display_name}</h1>
-            <p className="text-slate-400 text-sm">What do you want to explore today?</p>
-          </div>
-        </div>
-
-        {/* Quick links */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {QUICK_LINKS.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className="bg-slate-900 hover:bg-slate-800 rounded-xl p-5 transition-colors group"
-            >
-              <h3 className="text-white font-semibold mb-1 group-hover:text-indigo-400 transition-colors">
-                {link.label}
-              </h3>
-              <p className="text-slate-400 text-sm">{link.description}</p>
-            </Link>
-          ))}
-        </div>
-
-        {/* Tip */}
-        <div className="mt-10 bg-slate-900 rounded-xl p-6 border border-slate-800">
-          <p className="text-slate-400 text-sm text-center">
-            Get started by searching for music and rating it. Build your personal music library over time.
-          </p>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function HomePage() {
   const { isLoggedIn, loading } = useAuth()
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-        <p className="text-slate-400">Loading...</p>
-      </div>
-    )
-  }
+  if (loading) return <LoadingState />
 
-  if (isLoggedIn) return <LoggedInHome />
+  if (isLoggedIn) return <Navigate to="/dashboard" replace />
   return <LoggedOutHome />
 }

@@ -2,6 +2,8 @@ import { Link, useParams, Navigate, useSearchParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getLibrary, getFavorites, type LibraryItem, type LibraryResponse } from '../lib/api'
+import PillGroup from '../components/PillGroup'
+import PageShell from '../components/PageShell'
 
 const VALID_GROUPS = ['rated', 'on-rotation', 'want-to-listen', 'favorites'] as const
 
@@ -12,11 +14,11 @@ const GROUP_TITLES: Record<string, string> = {
   'favorites': 'Favorites',
 }
 
-const ENTITY_TYPES = [
-  { key: '', label: 'All' },
-  { key: 'track', label: 'Tracks' },
-  { key: 'album', label: 'Albums' },
-  { key: 'artist', label: 'Artists' },
+const ENTITY_TYPE_OPTIONS = [
+  { value: '', label: 'All' },
+  { value: 'track', label: 'Tracks' },
+  { value: 'album', label: 'Albums' },
+  { value: 'artist', label: 'Artists' },
 ]
 
 const SORT_OPTIONS = [
@@ -122,8 +124,7 @@ export default function LibraryGroupPage() {
   const totalPages = Math.ceil(total / PAGE_LIMIT)
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+    <PageShell>
         <Link
           to="/library"
           className="text-indigo-400 hover:text-indigo-300 hover:underline transition-colors text-sm mb-4 inline-block"
@@ -135,22 +136,7 @@ export default function LibraryGroupPage() {
         {/* Filter bar */}
         <div className="flex flex-wrap items-center gap-3 mb-6">
           {/* Entity type tabs */}
-          <div className="flex gap-1.5">
-            {ENTITY_TYPES.map((et) => (
-              <button
-                key={et.key}
-                type="button"
-                onClick={() => setEntityType(et.key)}
-                className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
-                  entityType === et.key
-                    ? 'bg-indigo-500 text-white font-semibold'
-                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-                }`}
-              >
-                {et.label}
-              </button>
-            ))}
-          </div>
+          <PillGroup options={ENTITY_TYPE_OPTIONS} value={entityType} onChange={setEntityType} size="md" />
 
           {/* Sort dropdown - hidden for favorites */}
           {!isFavorites && (
@@ -267,7 +253,6 @@ export default function LibraryGroupPage() {
             )}
           </>
         )}
-      </div>
-    </div>
+    </PageShell>
   )
 }

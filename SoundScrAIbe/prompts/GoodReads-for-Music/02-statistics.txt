@@ -1,0 +1,8 @@
+Plan a new feature set the app: user listening statistics, inspired by stats.fm. Look at the attached screenshots for reference.
+
+Features:
+1. Stats dashboard — streams, minutes, tracks, artists, albums counts with time filters (day/week/month/year/lifetime) and period-over-period % changes
+2. Top rankings — top tracks/artists/albums/genres with rank, cover art, play count, minutes, and time filters (4 weeks/6 months/lifetime)
+3. Listening clocks — 24h circular visualizations of when the user listens
+
+Create a detailed implementation plan and ofcourse make sure and before start implementing make sure that we have all the available information from the api or we can calculate it on our side 

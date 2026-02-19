@@ -2,35 +2,17 @@ import { Link, useParams } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getTrack, saveLikedSong, removeLikedSong, type TrackDetail } from '../lib/api'
+import { formatDuration, formatRelativeDate } from '../lib/format'
 import RatingShelfTags from '../components/RatingShelfTags'
-
-function formatDuration(ms: number): string {
-  const minutes = Math.floor(ms / 60000)
-  const seconds = Math.floor((ms % 60000) / 1000)
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`
-}
+import LoadingState from '../components/LoadingState'
+import ErrorState from '../components/ErrorState'
+import PageShell from '../components/PageShell'
 
 const KEY_NAMES = ['C', 'C#/Db', 'D', 'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab', 'A', 'A#/Bb', 'B']
 
 function keyToString(key: number, mode: number): string {
   if (key < 0 || key > 11) return 'Unknown'
   return `${KEY_NAMES[key]} ${mode === 1 ? 'Major' : 'Minor'}`
-}
-
-function formatRelativeDate(isoString: string): string {
-  const date = new Date(isoString)
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-  if (diffDays === 0) return 'Today'
-  if (diffDays === 1) return 'Yesterday'
-  if (diffDays < 7) return `${diffDays} days ago`
-  if (diffDays < 30) {
-    const weeks = Math.floor(diffDays / 7)
-    return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`
-  }
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
 function HeartIcon({ filled }: { filled: boolean }) {
@@ -107,33 +89,15 @@ export default function TrackDetailPage() {
     setIsPlaying(true)
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-        <p className="text-slate-400">Loading...</p>
-      </div>
-    )
-  }
+  if (loading) return <LoadingState />
 
-  if (error || !track) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-400 mb-4">{error || 'Track not found'}</p>
-          <Link to="/history" className="text-indigo-400 hover:text-indigo-300 hover:underline">
-            Back to Listening History
-          </Link>
-        </div>
-      </div>
-    )
-  }
+  if (error || !track) return <ErrorState message={error || 'Track not found'} backTo="/history" backLabel="Back to Listening History" />
 
   const af = track.audio_features
   const stats = track.listening_stats
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <div className="max-w-2xl mx-auto px-4 py-8">
+    <PageShell narrow>
         {/* Hero section */}
         <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 mb-8">
           {track.album_cover ? (
@@ -328,7 +292,6 @@ export default function TrackDetailPage() {
             </p>
           </div>
         )}
-      </div>
-    </div>
+    </PageShell>
   )
 }

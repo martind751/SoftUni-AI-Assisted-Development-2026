@@ -371,3 +371,105 @@ export async function getFavorites(params: {
   if (!res.ok) throw new Error('Failed to fetch favorites')
   return res.json()
 }
+
+// --- Stats types ---
+
+export type StatsPeriod = 'day' | 'week' | 'month' | 'year' | 'lifetime'
+
+export interface StatValue {
+  value: number
+  change_pct: number | null
+}
+
+export interface StatsOverview {
+  period: StatsPeriod
+  stats: {
+    streams: StatValue
+    minutes: StatValue
+    hours: StatValue
+    different_tracks: StatValue
+    different_artists: StatValue
+    different_albums: StatValue
+  }
+}
+
+export type SpotifyTopType = 'tracks' | 'artists'
+export type MyTopType = 'tracks' | 'artists' | 'albums' | 'genres'
+
+export interface SpotifyTopItem {
+  rank: number
+  id: string
+  name: string
+  subtitle?: string
+  image_url?: string
+}
+
+export interface SpotifyTopResponse {
+  type: string
+  time_range: string
+  items: SpotifyTopItem[]
+}
+
+export interface MyTopItem {
+  rank: number
+  id?: string
+  name: string
+  subtitle?: string
+  image_url?: string
+  play_count: number
+  total_ms: number
+}
+
+export interface MyTopResponse {
+  type: string
+  time_range: string
+  items: MyTopItem[]
+}
+
+export interface ClockHour {
+  hour: number
+  streams: number
+  minutes: number
+}
+
+export interface ListeningClock {
+  hours: ClockHour[]
+}
+
+// --- Stats fetch functions ---
+
+export async function getStatsOverview(period: StatsPeriod = 'week'): Promise<StatsOverview> {
+  const res = await fetch(`/api/stats/overview?period=${period}`)
+  if (!res.ok) throw new Error('Failed to fetch stats overview')
+  return res.json()
+}
+
+export async function getSpotifyTop(
+  type: SpotifyTopType,
+  timeRange: TimeRange = 'medium_term',
+  limit = 50,
+): Promise<SpotifyTopResponse> {
+  const res = await fetch(`/api/stats/spotify-top?type=${type}&time_range=${timeRange}&limit=${limit}`, {
+    credentials: 'include',
+  })
+  if (!res.ok) throw new Error('Failed to fetch Spotify top')
+  return res.json()
+}
+
+export async function getMyTop(
+  type: MyTopType,
+  timeRange: TimeRange = 'medium_term',
+  limit = 50,
+): Promise<MyTopResponse> {
+  const res = await fetch(`/api/stats/my-top?type=${type}&time_range=${timeRange}&limit=${limit}`, {
+    credentials: 'include',
+  })
+  if (!res.ok) throw new Error('Failed to fetch my top')
+  return res.json()
+}
+
+export async function getListeningClock(): Promise<ListeningClock> {
+  const res = await fetch('/api/stats/clock')
+  if (!res.ok) throw new Error('Failed to fetch listening clock')
+  return res.json()
+}

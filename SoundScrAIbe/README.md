@@ -28,8 +28,10 @@ Future: AI-powered insights and recommendations via Claude API.
 - **Favorites** — Browse your Spotify liked tracks, saved albums, and followed artists
 
 ### Listening Analytics
+- **Stats Dashboard** — Aggregate stats (streams, minutes, hours, unique tracks/artists/albums) with period filters (day/week/month/year/lifetime) and period-over-period % changes
+- **Rankings** — Two-section page: "Spotify Top" (Spotify's algorithmic rankings for tracks/artists) and "My Listening" (DB-tracked play counts for tracks/artists/albums/genres). Time filters: 4 weeks, 6 months, all time
+- **Listening Clocks** — 24-hour radial visualizations showing when you listen (streams and minutes by hour)
 - **Recently Played** — Synced from Spotify with local persistence
-- **Artist Charts** — Top artists by time range (short/medium/long term) with play count visualization (Recharts)
 - **Listening Stats** — Per-track play count, first/last played timestamps
 
 ### Detail Pages
@@ -85,6 +87,10 @@ Future: AI-powered insights and recommendations via Claude API.
 | GET | `/api/library` | Filtered library (query: `entity_type`, `shelf`, `tag`, `sort`, `page`, `limit`) |
 | GET | `/api/library/summary` | Library group counts + cover art previews |
 | GET | `/api/library/favorites` | Spotify liked tracks/saved albums/followed artists (query: `entity_type`, `page`, `limit`) |
+| GET | `/api/stats/overview` | Aggregate listening stats (query: `period`: day/week/month/year/lifetime) |
+| GET | `/api/stats/spotify-top` | Spotify's top tracks/artists (query: `type`: tracks/artists, `time_range`, `limit`) |
+| GET | `/api/stats/my-top` | DB-tracked top items (query: `type`: tracks/artists/albums/genres, `time_range`, `limit`) |
+| GET | `/api/stats/clock` | 24-hour listening distribution |
 
 ## Database Schema
 

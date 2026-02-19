@@ -6,6 +6,10 @@ All notable changes to SoundScrAIbe are documented here. Updated after every maj
 
 ### Changed
 - **Color scheme rebrand** — Replaced Spotify green accent (`green-400/500`) with Indigo/Deep Purple (`indigo-400/500`, `violet-500`) to give SoundScrAIbe its own visual identity. Migrated all background/text/border colors from `gray-*` to `slate-*` for a cooler, more cohesive dark theme. Updated Recharts chart fills to match. 18 files updated across components and pages.
+- **Stats page simplified** — Removed tab system, now directly shows overview stat cards + listening activity bar charts (replaced broken radar charts with clean 24h bar charts)
+- **Rankings page split** — Separated into two honest sections: "Spotify Top" (pure Spotify algorithmic rankings for tracks/artists, no fake play counts) and "My Listening" (real DB-tracked play counts for tracks/artists/albums/genres). Removed chart view toggle. New endpoints: `GET /api/stats/spotify-top`, `GET /api/stats/my-top` (replaced old `/api/stats/top`)
+- **Reusable UI components** — Created `PillGroup` and `ToggleGroup` components to standardize pill/toggle button styles across all pages (Stats, Rankings, Search, Library). Hierarchical sizing: lg/md/sm
+- **Rankings as separate page** — Moved rankings from Stats page tab to its own `/rankings` route with dedicated navbar entry (trophy icon)
 
 ## 2026-02-19
 
