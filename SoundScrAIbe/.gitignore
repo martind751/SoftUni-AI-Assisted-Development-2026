@@ -11,9 +11,6 @@ frontend/dist/
 .env.*
 !.env.example
 
-# Claude Code
-.claude/agent-memory/
-
 # IDE
 .vscode/
 .idea/

@@ -103,7 +103,7 @@ When a new database migration is created, the orchestrator MUST apply it before 
 
 ## Git Conventions
 
-- When committing, **never stage files that are in `.gitignore`** (e.g. `.claude/agent-memory/`, `*.exe`, `.env`, `node_modules/`)
+- When committing, **never stage files that are in `.gitignore`** (e.g. `*.exe`, `.env`, `node_modules/`)
 - Always check `git status` and exclude gitignored/untracked files that shouldn't be committed
 - Use the `martind751` GitHub account for pushing (switch with `gh auth switch --user martind751` if needed)
 
