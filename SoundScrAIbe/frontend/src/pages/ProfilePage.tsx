@@ -56,9 +56,16 @@ export default function ProfilePage() {
         </div>
         <Link
           to="/history"
-          className="text-green-400 hover:text-green-300 hover:underline transition-colors inline-block mb-6"
+          className="text-green-400 hover:text-green-300 hover:underline transition-colors inline-block mb-4"
         >
           Listening History &rarr;
+        </Link>
+        <br />
+        <Link
+          to="/artist-charts"
+          className="text-green-400 hover:text-green-300 hover:underline transition-colors inline-block mb-6"
+        >
+          Artist Charts &rarr;
         </Link>
         <br />
         <button

@@ -72,3 +72,26 @@ export async function removeLikedSong(trackId: string): Promise<void> {
   const res = await fetch(`/api/liked-songs/${trackId}`, { method: 'DELETE' })
   if (!res.ok) throw new Error('Failed to remove track')
 }
+
+export type TimeRange = 'short_term' | 'medium_term' | 'long_term'
+
+export interface ArtistChartItem {
+  artist_id: string
+  artist_name: string
+  artist_image_url: string
+  play_count: number
+  listening_time_ms: number
+  spotify_rank: number
+}
+
+export interface ArtistChartsData {
+  time_range: TimeRange
+  synced_at: string
+  artists: ArtistChartItem[]
+}
+
+export async function getArtistCharts(timeRange: TimeRange = 'medium_term'): Promise<ArtistChartsData> {
+  const res = await fetch(`/api/artist-charts?time_range=${timeRange}`)
+  if (!res.ok) throw new Error('Failed to fetch artist charts')
+  return res.json()
+}

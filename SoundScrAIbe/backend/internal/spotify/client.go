@@ -17,6 +17,8 @@ const (
 	recentlyPlayedURL  = "https://api.spotify.com/v1/me/player/recently-played"
 	libraryURL         = "https://api.spotify.com/v1/me/library"
 	libraryContainsURL = "https://api.spotify.com/v1/me/library/contains"
+	topArtistsURL      = "https://api.spotify.com/v1/me/top/artists"
+	artistURL          = "https://api.spotify.com/v1/artists/"
 )
 
 type Config struct {
@@ -197,12 +199,101 @@ type Track struct {
 }
 
 type Artist struct {
+	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
 type Album struct {
 	Name   string  `json:"name"`
 	Images []Image `json:"images"`
+}
+
+// TopArtist represents an artist from the /me/top/artists endpoint.
+type TopArtist struct {
+	ID         string    `json:"id"`
+	Name       string    `json:"name"`
+	Genres     []string  `json:"genres"`
+	Popularity int       `json:"popularity"`
+	Followers  Followers `json:"followers"`
+	Images     []Image   `json:"images"`
+}
+
+// ImageURL returns the URL of the first image, or empty string if none.
+func (a *TopArtist) ImageURL() string {
+	if len(a.Images) > 0 {
+		return a.Images[0].URL
+	}
+	return ""
+}
+
+// TopArtistsResponse is the response from GET /me/top/artists.
+type TopArtistsResponse struct {
+	Items []TopArtist `json:"items"`
+}
+
+// GetTopArtists fetches the user's top artists for the given time range.
+func GetTopArtists(ctx context.Context, accessToken, timeRange string, limit int) (*TopArtistsResponse, error) {
+	u := fmt.Sprintf("%s?time_range=%s&limit=%d", topArtistsURL, timeRange, limit)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	if err != nil {
+		return nil, fmt.Errorf("creating top-artists request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("fetching top artists: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading top-artists response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("spotify top-artists error (status %d): %s", resp.StatusCode, string(body))
+	}
+
+	var result TopArtistsResponse
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("parsing top-artists response: %w", err)
+	}
+
+	return &result, nil
+}
+
+// GetArtist fetches a single artist by ID (public endpoint, no special scope needed).
+func GetArtist(ctx context.Context, accessToken, artistID string) (*TopArtist, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, artistURL+artistID, nil)
+	if err != nil {
+		return nil, fmt.Errorf("creating artist request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("fetching artist: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading artist response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("spotify artist error (status %d): %s", resp.StatusCode, string(body))
+	}
+
+	var result TopArtist
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("parsing artist response: %w", err)
+	}
+
+	return &result, nil
 }
 
 // CheckSavedTracks checks if the given track IDs are saved in the user's library.

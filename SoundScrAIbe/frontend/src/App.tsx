@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage'
 import CallbackPage from './pages/CallbackPage'
 import ProfilePage from './pages/ProfilePage'
 import ListeningHistoryPage from './pages/ListeningHistoryPage'
+import ArtistChartsPage from './pages/ArtistChartsPage'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/callback" element={<CallbackPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/history" element={<ListeningHistoryPage />} />
+        <Route path="/artist-charts" element={<ArtistChartsPage />} />
       </Routes>
     </AuthProvider>
   )

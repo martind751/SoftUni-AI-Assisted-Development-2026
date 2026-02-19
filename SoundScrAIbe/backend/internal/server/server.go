@@ -47,6 +47,7 @@ func New(db *sql.DB, cfg *config.Config) *gin.Engine {
 			protected.GET("/liked-songs/check", h.CheckLikedSongs)
 			protected.PUT("/liked-songs/:trackId", h.SaveLikedSong)
 			protected.DELETE("/liked-songs/:trackId", h.RemoveLikedSong)
+			protected.GET("/artist-charts", h.ArtistCharts)
 		}
 	}
 
