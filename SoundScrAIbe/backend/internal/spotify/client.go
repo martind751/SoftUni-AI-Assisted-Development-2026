@@ -5,12 +5,50 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
 )
+
+// doWithRetry executes an HTTP request, retrying on 429 with Retry-After backoff.
+// Retries up to 3 times.
+func doWithRetry(client *http.Client, req *http.Request) (*http.Response, error) {
+	for attempt := 0; attempt < 3; attempt++ {
+		resp, err := client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+		if resp.StatusCode != http.StatusTooManyRequests {
+			return resp, nil
+		}
+		resp.Body.Close()
+
+		// Parse Retry-After header (seconds), default to 2^attempt seconds
+		wait := time.Duration(1<<uint(attempt)) * time.Second
+		if ra := resp.Header.Get("Retry-After"); ra != "" {
+			if secs, err := strconv.Atoi(ra); err == nil {
+				wait = time.Duration(secs) * time.Second
+			}
+		}
+		log.Printf("spotify rate limited, retrying in %v (attempt %d/3)", wait, attempt+1)
+		time.Sleep(wait)
+
+		// Rebuild request body for retry since it was already consumed
+		// For GET requests, body is nil so no issue
+		// For POST requests with form data, we need the original body
+		if req.GetBody != nil {
+			body, err := req.GetBody()
+			if err != nil {
+				return nil, fmt.Errorf("rebuilding request body for retry: %w", err)
+			}
+			req.Body = body
+		}
+	}
+	return nil, fmt.Errorf("spotify rate limit: max retries exceeded")
+}
 
 const (
 	tokenURL          = "https://accounts.spotify.com/api/token"
@@ -77,8 +115,12 @@ func (c *Config) ExchangeCode(ctx context.Context, code, codeVerifier string) (*
 		"grant_type":    {"authorization_code"},
 		"code":          {code},
 		"redirect_uri":  {c.RedirectURI},
-		"client_id":     {c.ClientID},
 		"code_verifier": {codeVerifier},
+	}
+
+	// Public client: send client_id in body. Confidential client: use Basic Auth.
+	if c.ClientSecret == "" {
+		data.Set("client_id", c.ClientID)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, tokenURL, strings.NewReader(data.Encode()))
@@ -87,13 +129,12 @@ func (c *Config) ExchangeCode(ctx context.Context, code, codeVerifier string) (*
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	// Include client_secret for confidential apps
 	if c.ClientSecret != "" {
 		req.SetBasicAuth(c.ClientID, c.ClientSecret)
 	}
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := doWithRetry(client, req)
 	if err != nil {
 		return nil, fmt.Errorf("exchanging code: %w", err)
 	}
@@ -121,7 +162,11 @@ func (c *Config) RefreshAccessToken(ctx context.Context, refreshToken string) (*
 	data := url.Values{
 		"grant_type":    {"refresh_token"},
 		"refresh_token": {refreshToken},
-		"client_id":     {c.ClientID},
+	}
+
+	// Public client: send client_id in body. Confidential client: use Basic Auth.
+	if c.ClientSecret == "" {
+		data.Set("client_id", c.ClientID)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, tokenURL, strings.NewReader(data.Encode()))
@@ -135,7 +180,7 @@ func (c *Config) RefreshAccessToken(ctx context.Context, refreshToken string) (*
 	}
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := doWithRetry(client, req)
 	if err != nil {
 		return nil, fmt.Errorf("refreshing token: %w", err)
 	}
@@ -167,7 +212,7 @@ func GetProfile(ctx context.Context, accessToken string) (*Profile, error) {
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := doWithRetry(client, req)
 	if err != nil {
 		return nil, fmt.Errorf("fetching profile: %w", err)
 	}
@@ -318,7 +363,7 @@ func GetTopArtists(ctx context.Context, accessToken, timeRange string, limit int
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := doWithRetry(client, req)
 	if err != nil {
 		return nil, fmt.Errorf("fetching top artists: %w", err)
 	}
@@ -351,7 +396,7 @@ func GetTopTracks(ctx context.Context, accessToken, timeRange string, limit int)
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := doWithRetry(client, req)
 	if err != nil {
 		return nil, fmt.Errorf("fetching top tracks: %w", err)
 	}
@@ -383,7 +428,7 @@ func GetArtist(ctx context.Context, accessToken, artistID string) (*TopArtist, e
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := doWithRetry(client, req)
 	if err != nil {
 		return nil, fmt.Errorf("fetching artist: %w", err)
 	}
@@ -420,7 +465,7 @@ func CheckSavedTracks(ctx context.Context, accessToken string, ids []string) ([]
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := doWithRetry(client, req)
 	if err != nil {
 		return nil, fmt.Errorf("checking saved tracks: %w", err)
 	}
@@ -457,7 +502,7 @@ func SaveTracks(ctx context.Context, accessToken string, ids []string) error {
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := doWithRetry(client, req)
 	if err != nil {
 		return fmt.Errorf("saving tracks: %w", err)
 	}
@@ -485,7 +530,7 @@ func RemoveTracks(ctx context.Context, accessToken string, ids []string) error {
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := doWithRetry(client, req)
 	if err != nil {
 		return fmt.Errorf("removing tracks: %w", err)
 	}
@@ -508,7 +553,7 @@ func GetRecentlyPlayed(ctx context.Context, accessToken string) (*RecentlyPlayed
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := doWithRetry(client, req)
 	if err != nil {
 		return nil, fmt.Errorf("fetching recently played: %w", err)
 	}
@@ -540,7 +585,7 @@ func GetTrack(ctx context.Context, accessToken, trackID string) (*FullTrack, err
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := doWithRetry(client, req)
 	if err != nil {
 		return nil, fmt.Errorf("fetching track: %w", err)
 	}
@@ -572,7 +617,7 @@ func GetAlbum(ctx context.Context, accessToken, albumID string) (*FullAlbum, err
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := doWithRetry(client, req)
 	if err != nil {
 		return nil, fmt.Errorf("fetching album: %w", err)
 	}
@@ -604,7 +649,7 @@ func GetAudioFeatures(ctx context.Context, accessToken, trackID string) (*AudioF
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := doWithRetry(client, req)
 	if err != nil {
 		return nil, fmt.Errorf("fetching audio features: %w", err)
 	}
@@ -725,7 +770,7 @@ func Search(ctx context.Context, accessToken, query, types string, limit int) (*
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := doWithRetry(client, req)
 	if err != nil {
 		return nil, fmt.Errorf("searching spotify: %w", err)
 	}
@@ -758,7 +803,7 @@ func GetSavedTracks(ctx context.Context, accessToken string, limit, offset int) 
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := doWithRetry(client, req)
 	if err != nil {
 		return nil, fmt.Errorf("fetching saved tracks: %w", err)
 	}
@@ -791,7 +836,7 @@ func GetSavedAlbums(ctx context.Context, accessToken string, limit, offset int) 
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := doWithRetry(client, req)
 	if err != nil {
 		return nil, fmt.Errorf("fetching saved albums: %w", err)
 	}
@@ -827,7 +872,7 @@ func GetFollowedArtists(ctx context.Context, accessToken string, limit int, afte
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := doWithRetry(client, req)
 	if err != nil {
 		return nil, fmt.Errorf("fetching followed artists: %w", err)
 	}

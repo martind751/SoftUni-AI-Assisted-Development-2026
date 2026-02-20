@@ -14,7 +14,10 @@ export async function exchangeCode(code: string, codeVerifier: string): Promise<
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ code, code_verifier: codeVerifier }),
   })
-  if (!res.ok) throw new Error('Token exchange failed')
+  if (!res.ok) {
+    const data = await res.json().catch(() => null)
+    throw new Error(data?.error || 'Token exchange failed')
+  }
   return res.json()
 }
 

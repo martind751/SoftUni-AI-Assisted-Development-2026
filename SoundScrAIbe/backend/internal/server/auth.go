@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -40,14 +41,15 @@ func (h *handlers) SpotifyCallback(c *gin.Context) {
 	tokenResp, err := h.spotify.ExchangeCode(c.Request.Context(), req.Code, req.CodeVerifier)
 	if err != nil {
 		log.Printf("spotify token exchange error: %v", err)
-		c.JSON(http.StatusBadGateway, gin.H{"error": "failed to exchange code with Spotify"})
+		c.JSON(http.StatusBadGateway, gin.H{"error": fmt.Sprintf("token exchange failed: %v", err)})
 		return
 	}
 
 	// Fetch Spotify profile
 	profile, err := spotify.GetProfile(c.Request.Context(), tokenResp.AccessToken)
 	if err != nil {
-		c.JSON(http.StatusBadGateway, gin.H{"error": "failed to fetch Spotify profile"})
+		log.Printf("spotify profile fetch error: %v", err)
+		c.JSON(http.StatusBadGateway, gin.H{"error": fmt.Sprintf("failed to fetch Spotify profile: %v", err)})
 		return
 	}
 

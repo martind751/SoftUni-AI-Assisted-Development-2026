@@ -53,7 +53,7 @@ function LoggedOutHome() {
     const codeVerifier = generateCodeVerifier()
     const codeChallenge = await generateCodeChallenge(codeVerifier)
 
-    sessionStorage.setItem('code_verifier', codeVerifier)
+    localStorage.setItem('code_verifier', codeVerifier)
 
     const params = new URLSearchParams({
       response_type: 'code',

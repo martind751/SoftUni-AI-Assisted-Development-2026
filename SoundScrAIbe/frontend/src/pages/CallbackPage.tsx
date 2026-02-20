@@ -16,7 +16,7 @@ export default function CallbackPage() {
     const handleCallback = async () => {
       const params = new URLSearchParams(window.location.search)
       const code = params.get('code')
-      const codeVerifier = sessionStorage.getItem('code_verifier')
+      const codeVerifier = localStorage.getItem('code_verifier')
 
       if (!code || !codeVerifier) {
         setError('Missing authorization code or code verifier')
@@ -24,7 +24,7 @@ export default function CallbackPage() {
       }
 
       try {
-        sessionStorage.removeItem('code_verifier')
+        localStorage.removeItem('code_verifier')
         await exchangeCode(code, codeVerifier)
         await checkAuth()
         navigate('/profile')
