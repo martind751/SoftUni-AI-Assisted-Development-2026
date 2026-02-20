@@ -1,6 +1,6 @@
 # SoundScrAIbe
 
-Personal music diary app — Go/Gin backend, React/Vite/TypeScript/Tailwind frontend, PostgreSQL 18 (Docker). Integrates Spotify Web API and Claude API.
+Personal music diary app — Go/Gin backend, React/Vite/TypeScript/Tailwind frontend, PostgreSQL 18 (Docker). Integrates Spotify Web API and Google Gemini API.
 
 ## Agent Routing — MANDATORY
 

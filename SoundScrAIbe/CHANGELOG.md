@@ -4,6 +4,15 @@ All notable changes to SoundScrAIbe are documented here. Updated after every maj
 
 ## 2026-02-20
 
+### Added
+- **AI Recommendations (Discover page)** — AI-powered music discovery at `/discover` using Groq (Llama 3.3 70B, free tier). Two modes: "Smart Analysis" (auto-analyses taste profile) and "Ask for Music" (natural language prompts like "rainy day music"). Each recommendation includes personalized reasoning, discovery angle badge (cross-genre, deep cut, era bridge, mood match, artist evolution), and mood tags. Results resolved to Spotify with cover art and links.
+- **Groq API client** — Raw `net/http` client for Groq's OpenAI-compatible API (free tier) with JSON mode and retry logic (`internal/ai/`)
+- **Recommendation service** — Concurrent taste profile gathering (8 parallel goroutines for Spotify + DB data), concurrent Spotify search resolution, rate limiting (60s cooldown), and history persistence (`internal/recommend/`)
+- **Recommendation history page** — Browse past recommendation sessions at `/discover/history` with expandable session cards
+- **Prompt suggestion chips** — Clickable quick-fill chips on Discover page: "Rainy day music", "Songs that make me feel young", "Late night driving", etc.
+- **New endpoints** — `POST /api/recommendations/smart`, `POST /api/recommendations/prompt`, `GET /api/recommendations/history`, `GET /api/recommendations/history/:id`
+- **Migration 000008** — `ai_recommendations` table for storing recommendation sessions
+
 ### Changed
 - **Color scheme rebrand** — Replaced Spotify green accent (`green-400/500`) with Indigo/Deep Purple (`indigo-400/500`, `violet-500`) to give SoundScrAIbe its own visual identity. Migrated all background/text/border colors from `gray-*` to `slate-*` for a cooler, more cohesive dark theme. Updated Recharts chart fills to match. 18 files updated across components and pages.
 - **Stats page simplified** — Removed tab system, now directly shows overview stat cards + listening activity bar charts (replaced broken radar charts with clean 24h bar charts)
@@ -80,3 +89,4 @@ All notable changes to SoundScrAIbe are documented here. Updated after every maj
 8. `000008_create_entity_metadata_table` — Cached entity metadata
 9. `000006_rework_shelves` — Replace 3-shelf model with on_rotation + want_to_listen
 10. `000007_add_album_to_listening_history` — Add album_id/album_name columns + indexes
+11. `000008_create_ai_recommendations` — AI recommendation sessions and results

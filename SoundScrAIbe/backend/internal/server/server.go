@@ -73,6 +73,14 @@ func New(db *sql.DB, cfg *config.Config) *gin.Engine {
 			protected.GET("/stats/spotify-top", h.SpotifyTop)
 			protected.GET("/stats/my-top", h.MyTop)
 			protected.GET("/stats/clock", h.StatsClock)
+
+			recommendations := protected.Group("/recommendations")
+			{
+				recommendations.POST("/smart", h.SmartRecommend)
+				recommendations.POST("/prompt", h.PromptRecommend)
+				recommendations.GET("/history", h.RecommendationHistory)
+				recommendations.GET("/history/:id", h.RecommendationDetail)
+			}
 		}
 	}
 

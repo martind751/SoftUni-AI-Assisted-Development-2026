@@ -11,7 +11,7 @@ SoundScrAIbe is your **personal music diary**. Connect your Spotify account and:
 - **Track** your listening history and discover patterns over time
 - **Explore** detailed audio features, artist stats, and album info
 
-Future: AI-powered insights and recommendations via Claude API.
+Includes AI-powered music recommendations via Groq API (free tier, Llama 3.3 70B).
 
 ## Features
 
@@ -39,6 +39,14 @@ Future: AI-powered insights and recommendations via Claude API.
 - **Album** — Release info, genres, label, popularity, full track list
 - **Artist** — Genres, followers, popularity, aggregated listening time
 
+### AI Recommendations (Discover)
+- **Smart Analysis** — AI analyses your full taste profile (top artists, genres, ratings, tags, listening patterns) and generates 10 cross-domain recommendations
+- **Prompt Mode** — Natural language queries like "rainy day music" or "songs that make me feel young"
+- Clickable suggestion chips for common prompts
+- Each recommendation includes personalized reasoning, discovery angle badges, and mood tags
+- Recommendations resolved to Spotify with cover art and direct links to detail pages
+- Recommendation history with expandable past sessions
+
 ### Search
 - Unified Spotify search across tracks, albums, and artists (debounced, paginated)
 
@@ -49,6 +57,7 @@ Future: AI-powered insights and recommendations via Claude API.
 
 | Layer | Technology | Version |
 |-------|-----------|---------|
+| AI | Groq API (free) | Llama 3.3 70B Versatile |
 | Backend | Go + Gin | Go 1.25, Gin 1.11 |
 | Frontend | React + TypeScript + Vite | React 19, Vite 7, TS 5.9 |
 | Styling | Tailwind CSS | v4 |
@@ -91,6 +100,10 @@ Future: AI-powered insights and recommendations via Claude API.
 | GET | `/api/stats/spotify-top` | Spotify's top tracks/artists (query: `type`: tracks/artists, `time_range`, `limit`) |
 | GET | `/api/stats/my-top` | DB-tracked top items (query: `type`: tracks/artists/albums/genres, `time_range`, `limit`) |
 | GET | `/api/stats/clock` | 24-hour listening distribution |
+| POST | `/api/recommendations/smart` | AI taste analysis recommendations |
+| POST | `/api/recommendations/prompt` | Prompt-based recommendations (body: `{"prompt": "..."}`) |
+| GET | `/api/recommendations/history` | Past recommendation sessions |
+| GET | `/api/recommendations/history/:id` | Single recommendation session |
 
 ## Database Schema
 
@@ -104,6 +117,7 @@ Future: AI-powered insights and recommendations via Claude API.
 | `tags` | User-defined tag names |
 | `item_tags` | Junction table linking tags to entities |
 | `entity_metadata` | Cached entity metadata (name, image, extras) |
+| `ai_recommendations` | AI recommendation sessions and results |
 
 ## Getting Started
 
@@ -174,8 +188,9 @@ SoundScrAIbe/
 │       ├── handlers/        # HTTP handlers
 │       ├── models/          # Data models
 │       ├── repository/      # Database queries
-│       ├── server/          # Router setup
-│       ├── service/         # Business logic
+│       ├── ai/              # Gemini API client + prompt engineering
+│       ├── recommend/       # Recommendation service (data gathering + resolution)
+│       ├── server/          # Router setup + HTTP handlers
 │       └── spotify/         # Spotify API client
 ├── frontend/
 │   └── src/

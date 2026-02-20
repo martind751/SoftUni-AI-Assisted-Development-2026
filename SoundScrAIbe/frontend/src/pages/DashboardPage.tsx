@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext'
 import PageShell from '../components/PageShell'
 
 const QUICK_LINKS = [
+  { label: 'Discover', description: 'AI-powered music recommendations', path: '/discover' },
   { label: 'Library', description: 'Browse your rated and shelved music', path: '/library' },
   { label: 'Listening History', description: 'See your recently played tracks', path: '/history' },
   { label: 'Stats', description: 'View your listening statistics', path: '/stats' },

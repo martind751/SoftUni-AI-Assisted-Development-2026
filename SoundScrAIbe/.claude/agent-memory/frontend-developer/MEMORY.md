@@ -16,10 +16,9 @@
 - Router: `frontend/src/App.tsx`
 
 ## Design System
-- Dark theme: `bg-gray-950` page bg, `bg-gray-900` cards, `bg-gray-800` inputs/sub-cards
-- Accent: `indigo-400` (text/links), `indigo-500` (buttons/fills)
-- Gradient: `from-indigo-400 to-violet-500` (hero title)
-- Card pattern: `bg-gray-900 rounded-xl p-6 mb-8`
+- Dark theme: `bg-slate-950` page bg, `bg-slate-900` cards, `bg-slate-800` inputs/sub-cards
+- Accent: `indigo-400` (text/links), `indigo-500` (buttons/fills), `indigo-600` (primary buttons)
+- Card pattern: `bg-slate-900 rounded-xl border border-slate-800 p-4`
 - Pill buttons: `rounded-full` with `px-3 py-1.5 text-sm`
 - Selected state: `bg-indigo-500 text-white font-semibold`
 - Links: `text-indigo-400 hover:text-indigo-300 hover:underline transition-colors`
@@ -28,7 +27,7 @@
 ## Auth Pattern
 - `useAuth()` hook from AuthContext
 - Auth guard: `useEffect` redirect to `/` if not logged in
-- Loading state: full-screen centered "Loading..." in `text-gray-400`
+- Loading state: full-screen centered "Loading..." in `text-slate-400`
 
 ## TypeScript Notes
 - React 19 does NOT export global `JSX` namespace - use `ReactNode` from 'react' instead of `JSX.Element`
@@ -37,6 +36,19 @@
 ## Pages Implemented
 - HomePage, CallbackPage, ProfilePage, ListeningHistoryPage, ArtistChartsPage
 - TrackDetailPage, AlbumDetailPage, ArtistDetailPage, LibraryPage
+- StatsPage, RankingsPage, SearchPage, DashboardPage
+- DiscoverPage, DiscoverHistoryPage
+
+## Shared Components
+- `PageShell` - page wrapper with max-w-5xl, optional title, narrow mode
+- `PillGroup` - generic pill tab/toggle, supports sm/md/lg sizes
+- `LoadingState` - full-screen loading placeholder
+- `RecommendCard` - AI recommendation card with discovery angle badges
+
+## Navbar Pattern
+- Icon components defined as functions above NAV_ITEMS array
+- NAV_ITEMS: array of { label, path, matchPrefixes, icon }
+- SVG icons: `viewBox="0 0 24 24"`, `fill="none"`, `stroke="currentColor"`, `strokeWidth={1.5}`, `className="w-5 h-5"`
 
 ## Rating System Components
 - `RatingSelector` - 10 numbered circles, hover preview, click-to-deselect

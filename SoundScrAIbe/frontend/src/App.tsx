@@ -16,6 +16,8 @@ import SearchPage from './pages/SearchPage'
 import StatsPage from './pages/StatsPage'
 import RankingsPage from './pages/RankingsPage'
 import DashboardPage from './pages/DashboardPage'
+import DiscoverPage from './pages/DiscoverPage'
+import DiscoverHistoryPage from './pages/DiscoverHistoryPage'
 
 function AuthLayout() {
   const { isLoggedIn, loading } = useAuth()
@@ -47,6 +49,8 @@ function App() {
         <Route path="/callback" element={<CallbackPage />} />
         <Route element={<AuthLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/discover" element={<DiscoverPage />} />
+          <Route path="/discover/history" element={<DiscoverHistoryPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/history" element={<ListeningHistoryPage />} />
           <Route path="/track/:id" element={<TrackDetailPage />} />

@@ -476,3 +476,85 @@ export async function getListeningClock(): Promise<ListeningClock> {
   if (!res.ok) throw new Error('Failed to fetch listening clock')
   return res.json()
 }
+
+// --- AI Recommendations ---
+
+export type DiscoveryAngle = 'cross_genre' | 'deep_cut' | 'era_bridge' | 'mood_match' | 'artist_evolution'
+
+export interface ResolvedRecommendation {
+  type: 'track' | 'album' | 'artist'
+  spotify_id: string
+  title: string
+  artist: string
+  album?: string
+  year?: string
+  image_url?: string
+  spotify_url?: string
+  why: string
+  discovery_angle: DiscoveryAngle
+  mood_tags: string[]
+  resolved: boolean
+}
+
+export interface RecommendationResponse {
+  taste_summary: string
+  recommendations: ResolvedRecommendation[]
+  mode: 'smart' | 'prompt'
+  user_prompt?: string
+}
+
+export interface RecommendationHistoryItem {
+  id: number
+  mode: 'smart' | 'prompt'
+  user_prompt: string
+  taste_summary: string
+  recommendations: ResolvedRecommendation[]
+  created_at: string
+}
+
+export class RateLimitError extends Error {
+  constructor(message: string, public retryAfter: number) {
+    super(message)
+    this.name = 'RateLimitError'
+  }
+}
+
+export async function getSmartRecommendations(): Promise<RecommendationResponse> {
+  const res = await fetch('/api/recommendations/smart', { method: 'POST' })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    if (data.retry_after) {
+      throw new RateLimitError(data.error || 'Rate limit reached', data.retry_after)
+    }
+    throw new Error(data.error || 'Failed to get recommendations')
+  }
+  return res.json()
+}
+
+export async function getPromptRecommendations(prompt: string): Promise<RecommendationResponse> {
+  const res = await fetch('/api/recommendations/prompt', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    if (data.retry_after) {
+      throw new RateLimitError(data.error || 'Rate limit reached', data.retry_after)
+    }
+    throw new Error(data.error || 'Failed to get recommendations')
+  }
+  return res.json()
+}
+
+export async function getRecommendationHistory(): Promise<RecommendationHistoryItem[]> {
+  const res = await fetch('/api/recommendations/history')
+  if (!res.ok) throw new Error('Failed to load history')
+  return res.json()
+}
+
+export async function getRecommendationDetail(id: number): Promise<RecommendationHistoryItem> {
+  const res = await fetch(`/api/recommendations/history/${id}`)
+  if (!res.ok) throw new Error('Failed to load recommendation')
+  return res.json()
+}

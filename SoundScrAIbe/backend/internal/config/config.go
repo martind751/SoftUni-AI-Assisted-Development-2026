@@ -14,6 +14,7 @@ type Config struct {
 	SpotifyClientSecret string
 	SpotifyRedirectURI  string
 	SessionSecret       string
+	GroqAPIKey          string
 }
 
 func Load() *Config {
@@ -29,6 +30,7 @@ func Load() *Config {
 		SpotifyClientSecret: getEnv("SPOTIFY_CLIENT_SECRET", ""),
 		SpotifyRedirectURI:  getEnv("SPOTIFY_REDIRECT_URI", "http://127.0.0.1:5173/callback"),
 		SessionSecret:       getEnv("SESSION_SECRET", "change-me-in-production"),
+		GroqAPIKey:          getEnv("GROQ_API_KEY", ""),
 	}
 }
 
