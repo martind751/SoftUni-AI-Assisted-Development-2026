@@ -35,7 +35,8 @@
       "Bash(gh auth status:*)",
       "Bash(gh auth switch:*)",
       "Bash(./server.exe:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(music\"\\). 10 recommendations per session with discovery angle badges,:*)"
     ]
   }
 }
