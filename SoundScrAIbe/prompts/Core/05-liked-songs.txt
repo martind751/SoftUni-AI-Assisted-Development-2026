@@ -1,1 +1,0 @@
-Plan how to implement the liked-songs module. Add a backend endpoint GET /api/liked-songs/check?ids= that calls Spotify endpoint for liked tracks. Add PUT /api/liked-songs/:trackId to save a track and DELETE /api/liked-songs/:trackId to remove it, calling Spotify's respectively endpoints. On the frontend, add a heart icon button to each track row on the Listening History page.

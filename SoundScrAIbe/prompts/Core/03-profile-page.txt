@@ -1,1 +1,0 @@
-Plan how to implement the profile module. The auth module already provides GET /api/me proxying Spotify's profile data. Build a frontend Profile page that displays the user's display name, profile image, and Spotify account link. After successful login, the user should always be redirected here. If the user is not authenticated, redirect them to the login screen.

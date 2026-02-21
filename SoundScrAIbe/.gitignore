@@ -21,6 +21,9 @@ frontend/dist/
 .DS_Store
 Thumbs.db
 
+# Prompts (local only)
+prompts/
+
 # Docker
 docker-compose.override.yml
 

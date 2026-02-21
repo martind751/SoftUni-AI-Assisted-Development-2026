@@ -1,4 +1,0 @@
-Plan how to Scaffold a monorepo called "SoundScrAIbe" (the casing matters!) — a personal music diary app where users log their Spotify listening history, rate and review artists/albums/songs, organize music into shelves (listened, currently listening, want to listen, favorites) (like GoodReads but for Music), and get AI-powered recommendations via the Claude API. 
-Stack: Go backend with Gin, React frontend with Vite, PostgreSQL database with docker-compose. 
-Set up the project skeleton with all packages, a working docker-compose, a Makefile for dev commands, and a health check endpoint to verify everything connects. 
-Don't implement features yet — just the foundation ready for module-by-module development.

@@ -1,2 +1,0 @@
-Plan how to implement the listening-history module. Add a backend endpoint GET /api/recently-played that calls Spotify's GET /me/player/recently-played (limit 50), returns the tracks with timestamp, song name, artist(s), album name, album cover image, and duration. 
-On the frontend, build a Listening History page that displays these tracks in reverse chronological order, grouped by day (Today, Yesterday, then dates). Each track should show its cover art, title, artist, album, duration, and the time it was played. Add a loading indicator while fetching.

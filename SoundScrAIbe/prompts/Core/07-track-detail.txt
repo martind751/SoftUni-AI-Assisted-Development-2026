@@ -1,1 +1,0 @@
-Plan the track-detail module. Build the necessary backend endpoints and a frontend Track Detail page showing all available track metadata. Make it accessible by clicking a track anywhere in the app. 
