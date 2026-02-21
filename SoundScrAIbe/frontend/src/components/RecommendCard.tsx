@@ -1,5 +1,7 @@
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import type { ResolvedRecommendation, DiscoveryAngle } from '../lib/api'
+import WhyModal from './WhyModal'
 
 interface RecommendCardProps {
   rec: ResolvedRecommendation
@@ -25,6 +27,21 @@ function MusicNotePlaceholder() {
 
 function CardContent({ rec }: RecommendCardProps) {
   const angle = ANGLE_STYLES[rec.discovery_angle]
+  const [showWhy, setShowWhy] = useState(false)
+  const [isClamped, setIsClamped] = useState(false)
+  const whyRef = useRef<HTMLParagraphElement>(null)
+
+  useEffect(() => {
+    function checkClamp() {
+      const el = whyRef.current
+      if (el) {
+        setIsClamped(el.scrollHeight > el.clientHeight)
+      }
+    }
+    checkClamp()
+    window.addEventListener('resize', checkClamp)
+    return () => window.removeEventListener('resize', checkClamp)
+  }, [rec.why])
 
   return (
     <div className="flex gap-4">
@@ -53,7 +70,16 @@ function CardContent({ rec }: RecommendCardProps) {
         </div>
 
         {/* Why text */}
-        <p className="text-slate-300 text-sm italic mt-1 line-clamp-2">{rec.why}</p>
+        <p ref={whyRef} className="text-slate-300 text-sm italic mt-1 line-clamp-2">{rec.why}</p>
+        {isClamped && (
+          <button
+            onClick={(e) => { e.stopPropagation(); e.preventDefault(); setShowWhy(true) }}
+            className="text-indigo-400 hover:text-indigo-300 text-xs cursor-pointer transition-colors mt-1"
+          >
+            Read more
+          </button>
+        )}
+        {showWhy && <WhyModal rec={rec} onClose={() => setShowWhy(false)} />}
 
         {/* Mood tags */}
         {rec.mood_tags.length > 0 && (
